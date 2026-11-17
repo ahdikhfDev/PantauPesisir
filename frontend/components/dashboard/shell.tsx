@@ -6,9 +6,7 @@ import {
   Database,
   LayoutDashboard,
   Menu,
-  Radio,
   Satellite,
-  ShieldCheck,
   Waves,
   X,
 } from "lucide-react";
@@ -67,55 +65,48 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <button
           type="button"
           aria-label="Close navigation"
-          className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
           onClick={() => setOpen(false)}
         />
       ) : null}
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[252px] flex-col overflow-y-auto bg-sea-deep text-white transition-transform duration-300 lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col overflow-y-auto bg-sea-deep text-white transition-transform duration-200 lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div
-          className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-signal/25 blur-3xl"
-          aria-hidden
-        />
+        <div className="h-[2px] w-full bg-signal" aria-hidden />
 
-        <div className="relative flex items-center justify-between px-5 pt-6">
+        <div className="flex items-center justify-between px-4 pb-4 pt-5">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-signal">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <span className="grid h-8 w-8 place-items-center rounded-[9px] border border-white/15">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path
                   d="M2.5 9c2.2-2.3 4.3-2.3 6.5 0s4.3 2.3 6.5 0 4.3-2.3 6 0M2.5 15.5c2.2-2.3 4.3-2.3 6.5 0s4.3 2.3 6.5 0 4.3-2.3 6 0"
-                  stroke="white"
-                  strokeWidth="2.1"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
                   strokeLinecap="round"
                 />
               </svg>
             </span>
             <span className="leading-none">
-              <span className="block text-[18px] font-extrabold tracking-[-0.04em]">CEWS</span>
-              <span className="mt-1 block text-[8px] font-extrabold uppercase tracking-[0.2em] text-white/45">
-                Operations console
-              </span>
+              <span className="font-display block text-[17px] font-semibold tracking-[-0.03em]">CEWS</span>
+              <span className="mt-1 block text-[9px] text-white/40">Coastal operations</span>
             </span>
           </Link>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-white/70 lg:hidden"
+            className="grid h-7 w-7 place-items-center rounded-md border border-white/10 text-white/60 lg:hidden"
             aria-label="Close navigation"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
 
-        <div className="relative mt-7 px-3">
-          <p className="px-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-white/35">
-            Monitoring
-          </p>
+        <div className="border-t border-white/[0.07] px-2 pt-5">
+          <p className="px-2 text-[10px] font-medium text-white/35">Monitoring</p>
           <nav className="mt-2 space-y-0.5">
             {NAV.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -124,19 +115,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "group relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition",
+                    "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
                     active
-                      ? "bg-white/10 text-white"
-                      : "text-white/55 hover:bg-white/5 hover:text-white/90",
+                      ? "bg-white/[0.07] text-white"
+                      : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
                   )}
                 >
                   {active ? (
-                    <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-signal" />
+                    <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
                   ) : null}
-                  <item.icon className="h-4 w-4 shrink-0" aria-hidden />
-                  {item.label}
+                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
+                  <span className="truncate">{item.label}</span>
                   {item.href === "/alerts" ? (
-                    <span className="ml-auto rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold text-white/60">
+                    <span className="ml-auto font-mono text-[10px] text-white/35">
                       {health.data?.counts.alerts_open ?? 0}
                     </span>
                   ) : null}
@@ -146,98 +137,86 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div className="relative mt-6 px-3">
-          <p className="px-3 text-[9px] font-extrabold uppercase tracking-[0.18em] text-white/35">Data mode</p>
-          <div className="mt-2 rounded-xl border border-white/10 bg-white/5 p-3">
-            <p className="flex items-center gap-1.5 text-[10px] font-bold text-white/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-              Simulated telemetry
-            </p>
-            <p className="mt-1 text-[9.5px] leading-relaxed text-white/40">
-              Buoy readings are generated by the CEWS simulator. Satellite records are real historical
-              acquisitions.
-            </p>
-          </div>
+        <div className="mt-6 px-4">
+          <p className="text-[10px] font-medium text-white/35">Data mode</p>
+          <p className="mt-2 flex items-center gap-1.5 text-[11px] text-white/70">
+            <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
+            Simulated telemetry
+          </p>
+          <p className="mt-1.5 text-[10px] leading-relaxed text-white/35">
+            Buoy readings are synthetic. Satellite records are real historical acquisitions.
+          </p>
         </div>
 
-        <div className="relative mt-auto space-y-3 p-3 pb-5">
-          <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-white/40">System</span>
-              <span
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full",
-                  healthy ? "bg-emerald-400" : health.error ? "bg-signal" : "bg-amber-400",
-                )}
-                aria-hidden
-              />
-            </div>
-            <p className="mt-1.5 text-[11px] font-semibold text-white/80">
-              {health.error ? "API unreachable" : healthy ? "Core services healthy" : "Degraded"}
-            </p>
-            <p className="mt-1 text-[9.5px] text-white/40">
-              DB {health.data?.database.dialect ?? "—"} · model {health.data?.model.version ?? "—"}
-            </p>
-            <Link href="/sources" className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold text-[#ff9a91]">
-              System health →
-            </Link>
+        <div className="mt-auto border-t border-white/[0.07] px-4 py-4">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-medium text-white/35">System</span>
+            <span
+              className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                healthy ? "bg-[#a8c3bd]" : health.error ? "bg-signal" : "bg-amber",
+              )}
+              aria-hidden
+            />
           </div>
-          <p className="px-1 text-[8.5px] leading-relaxed text-white/30">
-            IT RUSH 2026 prototype · decision support only · not an official warning service.
+          <p className="mt-1.5 text-[11px] font-medium text-white/75">
+            {health.error ? "API unreachable" : healthy ? "Core services healthy" : "Degraded"}
+          </p>
+          <p className="mt-1 font-mono text-[9.5px] text-white/35">
+            {health.data?.database.dialect ?? "db"} · {health.data?.model.version ?? "model"}
+          </p>
+          <Link href="/sources" className="mt-2 inline-block text-[10px] font-medium text-white/55 hover:text-white">
+            System health →
+          </Link>
+          <p className="mt-3 text-[9px] leading-relaxed text-white/25">
+            IT RUSH 2026 prototype. Decision support only. Not an official warning service.
           </p>
         </div>
       </aside>
 
-      <div className="lg:pl-[252px]">
-        <header className="sticky top-0 z-30 border-b border-line bg-paper/90 backdrop-blur">
-          <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="lg:pl-[248px]">
+        <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
+          <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-line bg-white text-ink lg:hidden"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-line bg-surface text-ink lg:hidden"
                 aria-label="Open navigation"
               >
                 <Menu className="h-4 w-4" />
               </button>
-              <div className="min-w-0">
-                <p className="truncate text-[9px] font-extrabold uppercase tracking-[0.16em] text-muted">
-                  CEWS / {current?.label ?? "Console"}
-                </p>
-                <p className="truncate text-[14px] font-extrabold tracking-[-0.02em]">
-                  {current?.label ?? "Overview"}
-                </p>
+              <div className="flex min-w-0 items-baseline gap-2">
+                <span className="hidden text-[10.5px] text-muted sm:inline">CEWS</span>
+                <span className="hidden text-[10.5px] text-line-strong sm:inline">/</span>
+                <span className="truncate text-[13px] font-semibold text-ink">
+                  {current?.label ?? "Console"}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="hidden items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1.5 text-[10px] font-bold text-muted sm:flex">
-                <Radio className="h-3 w-3 text-signal" aria-hidden />
+            <div className="flex items-center gap-4">
+              <span className="hidden items-center gap-1.5 text-[10px] font-medium text-muted sm:flex">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
                 Simulated feed
               </span>
-              <span className="hidden items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1.5 text-[10px] font-bold text-muted md:flex">
-                <ShieldCheck className="h-3 w-3 text-ok" aria-hidden />
-                Prototype
-              </span>
-              <span className="rounded-full border border-line bg-white px-2.5 py-1.5 font-mono text-[10px] text-ink-soft">
-                {clock} UTC
-              </span>
+              <span className="font-mono text-[10.5px] text-muted">{clock} UTC</span>
             </div>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+        <main className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">{children}</main>
 
         <footer className="mx-auto w-full max-w-[1500px] px-4 pb-8 text-[10px] leading-relaxed text-muted sm:px-6 lg:px-8">
           <p>
-            CEWS is a student-competition prototype. Simulated buoy telemetry is labelled throughout;
-            Copernicus records are historical acquisitions; AI output is model-derived. Never use this
-            console for evacuation or safety-of-life decisions — consult BMKG, BPBD and port authorities.
+            Prototype decision support. Simulated telemetry is labelled throughout; Copernicus records
+            are historical acquisitions; AI output is model-derived. Consult BMKG, BPBD and port
+            authorities for operational decisions.
           </p>
           {health.data ? (
-            <p className="mt-1">
-              API v{health.data.version} · {health.data.counts.buoy_observations} stored readings · last
-              source refresh {formatShortUtc(health.data.generated_at)} UTC
+            <p className="mt-1 font-mono text-[9.5px] text-muted/80">
+              API v{health.data.version} · {health.data.counts.buoy_observations} readings · ref{" "}
+              {formatShortUtc(health.data.generated_at)} UTC
             </p>
           ) : null}
         </footer>

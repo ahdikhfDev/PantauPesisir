@@ -123,7 +123,7 @@ export function SimulatorPanel({
         <div className="flex items-start justify-between gap-3">
           <div>
             <span className="eyebrow-plain">Demo simulator</span>
-            <h2 className="mt-3 text-[20px] font-extrabold tracking-[-0.03em]">Generate a scenario</h2>
+            <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Generate a scenario</h2>
             <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
               Every reading is synthetic, validated on ingestion and tagged with its simulation session.
             </p>
@@ -140,14 +140,14 @@ export function SimulatorPanel({
               type="button"
               onClick={() => setScenario(item.value)}
               className={cn(
-                "rounded-2xl border px-3.5 py-3 text-left transition",
+                "rounded-[12px] border px-3.5 py-3 text-left transition",
                 scenario === item.value
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-white text-ink hover:border-line-strong",
               )}
               aria-pressed={scenario === item.value}
             >
-              <span className="block text-[12px] font-extrabold">{item.label}</span>
+              <span className="block text-[12px] font-semibold">{item.label}</span>
               <span
                 className={cn(
                   "mt-0.5 block text-[10px]",
@@ -180,14 +180,14 @@ export function SimulatorPanel({
           </div>
           <div>
             <span className="label">Mode</span>
-            <div className="flex rounded-xl border border-line-strong bg-white p-1">
+            <div className="flex rounded-[10px] border border-line-strong bg-white p-1">
               {(["manual", "auto"] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setMode(value)}
                   className={cn(
-                    "flex-1 rounded-lg px-2 py-1.5 text-[11px] font-bold capitalize transition",
+                    "flex-1 rounded-lg px-2 py-1.5 text-[11px] font-semibold capitalize transition",
                     mode === value ? "bg-paper text-ink" : "text-muted hover:text-ink",
                   )}
                   aria-pressed={mode === value}
@@ -246,7 +246,7 @@ export function SimulatorPanel({
         </div>
 
         {error ? (
-          <div className="mt-4 rounded-xl border border-signal/25 bg-signal-soft px-3.5 py-3 text-[12px] text-signal-dark">
+          <div className="mt-4 rounded-[10px] border border-signal/25 bg-signal-soft px-3.5 py-3 text-[12px] text-signal-dark">
             {error}
             {error.toLowerCase().includes("api key") || error.includes("401") ? (
               <span className="mt-1 block text-[11px] text-signal-dark/80">
@@ -259,8 +259,8 @@ export function SimulatorPanel({
       </div>
 
       <div className="border-t border-line bg-paper/70 p-6 sm:p-7 lg:border-l lg:border-t-0">
-        <h3 className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-muted">What happens next</h3>
-        <ol className="mt-4 space-y-4">
+        <h3 className="text-[10px] font-semibold text-muted">What happens next</h3>
+        <ol className="mt-3 divide-y divide-line border-t border-line">
           {[
             "The simulator posts coherent readings with an idempotency key.",
             "A manual burst replaces earlier synthetic readings in its replay window.",
@@ -268,9 +268,9 @@ export function SimulatorPanel({
             "Valid rows are stored; invalid ones are kept with an audit trail.",
             "Charts, data quality and AI analysis refresh from the database.",
           ].map((step, index) => (
-            <li key={step} className="flex gap-3">
-              <span className="metric mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-line bg-white text-[9px] font-semibold text-muted">
-                {index + 1}
+            <li key={step} className="flex gap-3 py-2.5">
+              <span className="metric mt-[2px] shrink-0 text-[9.5px] text-muted">
+                {String(index + 1).padStart(2, "0")}
               </span>
               <p className="text-[12px] leading-relaxed text-ink-soft">{step}</p>
             </li>
@@ -278,22 +278,22 @@ export function SimulatorPanel({
         </ol>
 
         {acceptance ? (
-          <p className="mt-5 rounded-xl border border-sea/15 bg-sea-soft/60 px-3.5 py-3 text-[11px] leading-relaxed text-sea">
+          <p className="mt-4 border-l-2 border-l-sea py-1 pl-3 text-[11px] leading-relaxed text-ink-soft">
             {acceptance}
           </p>
         ) : null}
 
-        <div className="mt-5 space-y-2 rounded-xl border border-line bg-white p-4">
-          <p className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.1em] text-muted">
+        <div className="mt-5">
+          <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
             <Radar className="h-3 w-3" aria-hidden /> Job status
           </p>
           {job.data ? (
             <>
-              <div className="flex items-center justify-between gap-3 text-[12px]">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px] first:border-t-0">
                 <span className="text-muted">Scenario</span>
                 <span className="font-semibold capitalize">{job.data.scenario}</span>
               </div>
-              <div className="flex items-center justify-between gap-3 text-[12px]">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
                 <span className="text-muted">Status</span>
                 <StatusPill
                   tone={
@@ -307,11 +307,11 @@ export function SimulatorPanel({
                   {job.data.status}
                 </StatusPill>
               </div>
-              <div className="flex items-center justify-between gap-3 text-[12px]">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
                 <span className="text-muted">Observations</span>
                 <span className="metric font-semibold">{job.data.observations_count}</span>
               </div>
-              <p className="font-mono text-[9px] text-line-strong">{job.data.id}</p>
+              <p className="mt-2 font-mono text-[9px] text-line-strong">{job.data.id}</p>
             </>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted">
@@ -321,7 +321,7 @@ export function SimulatorPanel({
         </div>
 
         {notice ? (
-          <p className="mt-3 text-[11px] font-semibold text-ok">{notice}</p>
+          <p className="mt-3 text-[11px] font-medium text-ink-soft">{notice}</p>
         ) : null}
 
         {status.data?.last_tick_at ? (

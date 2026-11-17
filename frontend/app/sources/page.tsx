@@ -5,21 +5,17 @@ import {
   AlertTriangle,
   ArrowUpRight,
   BrainCircuit,
-  CheckCircle2,
   Database,
   ExternalLink,
-  HardDrive,
   KeyRound,
   Radio,
   Satellite,
-  ShieldCheck,
-  Waves,
 } from "lucide-react";
 import Link from "next/link";
 
 import { CaveatNote, ErrorState, PageHero, SourceBadge, StatusPill } from "@/components/ui";
 import { API_BASE_URL } from "@/lib/api";
-import { fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { DataSourcesResponse, SatelliteProviderInfo, SystemHealth } from "@/lib/types";
 
@@ -82,7 +78,7 @@ export default function SourcesPage() {
               {health.data?.status ?? "checking"} · v{health.data?.version ?? "—"}
             </StatusPill>
             <span className="chip">Environment · {health.data?.environment ?? "—"}</span>
-            <a href={docsUrl} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-sea underline underline-offset-2">
+            <a href={docsUrl} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-sea underline underline-offset-2">
               OpenAPI / Swagger <ExternalLink className="inline h-3 w-3" aria-hidden />
             </a>
           </div>
@@ -94,7 +90,6 @@ export default function SourcesPage() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <HealthCard
-            icon={Database}
             title="API & database"
             status={health.data?.database.ok ? "ok" : "failed"}
             rows={[
@@ -104,7 +99,6 @@ export default function SourcesPage() {
             ]}
           />
           <HealthCard
-            icon={BrainCircuit}
             title="Anomaly model"
             status={model?.available ? "ok" : "unavailable"}
             rows={[
@@ -119,7 +113,6 @@ export default function SourcesPage() {
             ]}
           />
           <HealthCard
-            icon={Radio}
             title="Buoy simulator"
             status={health.data?.simulator.running ? "online" : "idle"}
             rows={[
@@ -129,7 +122,6 @@ export default function SourcesPage() {
             ]}
           />
           <HealthCard
-            icon={Satellite}
             title="Copernicus provider"
             status={provider.data?.source_status ?? "unknown"}
             rows={[
@@ -145,7 +137,7 @@ export default function SourcesPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <div className="card grid grid-cols-2 gap-px overflow-hidden bg-line sm:grid-cols-3 xl:grid-cols-6">
           {[
             ["Stored observations", health.data?.counts.buoy_observations],
             ["Satellite datasets", health.data?.counts.satellite_datasets],
@@ -154,9 +146,9 @@ export default function SourcesPage() {
             ["Buoy devices", health.data?.counts.buoy_devices],
             ["Zones", health.data?.counts.coastal_zones],
           ].map(([label, value]) => (
-            <div key={String(label)} className="card p-4">
-              <p className="text-[9px] font-extrabold uppercase tracking-[0.1em] text-muted">{label}</p>
-              <p className="metric mt-1.5 text-[22px] font-semibold">{value ?? "—"}</p>
+            <div key={String(label)} className="bg-surface px-4 py-3.5">
+              <p className="text-[10px] text-muted">{label}</p>
+              <p className="metric mt-1.5 text-[21px] font-medium leading-none">{value ?? "—"}</p>
             </div>
           ))}
         </div>
@@ -164,8 +156,8 @@ export default function SourcesPage() {
         <div className="card overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Source freshness</h2>
-              <p className="mt-0.5 text-[11px] text-muted">
+              <h2 className="text-[14px] font-semibold">Source freshness</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">
                 Last observed, received and successful timestamps, straight from the database.
               </p>
             </div>
@@ -182,7 +174,7 @@ export default function SourcesPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[860px] text-left">
                 <thead>
-                  <tr className="border-b border-line bg-paper/70 text-[9px] font-extrabold uppercase tracking-[0.1em] text-muted">
+                  <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
                     <th className="px-5 py-2.5">Source</th>
                     <th className="px-3 py-2.5">Type</th>
                     <th className="px-3 py-2.5">Status</th>
@@ -195,7 +187,7 @@ export default function SourcesPage() {
                   {(sources.data?.items ?? []).map((source) => (
                     <tr key={source.source_name} className="table-row align-top text-[11.5px]">
                       <td className="px-5 py-3">
-                        <p className="font-bold text-ink">
+                        <p className="font-semibold text-ink">
                           {(source.metadata?.label as string) ?? source.source_name}
                         </p>
                         <p className="font-mono text-[9px] text-muted">{source.source_name}</p>
@@ -226,7 +218,7 @@ export default function SourcesPage() {
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="card p-6">
             <span className="eyebrow-plain">Provenance legend</span>
-            <h2 className="mt-2.5 text-[18px] font-extrabold tracking-[-0.03em]">Badges you will see</h2>
+            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">Badges you will see</h2>
             <div className="mt-4 space-y-4">
               {[
                 {
@@ -256,11 +248,13 @@ export default function SourcesPage() {
 
           <div className="card p-6">
             <span className="eyebrow-plain">Ingestion gates</span>
-            <h2 className="mt-2.5 text-[18px] font-extrabold tracking-[-0.03em]">What must pass</h2>
-            <ul className="mt-4 space-y-2.5">
-              {VALIDATION_RULES.map((rule) => (
-                <li key={rule} className="flex gap-2 text-[11.5px] leading-relaxed text-ink-soft">
-                  <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ok" aria-hidden />
+            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">What must pass</h2>
+            <ul className="mt-4 divide-y divide-line border-y border-line">
+              {VALIDATION_RULES.map((rule, index) => (
+                <li key={rule} className="flex gap-3 py-2.5 text-[11.5px] leading-relaxed text-ink-soft">
+                  <span className="metric mt-[1px] shrink-0 text-[10px] text-muted">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   {rule}
                 </li>
               ))}
@@ -278,7 +272,7 @@ export default function SourcesPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className="eyebrow-plain">Model & data lineage</span>
-              <h2 className="mt-2.5 text-[18px] font-extrabold tracking-[-0.03em]">
+              <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">
                 {model?.training_dataset ?? "Training dataset not registered"}
               </h2>
             </div>
@@ -332,7 +326,7 @@ export default function SourcesPage() {
 
         <div className="card overflow-hidden">
           <div className="border-b border-line px-5 py-4">
-            <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Public API surface</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Public API surface</h2>
             <p className="mt-0.5 text-[11px] text-muted">
               Base path <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · UTC ISO 8601.
               Key icon marks operations requiring <span className="font-mono">X-API-Key</span>.
@@ -341,7 +335,7 @@ export default function SourcesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left">
               <thead>
-                <tr className="border-b border-line bg-paper/70 text-[9px] font-extrabold uppercase tracking-[0.1em] text-muted">
+                <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
                   <th className="px-5 py-2.5">Method</th>
                   <th className="px-3 py-2.5">Endpoint</th>
                   <th className="px-3 py-2.5">Auth</th>
@@ -353,13 +347,14 @@ export default function SourcesPage() {
                   <tr key={`${endpoint.method}-${endpoint.path}`} className="table-row text-[11.5px]">
                     <td className="px-5 py-2.5">
                       <span
-                        className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] font-bold ${
+                        className={cn(
+                          "font-mono text-[9.5px] font-semibold",
                           endpoint.method === "GET"
-                            ? "bg-sea-soft text-sea"
+                            ? "text-sea"
                             : endpoint.method === "POST"
-                              ? "bg-signal-soft text-signal-dark"
-                              : "bg-amber-soft text-amber"
-                        }`}
+                              ? "text-signal-dark"
+                              : "text-amber",
+                        )}
                       >
                         {endpoint.method}
                       </span>
@@ -367,7 +362,7 @@ export default function SourcesPage() {
                     <td className="px-3 py-2.5 font-mono text-[10.5px] text-ink">{endpoint.path}</td>
                     <td className="px-3 py-2.5">
                       {endpoint.auth ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-signal">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-signal">
                           <KeyRound className="h-3 w-3" aria-hidden /> key
                         </span>
                       ) : (
@@ -384,10 +379,7 @@ export default function SourcesPage() {
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           <div className="card p-6">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-ok" aria-hidden />
-              <h2 className="text-[15px] font-extrabold">Graceful degradation</h2>
-            </div>
+            <h2 className="text-[14px] font-semibold">Graceful degradation</h2>
             <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
               If Copernicus times out, the satellite job is marked{" "}
               <span className="font-mono">completed_with_fallback</span>, the provider status becomes{" "}
@@ -403,24 +395,18 @@ export default function SourcesPage() {
           </div>
 
           <div className="card p-6">
-            <div className="flex items-center gap-2">
-              <HardDrive className="h-4 w-4 text-sea" aria-hidden />
-              <h2 className="text-[15px] font-extrabold">Storage layout</h2>
-            </div>
-            <ul className="mt-3 space-y-2 text-[11.5px] leading-relaxed text-muted">
-              <li className="flex gap-2">
-                <Database className="mt-0.5 h-3.5 w-3.5 shrink-0 text-line-strong" aria-hidden />
+            <h2 className="text-[14px] font-semibold">Storage layout</h2>
+            <ul className="mt-3 divide-y divide-line border-y border-line text-[11.5px] leading-relaxed text-muted">
+              <li className="py-2.5">
                 Relational tables for zones, devices, simulations, observations, datasets, jobs, models,
                 predictions, alerts and source status.
               </li>
-              <li className="flex gap-2">
-                <Waves className="mt-0.5 h-3.5 w-3.5 shrink-0 text-line-strong" aria-hidden />
+              <li className="py-2.5">
                 Geometry in SRID 4326: PostGIS POINT/MULTIPOLYGON in production, WKT text in the SQLite demo.
               </li>
-              <li className="flex gap-2">
-                <Satellite className="mt-0.5 h-3.5 w-3.5 shrink-0 text-line-strong" aria-hidden />
-                Quicklook JPEGs cached under <span className="font-mono">data/satellite/</span>; only URIs
-                and metadata live in the database.
+              <li className="py-2.5">
+                Quicklook JPEGs cached under <span className="font-mono">data/satellite/</span>; only URIs and
+                metadata live in the database.
               </li>
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -433,7 +419,7 @@ export default function SourcesPage() {
         </div>
 
         {provider.data?.last_error ? (
-          <div className="flex gap-2 rounded-2xl border border-amber/25 bg-amber-soft/60 px-5 py-4 text-[11.5px] leading-relaxed text-amber">
+          <div className="flex gap-2 rounded-[12px] border border-amber/25 bg-amber-soft/60 px-5 py-4 text-[11.5px] leading-relaxed text-amber">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             Last satellite provider error: {provider.data.last_error}
           </div>
@@ -449,30 +435,25 @@ export default function SourcesPage() {
 }
 
 function HealthCard({
-  icon: Icon,
   title,
   status,
   rows,
 }: {
-  icon: typeof Database;
   title: string;
   status: string;
   rows: Array<[string, string]>;
 }) {
   return (
     <div className="card p-5">
-      <div className="flex items-start justify-between gap-3">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-paper text-sea">
-          <Icon className="h-4 w-4" aria-hidden />
-        </span>
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-[12.5px] font-semibold">{title}</h3>
         <StatusPill tone={statusTone(status)}>{status}</StatusPill>
       </div>
-      <h3 className="mt-3.5 text-[13.5px] font-extrabold">{title}</h3>
-      <dl className="mt-3 space-y-1.5">
+      <dl className="mt-3 divide-y divide-line border-t border-line">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex items-baseline justify-between gap-3 text-[10.5px]">
+          <div key={label} className="flex items-baseline justify-between gap-3 py-2 text-[10.5px]">
             <dt className="text-muted">{label}</dt>
-            <dd className="truncate text-right font-semibold text-ink">{value}</dd>
+            <dd className="truncate text-right font-medium text-ink">{value}</dd>
           </div>
         ))}
       </dl>
@@ -482,9 +463,9 @@ function HealthCard({
 
 function Lineage({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-line bg-paper/60 p-3">
-      <p className="text-[9px] font-extrabold uppercase tracking-[0.1em] text-muted">{label}</p>
-      <p className="mt-1 text-[11.5px] font-semibold leading-snug text-ink">{value}</p>
+    <div>
+      <p className="text-[10px] text-muted">{label}</p>
+      <p className="mt-1 text-[11.5px] font-medium leading-snug text-ink">{value}</p>
     </div>
   );
 }

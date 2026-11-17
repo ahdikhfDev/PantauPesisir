@@ -1,15 +1,11 @@
 "use client";
 
 import {
-  Activity,
-  AlertTriangle,
-  ArrowRight,
   ArrowUpRight,
   BellRing,
   BrainCircuit,
   Clock3,
   Database,
-  Info,
   Radar,
   RefreshCw,
   Satellite,
@@ -98,6 +94,14 @@ export default function OverviewPage() {
   const sources = overview.data?.data_freshness.sources ?? [];
   const zones = overview.data?.zones ?? [];
 
+  const riskByZone = useMemo(() => {
+    const map = new Map<string, Prediction>();
+    for (const row of predictions.data ?? []) {
+      if (row.zone_code && !map.has(row.zone_code)) map.set(row.zone_code, row);
+    }
+    return map;
+  }, [predictions.data]);
+
   const seriesByZone = useMemo(() => {
     const map = new Map<string, number[]>();
     const rows = [...(history.data?.items ?? [])].reverse();
@@ -121,8 +125,6 @@ export default function OverviewPage() {
           wind: row.parameters.wind_speed_mps,
         }));
     }
-    // Averaging by minute avoids interleaving three independent buoy series into
-    // one jagged line. Per-zone detail is available in the zone console.
     const buckets = new Map<number, { heights: number[]; winds: number[] }>();
     for (const row of rows) {
       const bucketTime = Math.floor(new Date(row.observed_at).getTime() / 60_000) * 60_000;
@@ -140,14 +142,6 @@ export default function OverviewPage() {
       }));
   }, [history.data, chartZone]);
 
-  const riskByZone = useMemo(() => {
-    const map = new Map<string, Prediction>();
-    for (const row of predictions.data ?? []) {
-      if (row.zone_code && !map.has(row.zone_code)) map.set(row.zone_code, row);
-    }
-    return map;
-  }, [predictions.data]);
-
   const observationByZone = useMemo(() => {
     const map = new Map<string, Observation>();
     for (const item of observations) {
@@ -156,55 +150,58 @@ export default function OverviewPage() {
     return map;
   }, [observations]);
 
+  const calibration = health.data?.model.calibration as
+    | { target_false_alarm_rate?: number }
+    | undefined;
+
   return (
     <>
       <PageHero
-        eyebrow="Operations dashboard"
+        eyebrow="Operations"
         title="Coastal overview"
-        description="Three monitored zones, one traceable data chain: validated synthetic buoy telemetry, verified Copernicus Sentinel-2 metadata, calibrated anomaly screening and a transparent risk rubric."
+        description="Three monitored zones. Validated synthetic telemetry, verified Copernicus metadata and a calibrated anomaly screen — kept traceable end to end."
         right={
-          <div className="flex flex-wrap items-center gap-2">
+          <>
             <StatusPill tone={latest.data?.stale ? "warn" : "ok"}>
               {latest.data?.stale ? "Feed stale" : "Feed current"}
             </StatusPill>
-            <span className="chip">
-              <Clock3 className="h-3 w-3" aria-hidden /> Newest {formatAge(freshest)}
+            <span className="flex items-center gap-1.5 text-[10.5px] text-muted">
+              <Clock3 className="h-3 w-3" aria-hidden />
+              Newest {formatAge(freshest)}
             </span>
-            <button type="button" onClick={refreshAll} className="btn btn-primary btn-sm">
+            <button type="button" onClick={refreshAll} className="btn btn-ghost btn-sm">
               <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Refresh
             </button>
-          </div>
+          </>
         }
       />
 
-      <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-line bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex items-start gap-2 text-[11.5px] leading-relaxed text-muted">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sea" aria-hidden />
+      <div className="mb-5 flex flex-col gap-2 border-y border-line py-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 text-[11px] leading-relaxed text-muted">
+          <span className="mt-[3px] shrink-0 text-[9.5px] font-semibold text-signal-dark">
+            Prototype
+          </span>
           <span>
-            <strong className="text-ink">Prototype decision support.</strong> Buoy values are simulated and
-            labelled; satellite records are real historical acquisitions; AI output is model-derived. This
-            is not an official BMKG/BPBD warning.
+            Buoy values are simulated and labelled; satellite records are historical acquisitions; AI
+            output is model-derived. This is not an official BMKG/BPBD warning.
           </span>
         </p>
-        <Link href="/sources" className="shrink-0 text-[11px] font-extrabold text-signal">
-          How the chain works →
+        <Link href="/sources" className="shrink-0 text-[11px] font-medium text-ink underline underline-offset-4">
+          Data chain
         </Link>
       </div>
 
       {overview.error ? (
         <ErrorState message={overview.error} onRetry={refreshAll} />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <KpiCard
-            icon={Waves}
+        <div className="card grid grid-cols-2 divide-line lg:grid-cols-5 lg:divide-x">
+          <Stat
             label="Buoy sites"
-            value={health.data ? String(health.data.counts.buoy_devices) : "—"}
-            unit={health.data ? `${health.data.counts.coastal_zones} zones` : "zones"}
-            note="Virtual devices · simulated"
-            live
+            value={health.data ? String(health.data.counts.buoy_devices) : "3"}
+            unit="devices"
+            note={`${health.data?.counts.coastal_zones ?? 3} zones · simulated`}
           />
-          <KpiCard
-            icon={Activity}
+          <Stat
             label="Mean wave height"
             value={fixed(averageWave, 2)}
             unit="m"
@@ -214,16 +211,13 @@ export default function OverviewPage() {
                 : "Awaiting readings"
             }
           />
-          <KpiCard
-            icon={BellRing}
+          <Stat
             label="Open alerts"
             value={String(alertCounts.open ?? 0)}
             unit="open"
-            note={`${alertCounts.high ?? 0} high severity overall · prototype`}
-            tone={(alertCounts.open ?? 0) > 0 ? "warn" : "ok"}
+            note={`${alertCounts.high ?? 0} high severity total`}
           />
-          <KpiCard
-            icon={Satellite}
+          <Stat
             label="Sentinel-2 records"
             value={String(satellite.dataset_count ?? 0)}
             unit="cached"
@@ -233,56 +227,56 @@ export default function OverviewPage() {
                 : "No acquisition stored"
             }
           />
-          <KpiCard
-            icon={BrainCircuit}
-            label="Anomaly model"
-            value={health.data?.model.available ? "IForest" : "Offline"}
-            unit=""
-            note={
-              health.data?.model.available
-                ? `${health.data.model.version ?? ""} · 10% calibrated flag rate`
-                : health.data?.model.reason ?? "Model unavailable"
+          <Stat
+            label="Normal-window flag rate"
+            value={
+              calibration?.target_false_alarm_rate !== undefined
+                ? String(Math.round(calibration.target_false_alarm_rate * 100))
+                : "10"
             }
-            tone={health.data?.model.available ? "ok" : "warn"}
+            unit="%"
+            note={health.data?.model.version ?? "model unavailable"}
           />
         </div>
       )}
 
       <div className="mt-5 grid gap-5 xl:grid-cols-3">
         <section className="card overflow-hidden xl:col-span-2">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">Sea state</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Sea state</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
                 {chartZone === "ALL"
                   ? "Mean of all zones"
                   : zones.find((zone) => zone.zone_code === chartZone)?.zone_name ?? chartZone}{" "}
-                · wave height (m) and wind (m/s) · UTC · simulated
+                · wave height (m) and wind (m/s) · UTC
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-4">
               <select
-                className="rounded-full border border-line bg-white px-2.5 py-1.5 text-[10px] font-bold text-muted"
+                className="h-8 rounded-[7px] border border-line bg-transparent px-2 text-[11px] text-ink-soft outline-none focus:border-sea"
                 value={chartZone}
                 onChange={(event) => setChartZone(event.target.value)}
                 aria-label="Chart scope"
               >
-                <option value="ALL">All zones · mean</option>
+                <option value="ALL">All zones, mean</option>
                 {zones.map((zone) => (
                   <option key={zone.zone_code} value={zone.zone_code}>
                     {zone.zone_name}
                   </option>
                 ))}
               </select>
-              <div className="flex rounded-full border border-line bg-white p-0.5">
+              <div className="flex items-center gap-1">
                 {WINDOWS.map((window) => (
                   <button
                     key={window.hours}
                     type="button"
                     onClick={() => setHours(window.hours)}
                     className={cn(
-                      "rounded-full px-2.5 py-1 text-[10px] font-bold transition",
-                      hours === window.hours ? "bg-ink text-white" : "text-muted hover:text-ink",
+                      "border-b px-1.5 pb-1 text-[11px] font-medium transition-colors",
+                      hours === window.hours
+                        ? "border-signal text-ink"
+                        : "border-transparent text-muted hover:text-ink",
                     )}
                     aria-pressed={hours === window.hours}
                   >
@@ -290,86 +284,93 @@ export default function OverviewPage() {
                   </button>
                 ))}
               </div>
-              <SourceBadge kind="simulated" />
             </div>
           </div>
-          <div className="px-3 pb-2 pt-4 sm:px-4">
+
+          <div className="px-3 pb-1 pt-4 sm:px-4">
             {history.loading && !history.data ? (
-              <SkeletonBlock className="h-[280px] w-full" />
+              <SkeletonBlock className="h-[300px] w-full" />
             ) : (
-              <SeaStateChart points={chartPoints} height={282} />
+              <SeaStateChart points={chartPoints} height={300} />
             )}
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3 text-[10px] text-muted">
-            <span className="flex items-center gap-4">
+
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3">
+            <span className="flex items-center gap-4 text-[10px] text-muted">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-signal" aria-hidden /> Wave height (m)
+                <span className="h-[2px] w-4 bg-signal" aria-hidden /> Wave height, m
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-sea" aria-hidden /> Wind (m/s)
+                <span className="h-[2px] w-4 border-t border-dashed border-sea" aria-hidden /> Wind, m/s
               </span>
             </span>
-            <Link href="/ocean" className="inline-flex items-center gap-1 font-bold text-signal">
-              Ocean console <ArrowUpRight className="h-3 w-3" aria-hidden />
-            </Link>
+            <span className="flex items-center gap-3">
+              <SourceBadge kind="simulated" />
+              <Link href="/ocean" className="inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
+                Ocean console <ArrowUpRight className="h-3 w-3" aria-hidden />
+              </Link>
+            </span>
           </div>
         </section>
 
         <section className="card flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+          <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">Zone status</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Zone status</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">Latest valid reading per site</p>
             </div>
-            <span className="chip">{zones.length} zones</span>
+            <span className="font-mono text-[10px] text-muted">{zones.length} zones</span>
           </div>
-          <div className="flex-1 divide-y divide-line px-2">
+
+          <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 border-b border-line px-5 py-2 text-[9.5px] text-muted">
+            <span>Zone</span>
+            <span className="text-right">Wave</span>
+            <span className="w-[58px] text-right">Risk</span>
+          </div>
+
+          <div className="flex-1 divide-y divide-line">
             {zones.map((zone) => {
               const observation = observationByZone.get(zone.zone_code);
               const series = (seriesByZone.get(zone.zone_code) ?? []).slice(-40);
-              const zoneRisk = riskByZone.get(zone.zone_code)?.risk_level ?? null;
+              const risk = riskByZone.get(zone.zone_code)?.risk_level ?? null;
               return (
                 <Link
                   key={zone.id}
                   href={`/ocean?zone=${zone.zone_code}`}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-paper"
+                  className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 px-5 py-3 transition-colors hover:bg-paper"
                 >
-                  <span
-                    className={cn(
-                      "h-2 w-2 shrink-0 rounded-full",
-                      zoneRisk === "high"
-                        ? "bg-signal"
-                        : zoneRisk === "moderate"
-                          ? "bg-amber"
-                          : "bg-ok",
-                    )}
-                    aria-hidden
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[12px] font-bold">{zone.zone_name}</p>
-                    <p className="text-[9.5px] text-muted">
-                      {zone.zone_code} · {formatAge(observation?.data_age_seconds)}
+                  <div className="min-w-0">
+                    <p className="truncate text-[11.5px] font-medium">{zone.zone_name}</p>
+                    <p className="mt-0.5 flex items-center gap-2 text-[9.5px] text-muted">
+                      <span className="font-mono">{zone.zone_code}</span>
+                      <span className="h-2 w-px bg-line-strong" aria-hidden />
+                      {formatAge(observation?.data_age_seconds)}
                     </p>
                   </div>
-                  {series.length > 1 ? (
-                    <Sparkline values={series} width={64} height={22} tone="sea" showArea={false} />
-                  ) : null}
-                  <div className="shrink-0 text-right">
-                    <p className="metric text-[14px] font-semibold leading-none">
+                  <div className="flex items-center gap-3">
+                    {series.length > 1 ? (
+                      <Sparkline values={series} width={56} height={18} tone="sea" showArea={false} strokeWidth={1.4} />
+                    ) : null}
+                    <p className="metric min-w-[54px] text-right text-[12px] font-medium">
                       {fixed(observation?.parameters.wave_height_m, 2)}
                       <span className="ml-0.5 text-[9px] font-normal text-muted">m</span>
                     </p>
-                    <p className="mt-1 text-[8.5px] uppercase tracking-[0.06em] text-muted">
-                      {zoneRisk ? `risk ${zoneRisk}` : "not screened"}
-                    </p>
+                  </div>
+                  <div className="w-[58px] text-right">
+                    {risk ? (
+                      <RiskBadge level={risk} />
+                    ) : (
+                      <span className="text-[9.5px] text-muted">not run</span>
+                    )}
                   </div>
                 </Link>
               );
             })}
           </div>
+
           <div className="border-t border-line px-5 py-3">
-            <Link href="/satellite" className="inline-flex items-center gap-1 text-[10.5px] font-bold text-signal">
-              Open satellite context <ArrowUpRight className="h-3 w-3" aria-hidden />
+            <Link href="/satellite" className="inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
+              Satellite context <ArrowUpRight className="h-3 w-3" aria-hidden />
             </Link>
           </div>
         </section>
@@ -378,109 +379,129 @@ export default function OverviewPage() {
       <div className="mt-5 grid gap-5 xl:grid-cols-3">
         <section className="card overflow-hidden xl:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
-            <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-signal-soft text-signal">
-                <BrainCircuit className="h-4 w-4" aria-hidden />
-              </span>
-              <div>
-                <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">AI risk screening</h2>
-                <p className="text-[10.5px] text-muted">
-                  Isolation Forest on real NDBC data · transparent rubric
-                </p>
-              </div>
+            <div>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">AI risk screening</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">
+                Isolation Forest on NOAA NDBC data · rubric prototype_rubric_v1
+              </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <SourceBadge kind="model" />
-              <Link href="/ai" className="text-[10.5px] font-bold text-signal">
-                Workspace →
+              <Link href="/ai" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
+                Workspace
               </Link>
             </div>
           </div>
 
           {prediction ? (
-            <div className="grid gap-5 p-5 sm:grid-cols-[1fr_1.2fr]">
+            <div className="grid gap-6 p-5 sm:grid-cols-[1fr_1.15fr]">
               <div>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <RiskBadge level={prediction.risk_level} />
-                  <span className="chip">latest run · {prediction.zone_code}</span>
+                  <span className="text-[9.5px] font-medium text-muted">
+                    latest run · {prediction.zone_code} · {formatShortUtc(prediction.created_at)} UTC
+                  </span>
                 </div>
+
                 <div className="mt-4 flex items-end justify-between gap-2">
-                  <div>
-                    <p className="text-[9px] font-extrabold uppercase tracking-[0.12em] text-muted">
-                      Anomaly index
-                    </p>
-                    <p className="metric mt-1 text-[38px] font-semibold leading-none">
-                      {fixed(prediction.anomaly_score, 2)}
-                    </p>
-                  </div>
-                  <p className="metric text-[10px] text-muted">
+                  <p className="metric text-[40px] font-medium leading-none">
+                    {fixed(prediction.anomaly_score, 2)}
+                  </p>
+                  <p className="text-right text-[10px] leading-snug text-muted">
+                    anomaly index
+                    <br />
                     threshold {fixed(prediction.anomaly_threshold, 2)}
                   </p>
                 </div>
-                <div className="mt-3 h-2 rounded-full bg-line">
+                <div className="relative mt-3 h-[5px] rounded-full bg-line">
                   <div
                     className={cn(
-                      "h-full rounded-full",
+                      "absolute inset-y-0 left-0 rounded-full",
                       prediction.anomaly_detected ? "bg-signal" : "bg-sea",
                     )}
                     style={{ width: `${Math.min(100, prediction.anomaly_score * 100)}%` }}
                   />
+                  <span
+                    className="absolute -top-[3px] h-[11px] w-px bg-ink"
+                    style={{ left: `${Math.min(100, prediction.anomaly_threshold * 100)}%` }}
+                    aria-hidden
+                  />
                 </div>
-                <div className="mt-4 flex items-center justify-between text-[10px] text-muted">
-                  <span>Risk score {fixed(prediction.risk_score, 1)}/100</span>
-                  <span>{prediction.input_observation_count} observations</span>
+                <div className="mt-1 flex justify-between font-mono text-[9px] text-muted">
+                  <span>0.00</span>
+                  <span>calibrated threshold</span>
+                  <span>1.00</span>
                 </div>
-                <div className="mt-4 rounded-xl border border-amber/20 bg-amber-soft/60 px-3 py-2.5 text-[10.5px] leading-relaxed text-amber">
-                  Prototype advisory only. Verify conditions with BMKG/BPBD before any operational action.
-                </div>
+
+                <dl className="mt-5 grid grid-cols-2 gap-x-4 border-t border-line pt-3">
+                  <div>
+                    <dt className="text-[9.5px] text-muted">Rubric score</dt>
+                    <dd className="metric mt-0.5 text-[13px] font-medium">
+                      {fixed(prediction.risk_score, 1)}
+                      <span className="text-[9px] font-normal text-muted"> /100</span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[9.5px] text-muted">Observations</dt>
+                    <dd className="metric mt-0.5 text-[13px] font-medium">
+                      {prediction.input_observation_count}
+                    </dd>
+                  </div>
+                </dl>
+
+                <p className="mt-4 border-l-2 border-l-signal pl-3 text-[10.5px] leading-relaxed text-muted">
+                  Prototype advisory only. Verify with BMKG/BPBD before operational action.
+                </p>
               </div>
 
               <div>
-                <p className="text-[9px] font-extrabold uppercase tracking-[0.12em] text-muted">
-                  Top contributing factors
+                <p className="text-[9.5px] font-semibold text-muted">
+                  Contributing factors
                 </p>
-                <ul className="mt-2 space-y-2">
+                <ul className="mt-2 divide-y divide-line">
                   {prediction.contributing_factors.slice(0, 3).map((factor) => (
-                    <li key={factor.feature} className="rounded-xl border border-line bg-paper/50 px-3 py-2">
+                    <li key={factor.feature} className="py-2">
                       <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-[11px] font-semibold text-ink-soft">{factor.label}</span>
+                        <span className="text-[11px] text-ink-soft">{factor.label}</span>
                         <span className="metric text-[10.5px] text-ink">
                           {fixed(factor.value, 2)} {factor.unit}
+                          <span className="ml-2 text-[9.5px] text-muted">
+                            {factor.deviation_sigma > 0 ? "+" : ""}
+                            {fixed(factor.deviation_sigma, 1)}σ
+                          </span>
                         </span>
                       </div>
-                      <div className="mt-1.5 h-1 rounded-full bg-line">
+                      <div className="mt-1.5 h-[2px] bg-line">
                         <div
                           className={cn(
-                            "h-full rounded-full",
+                            "h-full",
                             factor.deviation_sigma >= 0 ? "bg-signal" : "bg-sea",
                           )}
-                          style={{
-                            width: `${Math.min(Math.abs(factor.deviation_sigma) * 22, 100)}%`,
-                          }}
+                          style={{ width: `${Math.min(Math.abs(factor.deviation_sigma) * 18, 100)}%` }}
                         />
                       </div>
                     </li>
                   ))}
                   {prediction.contributing_factors.length === 0 ? (
-                    <li className="text-[11px] text-muted">No factor exceeded the reporting band.</li>
+                    <li className="py-2 text-[11px] text-muted">No factor exceeded the reporting band.</li>
                   ) : null}
                 </ul>
-                <p className="mt-3 line-clamp-3 text-[11px] leading-relaxed text-muted">
+                <p className="mt-3 line-clamp-3 text-[10.5px] leading-relaxed text-muted">
                   {prediction.explanation}
                 </p>
-                <Link href="/ai" className="mt-3 inline-flex items-center gap-1 text-[10.5px] font-bold text-signal">
-                  Read full analysis <ArrowRight className="h-3 w-3" aria-hidden />
+                <Link href="/ai" className="mt-3 inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
+                  Full analysis <ArrowUpRight className="h-3 w-3" aria-hidden />
                 </Link>
               </div>
             </div>
           ) : (
             <div className="p-5">
               <EmptyState
-                title="No analysis has been run yet"
-                description="Screen the latest window to see the anomaly score, risk rubric and contributing factors."
+                title="No analysis has been run"
+                description="Screen the latest window to see the anomaly score, rubric and contributing factors."
                 action={
                   <Link href="/ai" className="btn btn-primary btn-sm">
-                    Run AI analysis
+                    Run analysis
                   </Link>
                 }
               />
@@ -489,84 +510,110 @@ export default function OverviewPage() {
         </section>
 
         <section className="card flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+          <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">Alert queue</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Alert queue</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
                 {alertCounts.open ?? 0} open · {alertCounts.acknowledged ?? 0} acknowledged
               </p>
             </div>
-            <Link href="/alerts" className="text-[10.5px] font-bold text-signal">
-              All →
+            <Link href="/alerts" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
+              All
             </Link>
           </div>
 
-          <div className="flex-1 divide-y divide-line">
+          <div>
             {alerts.loading && !alerts.data ? (
               <div className="space-y-2 p-4">
-                <SkeletonBlock className="h-12 w-full" />
-                <SkeletonBlock className="h-12 w-full" />
+                <SkeletonBlock className="h-10 w-full" />
+                <SkeletonBlock className="h-10 w-full" />
               </div>
             ) : alerts.data && alerts.data.items.length > 0 ? (
-              alerts.data.items.slice(0, 4).map((alert) => (
-                <Link
-                  key={alert.id}
-                  href="/alerts"
-                  className="flex items-start gap-2.5 px-4 py-3 transition hover:bg-paper"
-                >
-                  <span className="mt-0.5">
-                    <SeverityBadge severity={alert.severity} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 text-[11.5px] font-bold">{alert.title}</p>
-                    <p className="mt-0.5 text-[9.5px] text-muted">
-                      {alert.zone_code} · {formatShortUtc(alert.created_at)} UTC · {alert.status}
-                    </p>
-                  </div>
-                </Link>
-              ))
+              <ul className="divide-y divide-line">
+                {alerts.data.items.slice(0, 4).map((alert) => (
+                  <li key={alert.id}>
+                    <Link href="/alerts" className="block px-5 py-3 transition-colors hover:bg-paper">
+                      <div className="flex items-center justify-between gap-3">
+                        <SeverityBadge severity={alert.severity} />
+                        <span className="font-mono text-[9px] text-muted">
+                          {formatShortUtc(alert.created_at)} UTC
+                        </span>
+                      </div>
+                      <p className="mt-1 line-clamp-1 text-[11px] font-medium">{alert.title}</p>
+                      <p className="mt-0.5 text-[9.5px] text-muted">
+                        {alert.zone_code} · {alert.status}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             ) : (
               <div className="p-5">
-                <p className="flex items-center gap-1.5 text-[11px] font-bold text-ink">
-                  <ShieldCheck className="h-3.5 w-3.5 text-ok" aria-hidden /> No prototype alerts
+                <p className="flex items-center gap-1.5 text-[11px] font-medium text-ink">
+                  <ShieldCheck className="h-3.5 w-3.5 text-sea" aria-hidden /> No prototype alerts
                 </p>
                 <p className="mt-1 text-[10.5px] leading-relaxed text-muted">
-                  Alerts open only when the rubric reaches moderate or high. All clear in the current
-                  database.
+                  Alerts open only when the rubric reaches moderate or high.
                 </p>
               </div>
             )}
           </div>
 
-          <div className="border-t border-line px-5 py-3 text-[10px] text-muted">
-            Alerts are prototype advisories, not official warnings.
+          <div className="border-t border-line px-5 py-2.5 text-[9.5px] text-muted">
+            Prototype advisories, not official warnings.
           </div>
         </section>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1.15fr_1fr]">
         <section className="card overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+          <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">Data sources</h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">Freshness and status from the database</p>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Source freshness</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">Last observed and received, from the database</p>
             </div>
-            <Link href="/sources" className="text-[10.5px] font-bold text-signal">
-              Details →
+            <Link href="/sources" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
+              Details
             </Link>
           </div>
           <div className="divide-y divide-line">
             {sources.slice(0, 4).map((source) => (
               <div key={source.source_name} className="flex items-center justify-between gap-3 px-5 py-2.5">
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold">
-                    {String(source.metadata?.label ?? source.source_name)}
-                  </p>
-                  <p className="text-[9px] text-muted">{source.source_type}</p>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 shrink-0 rounded-full",
+                      statusTone(source.status) === "ok"
+                        ? "bg-ok"
+                        : statusTone(source.status) === "warn"
+                          ? "bg-amber"
+                          : statusTone(source.status) === "bad"
+                            ? "bg-signal"
+                            : "bg-muted/50",
+                    )}
+                    aria-hidden
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-medium">
+                      {String(source.metadata?.label ?? source.source_name)}
+                    </p>
+                    <p className="text-[9px] text-muted">{source.source_type}</p>
+                  </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-[9.5px] text-muted">{formatAge(source.age_seconds)}</span>
-                  <StatusPill tone={statusTone(source.status)}>{source.status}</StatusPill>
+                <div className="flex shrink-0 items-center gap-4">
+                  <span className="font-mono text-[9.5px] text-muted">{formatAge(source.age_seconds)}</span>
+                  <span
+                    className={cn(
+                      "w-[74px] text-right text-[9.5px] font-medium ",
+                      statusTone(source.status) === "warn"
+                        ? "text-amber"
+                        : statusTone(source.status) === "bad"
+                          ? "text-signal-dark"
+                          : "text-ink-soft",
+                    )}
+                  >
+                    {source.status.replaceAll("_", " ")}
+                  </span>
                 </div>
               </div>
             ))}
@@ -575,21 +622,16 @@ export default function OverviewPage() {
 
         <section className="card p-5">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-sea-soft text-sea">
-                <Radar className="h-4 w-4" aria-hidden />
-              </span>
-              <div>
-                <h2 className="text-[14px] font-extrabold tracking-[-0.02em]">Buoy simulator</h2>
-                <p className="text-[10.5px] text-muted">Synthetic telemetry generator</p>
-              </div>
+            <div>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Simulator</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">Synthetic telemetry generator</p>
             </div>
             <StatusPill tone={overview.data?.simulator.running ? "ok" : "neutral"}>
-              {overview.data?.simulator.running ? "Auto running" : "Idle"}
+              {overview.data?.simulator.running ? "Running" : "Idle"}
             </StatusPill>
           </div>
 
-          <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+          <dl className="mt-4 grid grid-cols-3 divide-x divide-line">
             {[
               ["Interval", `${overview.data?.simulator.interval_seconds ?? 60}s`],
               ["Generated", String(overview.data?.simulator.observations_generated ?? 0)],
@@ -600,86 +642,62 @@ export default function OverviewPage() {
                   : "—",
               ],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-xl bg-paper px-2 py-2.5">
-                <dt className="text-[8.5px] font-extrabold uppercase tracking-[0.1em] text-muted">{label}</dt>
-                <dd className="metric mt-1 text-[12px] font-semibold">{value}</dd>
+              <div key={label} className="px-3 first:pl-0 last:pr-0">
+                <dt className="text-[9px] text-muted">{label}</dt>
+                <dd className="metric mt-1 text-[12px] font-medium">{value}</dd>
               </div>
             ))}
           </dl>
 
-          <p className="mt-3 text-[10.5px] leading-relaxed text-muted">
-            Trigger a manual storm scenario to exercise validation, storage, analytics and the alert
-            workflow end to end. Every generated value is labelled simulated.
+          <p className="mt-4 text-[10.5px] leading-relaxed text-muted">
+            Trigger a storm replay to exercise ingestion, validation, analytics and the alert workflow.
+            Generated values are labelled simulated.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link href="/ocean#simulator" className="btn btn-dark btn-sm">
-              <AlertTriangle className="h-3.5 w-3.5" aria-hidden /> Open simulator
+              <Radar className="h-3.5 w-3.5" aria-hidden /> Open simulator
             </Link>
             <Link href="/alerts" className="btn btn-ghost btn-sm">
-              <BellRing className="h-3.5 w-3.5" aria-hidden /> Alert workflow
+              <BellRing className="h-3.5 w-3.5" aria-hidden /> Alerts
             </Link>
           </div>
         </section>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-white px-4 py-3 text-[10px] text-muted">
-        <Database className="h-3.5 w-3.5 text-line-strong" aria-hidden />
-        <span>All values on this page come from the API.</span>
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-3 text-[9.5px] text-muted">
+        <span className="flex items-center gap-1.5">
+          <Database className="h-3 w-3" aria-hidden /> All values from the API
+        </span>
         <SourceBadge kind="simulated" />
         <SourceBadge kind="satellite" />
         <SourceBadge kind="model" />
-        <span className="ml-auto">Last refreshed {formatUtc(overview.data?.generated_at)}</span>
+        <span className="ml-auto font-mono">refreshed {formatUtc(overview.data?.generated_at)}</span>
       </div>
     </>
   );
 }
 
-function KpiCard({
-  icon: Icon,
+function Stat({
   label,
   value,
   unit,
   note,
-  tone = "neutral",
-  live = false,
 }: {
-  icon: typeof Waves;
   label: string;
   value: string;
   unit: string;
   note: string;
-  tone?: "ok" | "warn" | "neutral";
-  live?: boolean;
 }) {
   return (
-    <div className="card p-4">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-[9px] font-extrabold uppercase leading-snug tracking-[0.11em] text-muted">
-          {label}
-        </p>
-        <span
-          className={cn(
-            "grid h-7 w-7 shrink-0 place-items-center rounded-full",
-            tone === "warn"
-              ? "bg-amber-soft text-amber"
-              : tone === "ok"
-                ? "bg-ok-soft text-ok"
-                : "bg-paper text-sea",
-          )}
-        >
-          <Icon className="h-3.5 w-3.5" aria-hidden />
-        </span>
-      </div>
-      <p className="mt-3 flex flex-wrap items-baseline gap-x-1.5">
-        <span className="metric text-[22px] font-semibold leading-none">{value}</span>
-        {unit ? <span className="text-[10px] font-semibold text-muted">{unit}</span> : null}
-        {live ? (
-          <span className="ml-1 inline-flex items-center gap-1 text-[8.5px] font-bold uppercase tracking-[0.06em] text-signal">
-            <span className="h-1 w-1 animate-pulse rounded-full bg-signal" aria-hidden /> live
-          </span>
-        ) : null}
+    <div className="px-5 py-4">
+      <p className="text-[10px] text-muted">{label}</p>
+      <p className="mt-2 flex items-baseline gap-1.5">
+        <span className="metric text-[27px] font-medium leading-none">{value}</span>
+        {unit ? <span className="text-[10.5px] text-muted">{unit}</span> : null}
       </p>
-      <p className="mt-2 text-[9.5px] leading-snug text-muted">{note}</p>
+      <p className="mt-1.5 truncate text-[9.5px] text-muted" title={note}>
+        {note}
+      </p>
     </div>
   );
 }

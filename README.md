@@ -45,7 +45,7 @@ key.
 | **`/` Overview** | KPI row (buoy sites, mean wave, open alerts, satellite records, model), sea-state chart with per-zone/mean scope, zone status list, AI snapshot with contributing factors, alert queue, source freshness and simulator state |
 | **`/ocean`** | Seven-parameter telemetry, wave/wind and pressure/period charts, readings table, full provenance panel, simulator controls |
 | **`/satellite`** | Leaflet map (zone polygons, buoys, Sentinel-2 footprints), real STAC sync form, acquisition gallery with quicklooks, cloud cover, CRS and attribution |
-| **`/ai`** | Model card, run form, anomaly gauge, risk score, contributing factors, recommendation, caveats and analysis history |
+| **`/ai`** | Model card, run form, anomaly index on a calibrated threshold scale, risk score, contributing factors, recommendation, caveats and analysis history |
 | **`/alerts`** | Filterable alert workflow with acknowledgement and resolution |
 | **`/sources`** | Database/model/simulator/provider health, source freshness, validation gates, lineage and the public API surface |
 
@@ -53,6 +53,22 @@ More screenshots: [ocean](docs/screenshots/ocean.png) ·
 [satellite](docs/screenshots/satellite.png) · [AI](docs/screenshots/ai.png) ·
 [alerts](docs/screenshots/alerts.png) · [sources](docs/screenshots/sources.png) ·
 [mobile](docs/screenshots/mobile.png).
+
+### Access model
+
+There is **no login**. Read-only screens are public. The three write paths — buoy ingestion,
+simulator scenarios, satellite sync, analysis runs and alert transitions — require the documented
+demo header `X-API-Key: cews-demo-2026`, which is intentionally public in this prototype so judges
+can exercise every control. The key is held in `sessionStorage`, never in a cookie or account.
+
+### Visual language
+
+One system, applied consistently: warm paper (`#f4f2ec`) surfaces, deep-sea ink (`#123f46`) chrome,
+a single **signal red** (`#d93a2b`) reserved for risk, simulation and attention — never decoration.
+Type is Manrope for interface, Space Grotesk for display headings, JetBrains Mono for every number so
+columns align. Data provenance is always text-labelled (`Simulated`, `Satellite · historical`,
+`Model output`), never colour alone. Motion is limited to a short reveal on load and is disabled
+under `prefers-reduced-motion`.
 
 ## 3. Quick start
 

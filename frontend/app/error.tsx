@@ -16,18 +16,16 @@ export default function DashboardError({
 
   return (
     <div className="mx-auto max-w-xl py-16">
-      <div className="card p-6">
-        <span className="grid h-10 w-10 place-items-center rounded-full bg-signal-soft text-signal">
-          <AlertTriangle className="h-5 w-5" aria-hidden />
-        </span>
-        <h1 className="mt-4 text-[20px] font-extrabold tracking-[-0.03em]">
-          This console view could not render
-        </h1>
+      <div className="card border-l-2 border-l-signal p-6">
+        <p className="flex items-center gap-1.5 text-[10px] font-semibold text-signal-dark">
+          <AlertTriangle className="h-3 w-3" aria-hidden /> Console error
+        </p>
+        <h1 className="mt-3 text-[20px] font-semibold">This console view could not render</h1>
         <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
           The rest of the application is still available. Try again, or open another workspace from the
           navigation.
         </p>
-        <pre className="mt-4 overflow-auto rounded-xl bg-paper p-3 text-[10px] leading-relaxed text-ink-soft">
+        <pre className="mt-4 overflow-auto rounded-[10px] bg-paper p-3 text-[10px] leading-relaxed text-ink-soft">
           {error.message}
           {error.digest ? `\n\ndigest: ${error.digest}` : ""}
         </pre>

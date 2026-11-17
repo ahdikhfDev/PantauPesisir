@@ -165,17 +165,10 @@ export default function AiPage() {
         <div className="grid gap-5 xl:grid-cols-[1fr_1.05fr]">
           {/* model card */}
           <div className="card p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <span className="eyebrow-plain">Model card snapshot</span>
-                <h2 className="mt-2.5 text-[19px] font-extrabold tracking-[-0.03em]">
-                  {modelInfo.data?.model_name ?? "cews-anomaly-isolation-forest"}
-                </h2>
-              </div>
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-paper text-sea">
-                <BrainCircuit className="h-4 w-4" aria-hidden />
-              </span>
-            </div>
+            <span className="eyebrow-plain">Model card snapshot</span>
+            <h2 className="mt-2 text-[19px] font-semibold">
+              {modelInfo.data?.model_name ?? "cews-anomaly-isolation-forest"}
+            </h2>
 
             <dl className="mt-4 divide-y divide-line">
               <KeyValue label="Algorithm" value={modelInfo.data?.algorithm ?? "IsolationForest"} />
@@ -215,24 +208,24 @@ export default function AiPage() {
               <span className="chip">Unsupervised</span>
             </div>
 
-            <div className="mt-4 rounded-xl border border-line bg-paper/70 p-3.5">
-              <p className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-muted">Evaluation proxy</p>
+            <div className="mt-4 border-t border-line pt-3.5">
+              <p className="text-[10px] font-semibold text-muted">Evaluation proxy</p>
               <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
                 {metrics.proxy_evaluation?.method ??
                   "Flags are checked for concentration in rapid pressure and wave-height changes on the real validation slice."}
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-2 text-[10.5px]">
-                <div className="rounded-lg bg-white px-2.5 py-2">
+              <div className="mt-3 grid grid-cols-2 gap-x-4 text-[10.5px]">
+                <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
                   <p className="text-muted">Pressure-change recall</p>
-                  <p className="metric mt-0.5 text-[13px] font-semibold">
+                  <p className="metric text-[13px] font-medium">
                     {metrics.proxy_evaluation?.recall_top5pct_pressure_change !== undefined
                       ? percent(metrics.proxy_evaluation.recall_top5pct_pressure_change)
                       : "—"}
                   </p>
                 </div>
-                <div className="rounded-lg bg-white px-2.5 py-2">
+                <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
                   <p className="text-muted">Random baseline</p>
-                  <p className="metric mt-0.5 text-[13px] font-semibold">
+                  <p className="metric text-[13px] font-medium">
                     {metrics.proxy_evaluation?.random_selection_baseline !== undefined
                       ? percent(metrics.proxy_evaluation.random_selection_baseline)
                       : "—"}
@@ -253,19 +246,12 @@ export default function AiPage() {
 
           {/* run panel */}
           <div className="card p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <span className="eyebrow-plain">Run analysis</span>
-                <h2 className="mt-2.5 text-[19px] font-extrabold tracking-[-0.03em]">Screen a window</h2>
-                <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
-                  Select a zone and window. The API loads stored valid observations, scores them, aligns
-                  cached satellite records and writes a new analysis row.
-                </p>
-              </div>
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-signal-soft text-signal">
-                <Sparkles className="h-4 w-4" aria-hidden />
-              </span>
-            </div>
+            <span className="eyebrow-plain">Run analysis</span>
+            <h2 className="mt-2 text-[19px] font-semibold">Screen a window</h2>
+            <p className="mt-1 max-w-md text-[11.5px] leading-relaxed text-muted">
+              Select a zone and window. The API loads stored valid observations, scores them, aligns
+              cached satellite records and writes a new analysis row.
+            </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div>
@@ -282,14 +268,14 @@ export default function AiPage() {
               </div>
               <div>
                 <span className="label">Observation window</span>
-                <div className="flex rounded-xl border border-line-strong bg-white p-1">
+                <div className="flex rounded-[10px] border border-line-strong bg-white p-1">
                   {WINDOWS.map((value) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => setWindowMinutes(value)}
                       className={cn(
-                        "flex-1 rounded-lg px-1 py-1.5 text-[11px] font-bold transition",
+                        "flex-1 rounded-lg px-1 py-1.5 text-[11px] font-semibold transition",
                         windowMinutes === value ? "bg-paper text-ink" : "text-muted hover:text-ink",
                       )}
                       aria-pressed={windowMinutes === value}
@@ -301,12 +287,12 @@ export default function AiPage() {
               </div>
             </div>
 
-            <label className="mt-3 flex items-start gap-2.5 rounded-xl border border-line bg-paper/60 px-3.5 py-3">
+            <label className="mt-3 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/60 px-3.5 py-3">
               <input
                 type="checkbox"
                 checked={createAlert}
                 onChange={(event) => setCreateAlert(event.target.checked)}
-                className="mt-0.5 h-3.5 w-3.5 accent-[#e23a2e]"
+                className="mt-0.5 h-3.5 w-3.5 accent-sea"
               />
               <span className="text-[11.5px] leading-relaxed text-ink-soft">
                 Open a prototype alert when the rubric reaches moderate or high.
@@ -324,7 +310,7 @@ export default function AiPage() {
             </button>
 
             {error ? (
-              <div className="mt-3 rounded-xl border border-signal/25 bg-signal-soft px-3.5 py-3 text-[11.5px] leading-relaxed text-signal-dark">
+              <div className="mt-3 rounded-[10px] border border-signal/25 bg-signal-soft px-3.5 py-3 text-[11.5px] leading-relaxed text-signal-dark">
                 {error}
                 {error.toLowerCase().includes("observation") ? (
                   <span className="mt-1 block text-[10.5px]">
@@ -334,13 +320,13 @@ export default function AiPage() {
               </div>
             ) : null}
             {notice ? (
-              <div className="mt-3 flex gap-2 rounded-xl border border-sea/15 bg-sea-soft/70 px-3.5 py-3 text-[11.5px] leading-relaxed text-sea">
+              <div className="mt-3 flex gap-2 rounded-[10px] border border-sea/15 bg-sea-soft/70 px-3.5 py-3 text-[11.5px] leading-relaxed text-sea">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
                 {notice}
               </div>
             ) : null}
 
-            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-line bg-paper/70 px-3.5 py-3">
+            <div className="mt-4 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/70 px-3.5 py-3">
               <SlidersHorizontal className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
               <p className="text-[10.5px] leading-relaxed text-muted">
                 Risk levels come from a transparent rubric (<span className="font-mono">prototype_rubric_v1</span>)
@@ -372,22 +358,39 @@ export default function AiPage() {
 
             <div className="grid gap-6 p-6 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
-                <div className="flex items-center gap-5">
-                  <ScoreDial score={prediction.anomaly_score} threshold={prediction.anomaly_threshold} />
-                  <div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-muted">Anomaly index</p>
-                    <p className="metric mt-1 text-[38px] font-semibold leading-none">
-                      {fixed(prediction.anomaly_score, 2)}
-                    </p>
-                    <p className="mt-1 text-[10.5px] text-muted">
-                      threshold {fixed(prediction.anomaly_threshold, 2)} ·{" "}
-                      {prediction.anomaly_detected ? "flagged" : "inside band"}
-                    </p>
-                  </div>
+                <p className="text-[10px] font-semibold text-muted">Anomaly index</p>
+                <p className="mt-1.5 flex items-baseline gap-2">
+                  <span className="metric text-[38px] font-medium leading-none">
+                    {fixed(prediction.anomaly_score, 2)}
+                  </span>
+                  <span className="text-[10.5px] text-muted">
+                    {prediction.anomaly_detected ? "flagged" : "inside band"}
+                  </span>
+                </p>
+                <div className="relative mt-4 h-[5px] rounded-full bg-line">
+                  <div
+                    className={cn(
+                      "absolute inset-y-0 left-0 rounded-full",
+                      prediction.anomaly_detected ? "bg-signal" : "bg-sea",
+                    )}
+                    style={{ width: `${Math.min(Math.max(prediction.anomaly_score, 0), 1) * 100}%` }}
+                  />
+                  <span
+                    className="absolute -top-[3px] h-[11px] w-[2px] bg-ink"
+                    style={{ left: `${Math.min(Math.max(prediction.anomaly_threshold, 0), 1) * 100}%` }}
+                    aria-hidden
+                  />
+                </div>
+                <div className="mt-1.5 flex items-baseline justify-between text-[9.5px] text-muted">
+                  <span className="metric">0.00</span>
+                  <span>
+                    threshold <span className="metric">{fixed(prediction.anomaly_threshold, 2)}</span>
+                  </span>
+                  <span className="metric">1.00</span>
                 </div>
 
                 <div className="mt-5">
-                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+                  <div className="flex items-center justify-between text-[10px] font-semibold text-muted">
                     <span>Prototype risk score</span>
                     <span className="metric">{fixed(prediction.risk_score, 1)}/100</span>
                   </div>
@@ -431,20 +434,18 @@ export default function AiPage() {
               </div>
 
               <div>
-                <h3 className="text-[13px] font-extrabold uppercase tracking-[0.1em] text-muted">Explanation</h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{prediction.explanation}</p>
+                <h3 className="text-[10px] font-semibold text-muted">Explanation</h3>
+                <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-soft">{prediction.explanation}</p>
 
-                <h3 className="mt-5 text-[13px] font-extrabold uppercase tracking-[0.1em] text-muted">
-                  Contributing factors
-                </h3>
-                <ul className="mt-2.5 space-y-2.5">
+                <h3 className="mt-5 text-[10px] font-semibold text-muted">Contributing factors</h3>
+                <ul className="mt-2 divide-y divide-line border-y border-line">
                   {prediction.contributing_factors.map((factor) => {
                     const magnitude = Math.min(Math.abs(factor.deviation_sigma) / 4, 1);
                     const anomalous = factor.deviation_sigma > 0;
                     return (
-                      <li key={factor.feature} className="rounded-xl border border-line bg-paper/50 p-3">
+                      <li key={factor.feature} className="py-2.5">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
-                          <p className="text-[11.5px] font-bold">{factor.label}</p>
+                          <p className="text-[11.5px] text-ink-soft">{factor.label}</p>
                           <p className="metric text-[11px] text-muted">
                             {fixed(factor.value, 2)} {factor.unit}
                             <span className="ml-2 text-[10px]">
@@ -453,7 +454,7 @@ export default function AiPage() {
                             </span>
                           </p>
                         </div>
-                        <div className="mt-2 h-1.5 rounded-full bg-line">
+                        <div className="mt-1.5 h-1 rounded-full bg-line">
                           <div
                             className={cn("h-full rounded-full", anomalous ? "bg-signal" : "bg-sea")}
                             style={{ width: `${Math.max(magnitude * 100, 3)}%` }}
@@ -463,7 +464,9 @@ export default function AiPage() {
                     );
                   })}
                   {prediction.contributing_factors.length === 0 ? (
-                    <li className="text-[12px] text-muted">No individual factor exceeded the reporting band.</li>
+                    <li className="py-2.5 text-[12px] text-muted">
+                      No individual factor exceeded the reporting band.
+                    </li>
                   ) : null}
                 </ul>
                 <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
@@ -473,7 +476,7 @@ export default function AiPage() {
 
                 <div
                   className={cn(
-                    "mt-5 rounded-xl border p-4",
+                    "mt-5 rounded-[10px] border p-4",
                     prediction.risk_level === "high"
                       ? "border-signal/25 bg-signal-soft/70"
                       : prediction.risk_level === "moderate"
@@ -481,7 +484,7 @@ export default function AiPage() {
                         : "border-ok/20 bg-ok-soft/60",
                   )}
                 >
-                  <p className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-ink">
+                  <p className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
                     <Target className="h-3 w-3" aria-hidden /> Decision support
                   </p>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-ink-soft">{prediction.recommendation}</p>
@@ -508,7 +511,7 @@ export default function AiPage() {
             </div>
           </div>
         ) : history.loading ? (
-          <div className="skeleton h-[320px] rounded-[22px]" />
+          <div className="skeleton h-[320px] rounded-[14px]" />
         ) : history.error ? (
           <ErrorState message={history.error} onRetry={history.refresh} />
         ) : (
@@ -528,7 +531,7 @@ export default function AiPage() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <span className="eyebrow">Analysis history</span>
-              <h2 className="mt-3 text-[22px] font-extrabold tracking-[-0.035em]">Recent model runs</h2>
+              <h2 className="mt-3 text-[22px] font-semibold tracking-[-0.035em]">Recent model runs</h2>
               <p className="mt-1 text-[12px] text-muted">
                 Stored in PostgreSQL/SQLite with model version, window and observation IDs.
               </p>
@@ -553,7 +556,7 @@ export default function AiPage() {
                   <span className="chip">{item.zone_code}</span>
                   <RiskBadge level={item.risk_level} />
                 </div>
-                <p className="mt-3 text-[12px] font-bold">{formatShortUtc(item.created_at)} UTC</p>
+                <p className="mt-3 text-[12px] font-semibold">{formatShortUtc(item.created_at)} UTC</p>
                 <div className="mt-2 flex items-center justify-between text-[10.5px] text-muted">
                   <span className="metric">anomaly {fixed(item.anomaly_score, 2)}</span>
                   <span className="metric">risk {fixed(item.risk_score, 0)}</span>
@@ -570,39 +573,4 @@ export default function AiPage() {
   );
 }
 
-function ScoreDial({ score, threshold }: { score: number; threshold: number }) {
-  const radius = 44;
-  const circumference = 2 * Math.PI * radius;
-  const filled = Math.min(Math.max(score, 0), 1) * circumference;
-  return (
-    <div className="relative h-[112px] w-[112px] shrink-0">
-      <svg viewBox="0 0 112 112" className="h-full w-full -rotate-90" aria-hidden>
-        <circle cx="56" cy="56" r={radius} fill="none" stroke="#e5e1d6" strokeWidth="8" />
-        <circle
-          cx="56"
-          cy="56"
-          r={radius}
-          fill="none"
-          stroke={score >= threshold ? "#e23a2e" : "#0f4b52"}
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={`${filled} ${circumference}`}
-        />
-        <circle
-          cx="56"
-          cy="56"
-          r={radius}
-          fill="none"
-          stroke="#11181b"
-          strokeWidth="10"
-          strokeDasharray={`2 ${circumference}`}
-          strokeDashoffset={-Math.min(Math.max(threshold, 0), 1) * circumference}
-          opacity="0.55"
-        />
-      </svg>
-      <div className="absolute inset-0 grid place-items-center">
-        <span className="metric text-[17px] font-semibold">{fixed(score, 2)}</span>
-      </div>
-    </div>
-  );
-}
+

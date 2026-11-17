@@ -110,10 +110,10 @@ export default function AlertsPage() {
                   type="button"
                   onClick={() => setStatusFilter(filter.value)}
                   className={cn(
-                    "rounded-full border px-3 py-1.5 text-[11px] font-bold transition",
+                    "border-b px-1 pb-1.5 text-[11px] font-medium transition-colors",
                     statusFilter === filter.value
-                      ? "border-ink bg-ink text-white"
-                      : "border-line bg-white text-muted hover:text-ink",
+                      ? "border-signal text-ink"
+                      : "border-transparent text-muted hover:text-ink",
                   )}
                   aria-pressed={statusFilter === filter.value}
                 >
@@ -128,10 +128,10 @@ export default function AlertsPage() {
                   type="button"
                   onClick={() => setSeverityFilter(filter.value)}
                   className={cn(
-                    "rounded-full border px-3 py-1.5 text-[11px] font-bold transition",
+                    "border-b px-1 pb-1.5 text-[11px] font-medium transition-colors",
                     severityFilter === filter.value
-                      ? "border-signal bg-signal-soft text-signal-dark"
-                      : "border-line bg-white text-muted hover:text-ink",
+                      ? "border-signal text-signal-dark"
+                      : "border-transparent text-muted hover:text-ink",
                   )}
                   aria-pressed={severityFilter === filter.value}
                 >
@@ -139,7 +139,7 @@ export default function AlertsPage() {
                 </button>
               ))}
               <select
-                className="ml-auto rounded-full border border-line bg-white px-3 py-1.5 text-[11px] font-bold text-muted"
+                className="ml-auto h-8 rounded-[7px] border border-line bg-transparent px-2 text-[11px] font-medium text-ink-soft outline-none focus:border-sea"
                 value={zoneFilter}
                 onChange={(event) => setZoneFilter(event.target.value)}
                 aria-label="Filter by zone"
@@ -157,18 +157,18 @@ export default function AlertsPage() {
               prototype rubric level at the moment of analysis; it is not a probability.
             </p>
             <div className="mt-4 border-t border-line pt-4">
-              <p className="text-[9.5px] font-extrabold uppercase tracking-[0.12em] text-muted">
+              <p className="text-[9.5px] font-semibold text-muted">
                 How an alert appears here
               </p>
-              <ol className="mt-2 space-y-2">
+              <ol className="mt-2 divide-y divide-line border-t border-line">
                 {[
                   "An analysis reaches moderate or high on the prototype rubric.",
                   "The API writes an alert linked to the prediction and the zone.",
                   "An operator acknowledges, then resolves it with a UTC timestamp.",
                 ].map((step, index) => (
-                  <li key={step} className="flex gap-2 text-[11px] leading-relaxed text-ink-soft">
-                    <span className="metric mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full border border-line bg-paper text-[8px] font-semibold text-muted">
-                      {index + 1}
+                  <li key={step} className="flex gap-2.5 py-2 text-[11px] leading-relaxed text-ink-soft">
+                    <span className="metric mt-[1px] shrink-0 text-[9.5px] text-muted">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                     {step}
                   </li>
@@ -176,41 +176,32 @@ export default function AlertsPage() {
               </ol>
             </div>
             {notice ? (
-              <p className="mt-3 rounded-xl border border-ok/20 bg-ok-soft px-3 py-2.5 text-[11.5px] text-ok">
-                {notice}
-              </p>
+              <p className="mt-3 border-l-2 border-l-ok py-1 pl-3 text-[11.5px] text-ink-soft">{notice}</p>
             ) : null}
             {error ? (
-              <p className="mt-3 rounded-xl border border-signal/25 bg-signal-soft px-3 py-2.5 text-[11.5px] text-signal-dark">
+              <p className="mt-3 rounded-[10px] border border-signal/25 bg-signal-soft px-3 py-2.5 text-[11.5px] text-signal-dark">
                 {error}
               </p>
             ) : null}
           </div>
 
           <div className="card p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-muted">
-                  <Lock className="h-3 w-3" aria-hidden /> Privileged actions
-                </p>
-                <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
-                  Acknowledging and resolving writes to the database and requires an API key.
-                </p>
-              </div>
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-signal-soft text-signal">
-                <BellRing className="h-3.5 w-3.5" aria-hidden />
-              </span>
-            </div>
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
+              <Lock className="h-3 w-3" aria-hidden /> Privileged actions
+            </p>
+            <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
+              Acknowledging and resolving writes to the database and requires an API key.
+            </p>
             <ApiKeyField value={apiKey} onChange={setApiKey} className="mt-3" />
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+            <div className="mt-3 grid grid-cols-3 divide-x divide-line border-t border-line pt-3 text-center">
               {[
                 ["High", alerts.data?.counts_by_severity.high ?? 0],
                 ["Moderate", alerts.data?.counts_by_severity.moderate ?? 0],
                 ["Info", alerts.data?.counts_by_severity.info ?? 0],
               ].map(([label, value]) => (
-                <div key={String(label)} className="rounded-xl bg-paper px-2 py-2.5">
-                  <p className="text-[9px] font-extrabold uppercase tracking-[0.1em] text-muted">{label}</p>
-                  <p className="metric mt-1 text-[17px] font-semibold">{value}</p>
+                <div key={String(label)} className="px-2">
+                  <p className="text-[9.5px] text-muted">{label}</p>
+                  <p className="metric mt-1 text-[16px] font-medium">{value}</p>
                 </div>
               ))}
             </div>
@@ -222,7 +213,7 @@ export default function AlertsPage() {
         ) : alerts.loading && !alerts.data ? (
           <div className="space-y-3">
             {[0, 1, 2].map((index) => (
-              <div key={index} className="skeleton h-[150px] rounded-[22px]" />
+              <div key={index} className="skeleton h-[150px] rounded-[14px]" />
             ))}
           </div>
         ) : alerts.data && alerts.data.items.length === 0 ? (
@@ -261,7 +252,7 @@ export default function AlertsPage() {
                         <span className="font-mono text-[9.5px] text-muted">{formatUtc(alert.created_at)}</span>
                       </div>
 
-                      <h2 className="mt-3 text-[15.5px] font-extrabold tracking-[-0.02em]">{alert.title}</h2>
+                      <h2 className="mt-3 text-[15.5px] font-semibold tracking-[-0.02em]">{alert.title}</h2>
                       <p
                         className={cn(
                           "mt-2 whitespace-pre-line text-[12px] leading-relaxed text-muted",
@@ -274,7 +265,7 @@ export default function AlertsPage() {
                       <button
                         type="button"
                         onClick={() => setExpanded(isOpen ? null : alert.id)}
-                        className="mt-2 inline-flex items-center gap-1 text-[10.5px] font-bold text-sea"
+                        className="mt-2 inline-flex items-center gap-1 text-[10.5px] font-semibold text-sea"
                       >
                         {isOpen ? <ChevronUp className="h-3 w-3" aria-hidden /> : <ChevronDown className="h-3 w-3" aria-hidden />}
                         {isOpen ? "Collapse note" : "Read full note"}
@@ -322,7 +313,7 @@ export default function AlertsPage() {
                           Resolve
                         </button>
                       ) : (
-                        <span className="rounded-xl border border-line bg-paper px-3 py-2 text-center text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+                        <span className="rounded-[10px] border border-line px-3 py-2 text-center text-[10.5px] text-muted">
                           Closed
                         </span>
                       )}
@@ -344,7 +335,7 @@ export default function AlertsPage() {
           </div>
         )}
 
-        <div className="rounded-2xl border border-line bg-white px-5 py-4 text-[10.5px] leading-relaxed text-muted">
+        <div className="border-t border-line pt-3 text-[10.5px] leading-relaxed text-muted">
           <strong className="text-ink">Lifecycle rules.</strong> Open → acknowledged → resolved is the
           intended path. Resolved alerts cannot be reopened (409 from the API), which preserves an honest
           audit trail. Acknowledgement stores the actor label and a UTC timestamp.

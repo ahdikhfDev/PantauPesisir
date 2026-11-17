@@ -62,7 +62,7 @@ export function ZoneMap({
             >
               <Popup>
                 <div className="text-[12px]">
-                  <p className="font-bold">{zone.zone_name}</p>
+                  <p className="font-semibold">{zone.zone_name}</p>
                   <p className="font-mono text-[10px] text-muted">{zone.zone_code}</p>
                   <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-muted">{zone.boundary_note}</p>
                 </div>
@@ -91,7 +91,7 @@ export function ZoneMap({
                   >
                     <Popup>
                       <div className="text-[12px]">
-                        <p className="font-bold">{buoy.buoy_code}</p>
+                        <p className="font-semibold">{buoy.buoy_code}</p>
                         <p className="text-[10px] text-muted">{zone.zone_name} · simulated</p>
                         {observation ? (
                           <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
@@ -137,7 +137,7 @@ export function ZoneMap({
               >
                 <Popup>
                   <div className="text-[11px]">
-                    <p className="font-bold">{dataset.collection}</p>
+                    <p className="font-semibold">{dataset.collection}</p>
                     <p className="mt-0.5 text-[10px] text-muted">{dataset.product_id}</p>
                     <p className="mt-1 text-[10px]">
                       Acquired <strong>{formatShortUtc(dataset.acquired_at)} UTC</strong>

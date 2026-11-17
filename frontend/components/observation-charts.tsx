@@ -62,12 +62,12 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
       <div className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Sea state over the window</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Sea state over the window</h2>
             <p className="mt-1 text-[11px] text-muted">
               Significant wave height (m) and wind speed (m/s) · simulated telemetry · UTC
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.08em]">
+          <div className="flex items-center gap-3 text-[10px] font-semibold ">
             <span className="flex items-center gap-1.5 text-signal">
               <span className="h-2 w-2 rounded-full bg-signal" aria-hidden /> Wave height
             </span>
@@ -167,7 +167,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
 
       <div className="card p-5 sm:p-6">
         <div>
-          <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Pressure & period</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Pressure & period</h2>
           <p className="mt-1 text-[11px] text-muted">
             A falling barometer with a lengthening period is the pattern the model watches for.
           </p>

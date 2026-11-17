@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Clock3,
-  Compass,
-  Droplets,
-  Gauge,
-  RefreshCw,
-  Thermometer,
-  Waves,
-  Wind,
-} from "lucide-react";
+import { ArrowUpRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -123,39 +112,41 @@ export default function OceanPage() {
                 aria-selected={item.zone_code === zoneCode}
                 onClick={() => selectZone(item.zone_code)}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-[12px] font-bold transition",
+                  "border-b-2 px-1 pb-2 pt-1 text-[12px] font-medium transition-colors",
                   item.zone_code === zoneCode
-                    ? "border-ink bg-ink text-white"
-                    : "border-line bg-white text-muted hover:border-line-strong hover:text-ink",
+                    ? "border-signal text-ink"
+                    : "border-transparent text-muted hover:text-ink",
                 )}
               >
                 {item.zone_name}
-                <span className={cn("ml-2 font-mono text-[9px]", item.zone_code === zoneCode ? "text-white/50" : "text-line-strong")}>
+                <span className={cn("ml-2 font-mono text-[9px]", item.zone_code === zoneCode ? "text-muted" : "text-line-strong")}>
                   {item.zone_code}
                 </span>
               </button>
             ))}
-            {zones.loading && !zones.data ? <div className="skeleton h-9 w-40 rounded-full" /> : null}
+            {zones.loading && !zones.data ? <div className="skeleton h-9 w-40 rounded-[7px]" /> : null}
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-[0.1em] text-muted">Window</span>
-            <div className="flex rounded-full border border-line bg-white p-1">
-              {RANGES.map((range) => (
-                <button
-                  key={range.minutes}
-                  type="button"
-                  onClick={() => setRangeMinutes(range.minutes)}
-                  className={cn(
-                    "rounded-full px-3 py-1.5 text-[11px] font-bold transition",
-                    rangeMinutes === range.minutes ? "bg-ink text-white" : "text-muted hover:text-ink",
-                  )}
-                  aria-pressed={rangeMinutes === range.minutes}
-                >
-                  {range.label}
-                </button>
-              ))}
-            </div>
+            <span className="text-[10.5px] font-medium text-muted">Window</span>
+              <div className="flex items-center gap-2">
+            {RANGES.map((range) => (
+              <button
+                key={range.minutes}
+                type="button"
+                onClick={() => setRangeMinutes(range.minutes)}
+                className={cn(
+                  "border-b px-1.5 pb-1 text-[11px] font-medium transition-colors",
+                  rangeMinutes === range.minutes
+                    ? "border-signal text-ink"
+                    : "border-transparent text-muted hover:text-ink",
+                )}
+                aria-pressed={rangeMinutes === range.minutes}
+              >
+                {range.label}
+              </button>
+            ))}
+          </div>
           </div>
         </div>
 
@@ -163,10 +154,7 @@ export default function OceanPage() {
         <div className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11.5px]">
             <span className="flex items-center gap-1.5 font-semibold text-ink">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
-              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
               {zone?.zone_name ?? zoneCode}
             </span>
             <span className="text-muted">
@@ -195,58 +183,50 @@ export default function OceanPage() {
         ) : null}
 
         {/* metric grid */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="card grid grid-cols-2 divide-x divide-y divide-line overflow-hidden lg:grid-cols-4">
           <MetricCard
-            icon={Waves}
             label="Significant wave height"
             value={fixed(parameters?.wave_height_m, 2)}
             unit="m"
             hint="Simulated · last valid reading"
           />
           <MetricCard
-            icon={Clock3}
             label="Dominant wave period"
             value={fixed(parameters?.wave_period_s, 1)}
             unit="s"
             hint="Coupled to wave height by the generator"
           />
           <MetricCard
-            icon={Compass}
             label="Wave direction"
             value={parameters ? `${compass(parameters.wave_direction_deg)} ${fixed(parameters.wave_direction_deg, 0)}` : "—"}
             unit="°"
             hint="Direction the waves come from"
           />
           <MetricCard
-            icon={Wind}
             label="Wind speed"
             value={fixed(parameters?.wind_speed_mps, 1)}
             unit="m/s"
             hint={parameters ? `From ${compass(parameters.wind_direction_deg)} ${fixed(parameters.wind_direction_deg, 0)}°` : "—"}
           />
           <MetricCard
-            icon={Gauge}
             label="Air pressure"
             value={fixed(parameters?.air_pressure_hpa, 1)}
             unit="hPa"
             hint="Mean sea-level pressure"
           />
           <MetricCard
-            icon={Thermometer}
             label="Sea-surface temperature"
             value={fixed(parameters?.sea_temperature_c, 1)}
             unit="°C"
             hint="Simulated at buoy depth"
           />
           <MetricCard
-            icon={Droplets}
             label="Valid readings in window"
             value={String(quality.count)}
             unit="rows"
             hint={`${quality.invalid} invalid / quarantined excluded`}
           />
           <MetricCard
-            icon={Clock3}
             label="Median sampling gap"
             value={quality.medianGap ? fixed(quality.medianGap, 0) : "—"}
             unit="min"
@@ -262,8 +242,8 @@ export default function OceanPage() {
           <ObservationCharts items={history.data.items} />
         ) : (
           <div className="grid gap-5 xl:grid-cols-[1.35fr_1fr]">
-            <div className="skeleton h-[340px] rounded-[22px]" />
-            <div className="skeleton h-[340px] rounded-[22px]" />
+            <div className="skeleton h-[340px] rounded-[14px]" />
+            <div className="skeleton h-[340px] rounded-[14px]" />
           </div>
         )}
 
@@ -272,7 +252,7 @@ export default function OceanPage() {
           <div className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
               <div>
-                <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Recent readings</h2>
+                <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Recent readings</h2>
                 <p className="mt-0.5 text-[11px] text-muted">
                   {history.data?.total ?? 0} row(s) in the selected window · newest first
                 </p>
@@ -282,7 +262,7 @@ export default function OceanPage() {
             <div className="max-h-[430px] overflow-auto">
               <table className="w-full min-w-[580px] border-collapse text-left">
                 <thead className="sticky top-0 z-10 bg-paper/95 backdrop-blur">
-                  <tr className="text-[9.5px] font-extrabold uppercase tracking-[0.1em] text-muted">
+                  <tr className="text-[10px] font-medium text-muted">
                     <th className="px-5 py-2.5">Observed (UTC)</th>
                     <th className="px-3 py-2.5">H (m)</th>
                     <th className="px-3 py-2.5">T (s)</th>
@@ -319,7 +299,7 @@ export default function OceanPage() {
           </div>
 
           <div className="card p-5">
-            <h2 className="text-[15px] font-extrabold tracking-[-0.02em]">Reading provenance</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Reading provenance</h2>
             <p className="mt-1 text-[11px] leading-relaxed text-muted">
               Observed, received and processed times are stored separately so ingestion time is never
               confused with measurement time.
@@ -344,8 +324,8 @@ export default function OceanPage() {
             </dl>
 
             {observation?.validation_errors?.length ? (
-              <div className="mt-4 rounded-xl border border-signal/20 bg-signal-soft/60 p-3 text-[11px] text-signal-dark">
-                <p className="font-bold">Validation issues</p>
+              <div className="mt-4 rounded-[10px] border border-signal/20 bg-signal-soft/60 p-3 text-[11px] text-signal-dark">
+                <p className="font-semibold">Validation issues</p>
                 <ul className="mt-1 list-inside list-disc space-y-1">
                   {observation.validation_errors.map((error) => (
                     <li key={error.code}>{error.message}</li>
@@ -354,7 +334,7 @@ export default function OceanPage() {
               </div>
             ) : null}
 
-            <div className="mt-4 rounded-xl bg-paper p-3 text-[10.5px] leading-relaxed text-muted">
+            <div className="mt-4 rounded-[10px] bg-paper p-3 text-[10.5px] leading-relaxed text-muted">
               <strong className="text-ink">Unit note.</strong> Wave direction and wind direction are
               meteorological “coming from” angles in degrees true. Pressure is stored in hPa and never
               converted in the database.
@@ -372,7 +352,7 @@ export default function OceanPage() {
           />
         </section>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-white px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-line bg-white px-5 py-4">
           <p className="text-[11.5px] text-muted">
             Next step: screen this window with the anomaly model and the transparent risk rubric.
           </p>
@@ -386,28 +366,24 @@ export default function OceanPage() {
 }
 
 function MetricCard({
-  icon: Icon,
   label,
   value,
   unit,
   hint,
 }: {
-  icon: typeof Waves;
   label: string;
   value: string;
   unit: string;
   hint: string;
 }) {
   return (
-    <div className="card p-4">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-[9.5px] font-extrabold uppercase leading-snug tracking-[0.1em] text-muted">{label}</p>
-        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-paper text-sea">
-          <Icon className="h-3 w-3" aria-hidden />
-        </span>
-      </div>
-      <Metric label="" value={value} unit={unit} className="mt-2" />
-      <p className="mt-1 text-[10px] leading-snug text-muted">{hint}</p>
+    <div className="px-5 py-4">
+      <p className="text-[10px] text-muted">{label}</p>
+      <p className="mt-2 flex items-baseline gap-1.5">
+        <span className="metric text-[23px] font-medium leading-none">{value}</span>
+        <span className="text-[10px] text-muted">{unit}</span>
+      </p>
+      <p className="mt-1.5 text-[9.5px] leading-snug text-muted">{hint}</p>
     </div>
   );
 }
