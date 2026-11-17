@@ -1,0 +1,66 @@
+{
+  "training_rows": 32883,
+  "validation_rows": 8221,
+  "train_period": [
+    "2022-01-01T00:40:00+00:00",
+    "2024-09-16T05:10:00+00:00"
+  ],
+  "validation_period": [
+    "2024-09-16T05:40:00+00:00",
+    "2024-12-31T23:40:00+00:00"
+  ],
+  "contamination": 0.01,
+  "flagged_rate_validation_at_deployed_threshold": 0.0015813161415886145,
+  "threshold_raw_score": -0.6163817272164764,
+  "score_p1": -0.6215435793785059,
+  "score_p50": -0.3976033095102363,
+  "threshold_calibration": {
+    "method": "scenario_normal_windows_v1",
+    "windows": 90,
+    "zones": [
+      "JKT-BAY",
+      "SMR-UTC",
+      "MKS-STR"
+    ],
+    "seeds": 30,
+    "samples_per_window": 18,
+    "interval_seconds": 300,
+    "target_false_alarm_rate": 0.1,
+    "observed_false_alarm_rate": 0.1,
+    "threshold_raw": -0.6163817272164764,
+    "median_raw": -0.5316869627827101,
+    "scale": 0.03854624843876682,
+    "minimum_raw": -0.6782293213763139,
+    "maximum_raw": -0.47507079635060995,
+    "note": "Threshold and score scale are calibrated on synthetic normal-scenario windows. Flag rates on real telemetry would need recalibration with real coastal buoy data."
+  },
+  "proxy_evaluation": {
+    "method": "Unsupervised model: no hazard labels exist. Discrimination is checked on the real validation slice at a 1% reference threshold: do anomaly flags concentrate in the top 5% of rapid pressure changes and rapid one-step wave-height changes?",
+    "reference_threshold_raw": -0.5560777427129634,
+    "reference_threshold_note": "Not the deployed threshold; the deployed threshold is scenario-calibrated below.",
+    "recall_top5pct_pressure_change": 0.06470588235294118,
+    "recall_top5pct_wave_height_change": 0.021897810218978103,
+    "random_selection_baseline": 0.010096095365527307,
+    "wave_height_p95_m": 3.68,
+    "median_wave_height_flagged_m": 6.29,
+    "median_wave_height_unflagged_m": 2.12
+  },
+  "feature_names": [
+    "wave_height_m",
+    "air_pressure_hpa",
+    "wave_height_rel_dev",
+    "wave_steepness_rel_dev",
+    "wind_speed_rel_dev",
+    "wave_period_rel_dev",
+    "pressure_residual_hpa",
+    "pressure_rate_hpa_per_hour",
+    "wave_height_change_ratio",
+    "sst_residual_c",
+    "wave_direction_change_deg"
+  ],
+  "random_state": 42,
+  "n_estimators": 250,
+  "sklearn_version": "1.9.1",
+  "pandas_version": "3.1.1",
+  "numpy_version": "2.5.4"
+}

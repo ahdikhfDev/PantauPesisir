@@ -1,0 +1,67 @@
+{
+  "dataset_title": "NOAA NDBC Historical Standard Meteorological Data (stdmet)",
+  "provider": "NOAA National Data Buoy Center (NDBC), USA",
+  "landing_page": "https://www.ndbc.noaa.gov/",
+  "data_access": "https://www.ndbc.noaa.gov/data/historical/stdmet/",
+  "license": "Public domain (work of the U.S. federal government); attribution appreciated.",
+  "attribution": "NOAA National Data Buoy Center (NDBC). Retrieved via NDBC historical stdmet archive.",
+  "retrieved_on": "2026-11-18",
+  "retrieval_method": "Direct HTTP GET of documented historical stdmet .txt.gz files",
+  "stations": {
+    "51002": {
+      "name": "SOUTHWEST HAWAII - 215NM SSW of Hilo, HI",
+      "latitude": 17.07,
+      "longitude": -157.755,
+      "water_depth_m": 4979,
+      "station_page": "https://www.ndbc.noaa.gov/station_page.php?station=51002"
+    },
+    "41010": {
+      "name": "CANAVERAL EAST - 120NM East of Cape Canaveral",
+      "latitude": 28.86,
+      "longitude": -78.478,
+      "water_depth_m": 903.1,
+      "station_page": "https://www.ndbc.noaa.gov/station_page.php?station=41010"
+    }
+  },
+  "years": [
+    2022,
+    2023,
+    2024
+  ],
+  "columns": [
+    "buoy_code",
+    "ndbc_station",
+    "station_name",
+    "observed_at",
+    "wave_height_m",
+    "wave_period_s",
+    "wave_direction_deg",
+    "wind_speed_mps",
+    "wind_direction_deg",
+    "sea_temperature_c",
+    "air_pressure_hpa",
+    "air_temperature_c",
+    "source"
+  ],
+  "units": {
+    "wave_height_m": "m (significant wave height, WVHT)",
+    "wave_period_s": "s (dominant period, DPD)",
+    "wave_direction_deg": "degrees true (MWD)",
+    "wind_speed_mps": "m/s (WSPD)",
+    "wind_direction_deg": "degrees true (WDIR)",
+    "sea_temperature_c": "degC (WTMP, ~1 m depth)",
+    "air_pressure_hpa": "hPa (PRES, sea level)"
+  },
+  "missing_value_handling": "NDBC sentinel values (99, 999, 9999) removed; rows lacking a core wave/weather variable dropped.",
+  "row_count": 41104,
+  "temporal_coverage": {
+    "start": "2022-01-01T00:40:00Z",
+    "end": "2024-12-31T23:40:00Z"
+  },
+  "limitations": [
+    "Stations are in the Pacific (Hawaii) and Atlantic (Florida) offshore zones, not Indonesian waters.",
+    "Observing cadence is typically 10 minutes with sensor outages; gaps are preserved.",
+    "No hazard labels are included. Wave-height percentiles are used only as an evaluation proxy.",
+    "Training data are real measurements; CEWS inference inputs in this prototype are simulated."
+  ]
+}
