@@ -52,8 +52,8 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
         <ComposedChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: -20 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e23a2e" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#e23a2e" stopOpacity={0} />
+              <stop offset="0%" stopColor="#d93a2b" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="#d93a2b" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
@@ -102,7 +102,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             type="monotone"
             dataKey="height"
             name="Wave height"
-            stroke="#e23a2e"
+            stroke="#d93a2b"
             strokeWidth={2}
             fill={`url(#${gradientId})`}
             dot={false}
@@ -114,7 +114,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             type="monotone"
             dataKey="wind"
             name="Wind speed"
-            stroke="#0f4b52"
+            stroke="#123f46"
             strokeWidth={1.5}
             strokeDasharray="5 4"
             dot={false}

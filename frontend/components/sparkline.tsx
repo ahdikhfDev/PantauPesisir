@@ -39,8 +39,8 @@ export function Sparkline({
     .map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`)
     .join(" ");
   const area = `${path} L${width},${height} L0,${height} Z`;
-  const stroke = tone === "signal" ? "#e23a2e" : tone === "sea" ? "#0f4b52" : "rgba(255,255,255,0.85)";
-  const fill = tone === "signal" ? "#e23a2e" : tone === "sea" ? "#0f4b52" : "#ffffff";
+  const stroke = tone === "signal" ? "#d93a2b" : tone === "sea" ? "#123f46" : "rgba(255,255,255,0.85)";
+  const fill = tone === "signal" ? "#d93a2b" : tone === "sea" ? "#123f46" : "#ffffff";
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none" aria-hidden>

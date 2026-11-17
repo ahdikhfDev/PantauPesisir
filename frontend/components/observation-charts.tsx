@@ -82,8 +82,8 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
             <ComposedChart data={data} margin={{ top: 6, right: 6, bottom: 0, left: -18 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#e23a2e" stopOpacity={0.22} />
-                  <stop offset="100%" stopColor="#e23a2e" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#d93a2b" stopOpacity={0.22} />
+                  <stop offset="100%" stopColor="#d93a2b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
@@ -141,7 +141,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="height"
                 name="Wave height"
-                stroke="#e23a2e"
+                stroke="#d93a2b"
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
                 dot={false}
@@ -153,7 +153,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="wind"
                 name="Wind speed"
-                stroke="#0f4b52"
+                stroke="#123f46"
                 strokeWidth={1.6}
                 strokeDasharray="5 4"
                 dot={false}
@@ -212,7 +212,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="pressure"
                 name="Pressure"
-                stroke="#a9711a"
+                stroke="#94651a"
                 strokeWidth={1.8}
                 dot={false}
                 isAnimationActive={false}
@@ -222,7 +222,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="period"
                 name="Period"
-                stroke="#0f4b52"
+                stroke="#123f46"
                 strokeWidth={1.6}
                 dot={false}
                 isAnimationActive={false}

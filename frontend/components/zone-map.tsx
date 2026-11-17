@@ -53,10 +53,10 @@ export function ZoneMap({
               key={`zone-${zone.id}`}
               data={zone.boundary as never}
               style={{
-                color: "#e23a2e",
+                color: "#d93a2b",
                 weight: 1.4,
                 dashArray: "6 4",
-                fillColor: "#e23a2e",
+                fillColor: "#d93a2b",
                 fillOpacity: 0.04,
               }}
             >
@@ -83,9 +83,9 @@ export function ZoneMap({
                     center={[buoy.latitude as number, buoy.longitude as number]}
                     radius={8}
                     pathOptions={{
-                      color: "#0a3338",
+                      color: "#0c2c31",
                       weight: 2,
-                      fillColor: "#e23a2e",
+                      fillColor: "#d93a2b",
                       fillOpacity: 0.95,
                     }}
                   >
@@ -129,9 +129,9 @@ export function ZoneMap({
                 key={`footprint-${dataset.id}`}
                 data={dataset.footprint as never}
                 style={{
-                  color: "#0f4b52",
+                  color: "#123f46",
                   weight: 1,
-                  fillColor: "#0f4b52",
+                  fillColor: "#123f46",
                   fillOpacity: 0.09,
                 }}
               >

@@ -154,7 +154,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
-                healthy ? "bg-[#a8c3bd]" : health.error ? "bg-signal" : "bg-amber",
+                healthy ? "bg-white/60" : health.error ? "bg-signal" : "bg-amber",
               )}
               aria-hidden
             />
