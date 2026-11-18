@@ -57,7 +57,7 @@ docs/                 checklist lomba, rencana uji, tangkapan layar
 
 | Rute | Untuk | Isi |
 | --- | --- | --- |
-| `/` | warga | Cek Kondisi — pilih pantai + aktivitas → status |
+| `/` | warga | Cek Kondisi — pilih pantai + aktivitas → status, grafik ombak 24 jam, peta 3 pantai |
 | `/ringkasan` | warga | Kabar Laut — dua kalimat per pantai/aktivitas |
 | `/belajar` | warga | Kamus istilah + eksperimen slider |
 | `/alerts` | warga | Pemberitahuan aktif (read-only, kedaluwarsa 6 jam) |
@@ -68,6 +68,12 @@ docs/                 checklist lomba, rencana uji, tangkapan layar
 | `/sources` | admin | Kesehatan sumber, lineage, permukaan API |
 
 `/cek` hanya redirect 307 ke `/`.
+
+Halaman warga memakai 
+`WaveHistoryChart` (`components/warga/wave-chart.tsx`) dan `ZoneMap` dengan `variant="warga"`:
+satu seri ombak + garis batas aman aktivitas, dan peta tanpa kode zona, tanpa footprint satelit,
+tanpa parameter teknis di popup. Konsol tetap memakai varian default yang penuh. Kedua komponen hanya
+membaca endpoint publik (`/buoy/history`, `/coastal/zones`, `/buoy/latest`), jadi tidak perlu API key.
 
 ---
 

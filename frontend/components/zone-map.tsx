@@ -7,19 +7,28 @@ import { useMemo } from "react";
 import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer } from "react-leaflet";
 
 import { compass, fixed, formatShortWib } from "@/lib/format";
+import { waveWords } from "@/lib/coastal";
 import type { LatestResponse, SatelliteDataset, Zone } from "@/lib/types";
 
 export function ZoneMap({
   zones,
   latest,
-  datasets,
-  layers,
+  datasets = [],
+  layers = { zones: true, buoys: true, footprints: false },
+  variant = "konsol",
+  activeZoneCode,
+  onSelectZone,
 }: {
   zones: Zone[];
   latest: LatestResponse | null;
-  datasets: SatelliteDataset[];
-  layers: { zones: boolean; buoys: boolean; footprints: boolean };
+  datasets?: SatelliteDataset[];
+  layers?: { zones: boolean; buoys: boolean; footprints: boolean };
+  /** "warga" keeps the map friendly: no codes, no footprints, no extra parameters. */
+  variant?: "konsol" | "warga";
+  activeZoneCode?: string;
+  onSelectZone?: (zoneCode: string) => void;
 }) {
+  const simple = variant === "warga";
   const bounds = useMemo(() => {
     const centroids = zones
       .map((zone) => zone.centroid)
@@ -31,8 +40,9 @@ export function ZoneMap({
       [-3.22, 117.48],
     ];
     const points = centroids.length ? centroids : fallback;
-    return L.latLngBounds(points).pad(0.7);
-  }, [zones]);
+    // The citizen map is a locator, not an analysis tool: keep the coast filling the frame.
+    return L.latLngBounds(points).pad(simple ? 0.18 : 0.7);
+  }, [zones, simple]);
 
   return (
     <MapContainer
@@ -48,27 +58,69 @@ export function ZoneMap({
       />
 
       {layers.zones
-        ? zones.map((zone) => (
-            <GeoJSON
-              key={`zone-${zone.id}`}
-              data={zone.boundary as never}
-              style={{
-                color: "#d93a2b",
-                weight: 1.4,
-                dashArray: "6 4",
-                fillColor: "#d93a2b",
-                fillOpacity: 0.04,
-              }}
-            >
-              <Popup>
-                <div className="text-[12px]">
-                  <p className="font-semibold">{zone.zone_name}</p>
-                  <p className="font-mono text-[10px] text-muted">{zone.zone_code}</p>
-                  <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-muted">{zone.boundary_note}</p>
-                </div>
-              </Popup>
-            </GeoJSON>
-          ))
+        ? zones.map((zone) => {
+            const active = activeZoneCode === zone.zone_code;
+            const observation = simple
+              ? latest?.items.find((item) => item.zone_code === zone.zone_code)
+              : null;
+            return (
+              <GeoJSON
+                key={`zone-${zone.id}`}
+                data={zone.boundary as never}
+                style={
+                  simple
+                    ? {
+                        color: active ? "#d93a2b" : "#123f46",
+                        weight: active ? 1.8 : 1,
+                        dashArray: active ? undefined : "2 4",
+                        fillColor: active ? "#d93a2b" : "#123f46",
+                        fillOpacity: active ? 0.07 : 0.03,
+                      }
+                    : {
+                        color: "#d93a2b",
+                        weight: 1.4,
+                        dashArray: "6 4",
+                        fillColor: "#d93a2b",
+                        fillOpacity: 0.04,
+                      }
+                }
+                eventHandlers={
+                  onSelectZone ? { click: () => onSelectZone(zone.zone_code) } : undefined
+                }
+              >
+                {simple ? (
+                  <Popup>
+                    <div className="text-[12px]">
+                      <p className="font-semibold">{zone.zone_name}</p>
+                      {observation ? (
+                        <>
+                          <p className="mt-1">
+                            Ombak {fixed(observation.parameters.wave_height_m, 1)} m ·{" "}
+                            {waveWords(observation.parameters.wave_height_m)}
+                          </p>
+                          <p className="mt-0.5 text-[10px] text-muted">
+                            Diperbarui {formatShortWib(observation.observed_at)} WIB
+                          </p>
+                        </>
+                      ) : (
+                        <p className="mt-1 text-[10px] text-muted">Belum ada pembacaan terbaru.</p>
+                      )}
+                    </div>
+                  </Popup>
+                ) : (
+                  <Popup>
+                    <div className="text-[12px]">
+                      <p className="font-semibold">{zone.zone_name}</p>
+                      <p className="font-mono text-[10px] text-muted">{zone.zone_code}</p>
+                      <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-muted">
+                        {zone.boundary_note}
+                      </p>
+                    </div>
+                  </Popup>
+                )}
+              </GeoJSON>
+            );
+          })
         : null}
 
       {layers.buoys
@@ -81,47 +133,84 @@ export function ZoneMap({
                   <CircleMarker
                     key={buoy.id}
                     center={[buoy.latitude as number, buoy.longitude as number]}
-                    radius={8}
-                    pathOptions={{
-                      color: "#0c2c31",
-                      weight: 2,
-                      fillColor: "#d93a2b",
-                      fillOpacity: 0.95,
-                    }}
+                    radius={simple ? 6 : 8}
+                    pathOptions={
+                      simple
+                        ? {
+                            color: "#fbfaf7",
+                            weight: 1.5,
+                            fillColor:
+                              activeZoneCode === zone.zone_code ? "#d93a2b" : "#123f46",
+                            fillOpacity: 0.9,
+                          }
+                        : {
+                            color: "#0c2c31",
+                            weight: 2,
+                            fillColor: "#d93a2b",
+                            fillOpacity: 0.95,
+                          }
+                    }
+                    eventHandlers={
+                      onSelectZone ? { click: () => onSelectZone(zone.zone_code) } : undefined
+                    }
                   >
-                    <Popup>
-                      <div className="text-[12px]">
-                        <p className="font-semibold">{buoy.buoy_code}</p>
-                        <p className="text-[10px] text-muted">{zone.zone_name} · pemantauan</p>
-                        {observation ? (
-                          <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-                            <dt className="text-muted">Gelombang</dt>
-                            <dd className="font-mono">{fixed(observation.parameters.wave_height_m, 2)} m</dd>
-                            <dt className="text-muted">Periode</dt>
-                            <dd className="font-mono">{fixed(observation.parameters.wave_period_s, 1)} s</dd>
-                            <dt className="text-muted">Angin</dt>
-                            <dd className="font-mono">{fixed(observation.parameters.wind_speed_mps, 1)} m/s</dd>
-                            <dt className="text-muted">Tekanan</dt>
-                            <dd className="font-mono">{fixed(observation.parameters.air_pressure_hpa, 1)} hPa</dd>
-                            <dt className="text-muted">Swell dari</dt>
-                            <dd className="font-mono">
-                              {compass(observation.parameters.wave_direction_deg)}{" "}
-                              {fixed(observation.parameters.wave_direction_deg, 0)}°
-                            </dd>
-                          </dl>
-                        ) : null}
-                        {observation ? (
-                          <p className="mt-1.5 text-[9px] text-muted">{formatShortWib(observation.observed_at)} WIB</p>
-                        ) : null}
-                      </div>
-                    </Popup>
+                    {simple ? (
+                      <Popup>
+                        <div className="text-[12px]">
+                          <p className="font-semibold">{zone.zone_name}</p>
+                          {observation ? (
+                            <p className="mt-1">
+                              Ombak {fixed(observation.parameters.wave_height_m, 1)} m ·{" "}
+                              {waveWords(observation.parameters.wave_height_m)}
+                            </p>
+                          ) : null}
+                        </div>
+                      </Popup>
+                    ) : (
+                      <Popup>
+                        <div className="text-[12px]">
+                          <p className="font-semibold">{buoy.buoy_code}</p>
+                          <p className="text-[10px] text-muted">{zone.zone_name} · pemantauan</p>
+                          {observation ? (
+                            <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                              <dt className="text-muted">Gelombang</dt>
+                              <dd className="font-mono">
+                                {fixed(observation.parameters.wave_height_m, 2)} m
+                              </dd>
+                              <dt className="text-muted">Periode</dt>
+                              <dd className="font-mono">
+                                {fixed(observation.parameters.wave_period_s, 1)} s
+                              </dd>
+                              <dt className="text-muted">Angin</dt>
+                              <dd className="font-mono">
+                                {fixed(observation.parameters.wind_speed_mps, 1)} m/s
+                              </dd>
+                              <dt className="text-muted">Tekanan</dt>
+                              <dd className="font-mono">
+                                {fixed(observation.parameters.air_pressure_hpa, 1)} hPa
+                              </dd>
+                              <dt className="text-muted">Swell dari</dt>
+                              <dd className="font-mono">
+                                {compass(observation.parameters.wave_direction_deg)}{" "}
+                                {fixed(observation.parameters.wave_direction_deg, 0)}°
+                              </dd>
+                            </dl>
+                          ) : null}
+                          {observation ? (
+                            <p className="mt-1.5 text-[9px] text-muted">
+                              {formatShortWib(observation.observed_at)} WIB
+                            </p>
+                          ) : null}
+                        </div>
+                      </Popup>
+                    )}
                   </CircleMarker>
                 );
               }),
           )
         : null}
 
-      {layers.footprints
+      {layers.footprints && !simple
         ? datasets
             .filter((dataset) => dataset.footprint && (dataset.footprint as { coordinates?: unknown }).coordinates)
             .map((dataset) => (

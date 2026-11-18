@@ -68,7 +68,7 @@ penilaian teknis, dibuka lewat tombol **Mode Admin (demo)** di sidebar warga.
 
 | Rute | Ruang kerja |
 | --- | --- |
-| **`/` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), dan tautan ke detail teknis |
+| **`/` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), grafik ombak 24 jam dengan garis batas aman aktivitas, peta tiga pantai yang dipantau (klik untuk memilih), dan tautan ke detail teknis |
 | **`/ringkasan` Kabar Laut** | Dua kalimat bahasa sehari-hari per pantai dan aktivitas, dibuat dari data dan status sistem; tersedia fallback template bila penyedia bahasa tidak tersedia |
 | **`/belajar` Belajar** | Kamus istilah laut (ombak, periode, angin, tekanan, peringatan) dan eksperimen slider ombak/angin per aktivitas |
 | **`/konsol` Ringkasan teknis** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |

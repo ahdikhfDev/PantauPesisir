@@ -14,20 +14,28 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 
-import { cn, fixed, formatAge } from "@/lib/format";
+import { cn, fixed, formatAge, formatShortWib } from "@/lib/format";
 import {
   ACTIVITIES,
   assessConditions,
   LEVEL_LABEL,
+  LIMITS,
   waveWords,
   windWords,
   type ActivityKey,
   type Level,
 } from "@/lib/coastal";
+import { WaveHistoryChart } from "@/components/warga/wave-chart";
 import { useApi } from "@/lib/hooks";
-import type { AlertList, LatestResponse, Prediction, Zone } from "@/lib/types";
+import type { AlertList, HistoryResponse, LatestResponse, Prediction, Zone } from "@/lib/types";
+
+const ZoneMap = dynamic(() => import("@/components/zone-map").then((mod) => mod.ZoneMap), {
+  ssr: false,
+  loading: () => <div className="skeleton h-[280px] w-full" />,
+});
 
 const ACTIVITY_ICONS: Record<ActivityKey, typeof Anchor> = {
   boat: Anchor,
@@ -86,6 +94,13 @@ export default function CekPage() {
 
   const zone = zoneOptions.find((item) => item.zone_code === zoneCode) ?? zoneOptions[0];
 
+  // Only public read endpoints: the citizen page never asks for an API key.
+  const since = useMemo(() => new Date(Date.now() - 24 * 3600_000).toISOString(), []);
+  const history = useApi<HistoryResponse>(
+    `/buoy/history?zone_code=${encodeURIComponent(zone.zone_code)}&page_size=300&observed_from=${encodeURIComponent(since)}`,
+    60000,
+  );
+
   const reading = useMemo(
     () => (latest.data?.items ?? []).find((item) => item.zone_code === zone.zone_code) ?? null,
     [latest.data, zone.zone_code],
@@ -124,6 +139,19 @@ export default function CekPage() {
   const LevelIcon = meta.icon;
   const loading = latest.loading || zones.loading;
   const activeActivity = ACTIVITIES.find((item) => item.key === activity)!;
+
+  const wavePoints = useMemo(
+    () =>
+      (history.data?.items ?? [])
+        .filter((item) => item.validation_status === "valid")
+        .map((item) => ({
+          time: new Date(item.observed_at).getTime(),
+          height: item.parameters.wave_height_m,
+        }))
+        .filter((point) => Number.isFinite(point.time) && Number.isFinite(point.height))
+        .sort((a, b) => a.time - b.time),
+    [history.data],
+  );
 
   return (
     <>
@@ -229,9 +257,7 @@ export default function CekPage() {
               <LevelIcon className={cn("h-6 w-6", meta.badge)} aria-hidden />
             </span>
             <div>
-              <p className="text-[10px] font-semibold tracking-[0.14em] text-muted">
-                HASIL UNTUK {zone.zone_name.toUpperCase()}
-              </p>
+              <p className="text-[10px] font-semibold text-muted">Hasil untuk {zone.zone_name}</p>
               <h2 className={cn("mt-1 text-[22px] font-semibold leading-tight tracking-[-0.03em]", meta.badge)}>
                 {loading ? "Membaca kondisi…" : meta.label}
               </h2>
@@ -248,17 +274,17 @@ export default function CekPage() {
 
         <div className="grid gap-0 border-t border-white/60 bg-white/45 sm:grid-cols-3">
           <div className="border-b border-white/70 px-5 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-[9.5px] font-semibold tracking-[0.1em] text-muted">OMBAK</p>
+            <p className="text-[9.5px] font-semibold text-muted">Ombak</p>
             <p className="metric mt-1 text-[17px] font-medium text-ink">{fixed(wave, 1)} m</p>
             <p className="text-[10.5px] text-muted">{waveWords(wave)}</p>
           </div>
           <div className="border-b border-white/70 px-5 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-[9.5px] font-semibold tracking-[0.1em] text-muted">ANGIN</p>
+            <p className="text-[9.5px] font-semibold text-muted">Angin</p>
             <p className="metric mt-1 text-[17px] font-medium text-ink">{fixed(wind, 0)} m/s</p>
             <p className="text-[10.5px] text-muted">{windWords(wind)}</p>
           </div>
           <div className="px-5 py-3.5">
-            <p className="text-[9.5px] font-semibold tracking-[0.1em] text-muted">PERINGATAN AKTIF</p>
+            <p className="text-[9.5px] font-semibold text-muted">Peringatan aktif</p>
             <p className="metric mt-1 text-[17px] font-medium text-ink">{zoneAlerts.length}</p>
             <p className="text-[10.5px] text-muted">{zoneAlerts.length ? zoneAlerts[0].title : "tidak ada"}</p>
           </div>
@@ -274,14 +300,14 @@ export default function CekPage() {
             ))}
           </p>
           <div className="mt-3 flex items-center gap-1.5 text-[10px] font-medium text-muted">
-            <span>TENANG</span>
+            <span>Tenang</span>
             <span className="mx-1 flex-1 overflow-hidden rounded-full bg-line">
               <span
                 className={cn("block h-1.5 rounded-full transition-all", meta.scale)}
                 style={{ width: level === "tenang" ? "33%" : level === "hati" ? "66%" : "100%" }}
               />
             </span>
-            <span>TUNDA</span>
+            <span>Tunda</span>
           </div>
           <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
             Penilaian memakai ombak, angin, riwayat analisis, dan peringatan aktif untuk{" "}
@@ -289,6 +315,61 @@ export default function CekPage() {
           </p>
         </div>
       </section>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.35fr_1fr]">
+        <section className="card overflow-hidden">
+          <div className="flex flex-wrap items-end justify-between gap-2 border-b border-line px-5 py-4">
+            <div>
+              <h2 className="text-[14px] font-semibold">Ombak 24 jam terakhir</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">
+                {zone.zone_name}
+                {wavePoints.length
+                  ? ` · ${formatShortWib(new Date(wavePoints[0].time).toISOString())} – ${formatShortWib(
+                      new Date(wavePoints[wavePoints.length - 1].time).toISOString(),
+                    )} WIB`
+                  : ""}
+              </p>
+            </div>
+            <span className="text-[10.5px] text-muted">
+              {wavePoints.length ? `${wavePoints.length} pembacaan` : "memuat…"}
+            </span>
+          </div>
+          <div className="px-3 pb-2 pt-3 sm:px-4">
+            <WaveHistoryChart
+              points={wavePoints}
+              limit={LIMITS[activity].waveWarn}
+              limitLabel={`batas aman ${fixed(LIMITS[activity].waveWarn, 1)} m`}
+            />
+          </div>
+          <p className="border-t border-line px-5 py-2.5 text-[9.5px] leading-relaxed text-muted">
+            Garis putus-putus adalah batas aman untuk {activeActivity.label.toLowerCase()}. Sumber:
+            pembacaan buoy yang sudah diperiksa.
+          </p>
+        </section>
+
+        <section className="card overflow-hidden">
+          <div className="border-b border-line px-5 py-4">
+            <h2 className="text-[14px] font-semibold">Pantai yang dipantau</h2>
+            <p className="mt-0.5 text-[10.5px] text-muted">Pilih pantai di peta untuk melihat kondisinya</p>
+          </div>
+          <div className="h-[280px] w-full">
+            {zones.data ? (
+              <ZoneMap
+                zones={zones.data}
+                latest={latest.data}
+                variant="warga"
+                activeZoneCode={zone.zone_code}
+                onSelectZone={setZoneCode}
+              />
+            ) : (
+              <div className="grid h-full place-items-center text-[11px] text-muted">Memuat peta…</div>
+            )}
+          </div>
+          <p className="border-t border-line px-5 py-2.5 text-[9.5px] text-muted">
+            Peta dasar © OpenStreetMap contributors
+          </p>
+        </section>
+      </div>
 
       <section className="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="card p-5">
@@ -312,12 +393,12 @@ export default function CekPage() {
 
         <div className="card flex flex-col justify-between gap-4 p-5">
           <div>
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.12em] text-muted">
-              <LifeBuoy className="h-3.5 w-3.5" aria-hidden /> BUTUH ANGKA LENGKAP?
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
+              <LifeBuoy className="h-3.5 w-3.5" aria-hidden /> Butuh angka lengkap?
             </p>
             <p className="mt-2 text-[12px] leading-relaxed text-muted">
-              Halaman ini adalah ringkasan untuk pengguna umum. Grafik, riwayat, dan detail teknis ada di
-              konsol pemantauan.
+              Riwayat per jam, metadata satelit, dan panel analisis tersedia di konsol pemantauan untuk
+              operator.
             </p>
           </div>
           <Link href="/konsol" className="btn btn-ghost btn-sm self-start">
