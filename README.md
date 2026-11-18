@@ -93,12 +93,12 @@ cd backend
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
 # 1. Download the real NOAA NDBC training archive (public, no auth)
 python scripts/fetch_training_data.py
 
-# 2. Train the anomaly model and write backend/ml/artifacts/cews-iforest-v1.joblib
+# 2. Train the anomaly model (also exports the numpy runtime artifact)
 python scripts/train_model.py --version cews-iforest-v1
 
 # 3. Create the schema, seed zones/buoys, run a real Copernicus sync and first analyses
