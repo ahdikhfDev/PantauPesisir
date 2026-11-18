@@ -13,22 +13,22 @@ import {
   StatusPill,
 } from "@/components/ui";
 import { ApiError, apiSend } from "@/lib/api";
-import { cn, formatUtc } from "@/lib/format";
+import { cn, enumLabel, formatUtc } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import { useApiKey } from "@/lib/use-api-key";
 import type { Alert, AlertList, Zone } from "@/lib/types";
 
 const STATUS_FILTERS = [
-  { value: "", label: "All statuses" },
-  { value: "open", label: "Open" },
-  { value: "acknowledged", label: "Acknowledged" },
-  { value: "resolved", label: "Resolved" },
+  { value: "", label: "Semua status" },
+  { value: "open", label: "Terbuka" },
+  { value: "acknowledged", label: "Diakui" },
+  { value: "resolved", label: "Selesai" },
 ];
 
 const SEVERITY_FILTERS = [
-  { value: "", label: "All severities" },
-  { value: "high", label: "High" },
-  { value: "moderate", label: "Moderate" },
+  { value: "", label: "Semua tingkat" },
+  { value: "high", label: "Tinggi" },
+  { value: "moderate", label: "Sedang" },
   { value: "info", label: "Info" },
 ];
 
@@ -60,20 +60,20 @@ export default function AlertsPage() {
         {
           status,
           actor: "demo-operator",
-          note: status === "resolved" ? "Closed after operator review in the prototype console." : undefined,
+          note: status === "resolved" ? "Ditutup setelah peninjauan operator di konsol prototipe." : undefined,
         },
         apiKey,
       );
       setNotice(
         status === "acknowledged"
-          ? "Alert acknowledged with the operator identity and UTC timestamp."
+          ? "Peringatan diakui dengan identitas operator dan stempel waktu UTC."
           : status === "resolved"
-            ? "Alert resolved. The history keeps both timestamps."
-            : "Alert reopened.",
+            ? "Peringatan diselesaikan. Riwayat menyimpan kedua stempel waktu."
+            : "Peringatan dibuka kembali.",
       );
       alerts.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Update failed");
+      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Pembaruan gagal");
     } finally {
       setBusy(null);
     }
@@ -84,18 +84,18 @@ export default function AlertsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Alert management"
+        eyebrow="Manajemen peringatan"
         title={
           <>
-            Alerts with a <span className="text-signal">paper trail.</span>
+            Peringatan dengan <span className="text-signal">jejak audit.</span>
           </>
         }
-        description="Every prototype alert is linked to the analysis that produced it, carries its severity and timestamps, and moves through an explicit lifecycle. Alerts never claim to be official warnings."
+        description="Setiap peringatan prototipe tertaut ke analisis yang menghasilkannya, membawa tingkat keparahan dan stempel waktu, serta melewati siklus hidup yang eksplisit. Peringatan tidak pernah mengklaim sebagai peringatan resmi."
         right={
           <div className="flex flex-wrap items-center gap-2">
-            <StatusPill tone="bad">{counts.open ?? 0} open</StatusPill>
-            <StatusPill tone="warn">{counts.acknowledged ?? 0} acknowledged</StatusPill>
-            <StatusPill tone="ok">{counts.resolved ?? 0} resolved</StatusPill>
+            <StatusPill tone="bad">{counts.open ?? 0} terbuka</StatusPill>
+            <StatusPill tone="warn">{counts.acknowledged ?? 0} diakui</StatusPill>
+            <StatusPill tone="ok">{counts.resolved ?? 0} selesai</StatusPill>
           </div>
         }
       />
@@ -142,9 +142,9 @@ export default function AlertsPage() {
                 className="ml-auto h-8 rounded-[7px] border border-line bg-transparent px-2 text-[11px] font-medium text-ink-soft outline-none focus:border-sea"
                 value={zoneFilter}
                 onChange={(event) => setZoneFilter(event.target.value)}
-                aria-label="Filter by zone"
+                aria-label="Filter berdasarkan zona"
               >
-                <option value="">All zones</option>
+                <option value="">Semua zona</option>
                 {(zones.data ?? []).map((zone) => (
                   <option key={zone.zone_code} value={zone.zone_code}>
                     {zone.zone_code}
@@ -153,18 +153,18 @@ export default function AlertsPage() {
               </select>
             </div>
             <p className="mt-4 text-[11px] leading-relaxed text-muted">
-              {alerts.data?.total ?? 0} alert(s) match the current filters. Severity describes the
-              prototype rubric level at the moment of analysis; it is not a probability.
+              {alerts.data?.total ?? 0} peringatan cocok dengan filter saat ini. Tingkat keparahan
+              menggambarkan level rubrik prototipe saat analisis; bukan probabilitas.
             </p>
             <div className="mt-4 border-t border-line pt-4">
               <p className="text-[9.5px] font-semibold text-muted">
-                How an alert appears here
+                Cara peringatan muncul di sini
               </p>
               <ol className="mt-2 divide-y divide-line border-t border-line">
                 {[
-                  "An analysis reaches moderate or high on the prototype rubric.",
-                  "The API writes an alert linked to the prediction and the zone.",
-                  "An operator acknowledges, then resolves it with a UTC timestamp.",
+                  "Analisis mencapai Sedang atau Tinggi pada rubrik prototipe.",
+                  "API menulis peringatan yang tertaut ke prediksi dan zona.",
+                  "Operator mengakui, lalu menyelesaikannya dengan stempel waktu UTC.",
                 ].map((step, index) => (
                   <li key={step} className="flex gap-2.5 py-2 text-[11px] leading-relaxed text-ink-soft">
                     <span className="metric mt-[1px] shrink-0 text-[9.5px] text-muted">
@@ -187,16 +187,16 @@ export default function AlertsPage() {
 
           <div className="card p-5">
             <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
-              <Lock className="h-3 w-3" aria-hidden /> Privileged actions
+              <Lock className="h-3 w-3" aria-hidden /> Tindakan istimewa
             </p>
             <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
-              Acknowledging and resolving writes to the database and requires an API key.
+              Mengakui dan menyelesaikan menulis ke database dan memerlukan kunci API.
             </p>
             <ApiKeyField value={apiKey} onChange={setApiKey} className="mt-3" />
             <div className="mt-3 grid grid-cols-3 divide-x divide-line border-t border-line pt-3 text-center">
               {[
-                ["High", alerts.data?.counts_by_severity.high ?? 0],
-                ["Moderate", alerts.data?.counts_by_severity.moderate ?? 0],
+                ["Tinggi", alerts.data?.counts_by_severity.high ?? 0],
+                ["Sedang", alerts.data?.counts_by_severity.moderate ?? 0],
                 ["Info", alerts.data?.counts_by_severity.info ?? 0],
               ].map(([label, value]) => (
                 <div key={String(label)} className="px-2">
@@ -218,8 +218,8 @@ export default function AlertsPage() {
           </div>
         ) : alerts.data && alerts.data.items.length === 0 ? (
           <EmptyState
-            title="No alerts match these filters"
-            description="Alerts are only created by a completed analysis whose risk rubric reaches moderate or high. Run an extreme scenario, then screen the window in the AI workspace."
+            title="Tidak ada peringatan"
+            description="Peringatan hanya dibuat oleh analisis selesai yang rubrik risikonya mencapai Sedang atau Tinggi. Jalankan skenario ekstrem, lalu saring jendela di ruang kerja AI."
           />
         ) : (
           <div className="space-y-3">
@@ -246,7 +246,7 @@ export default function AlertsPage() {
                             alert.status === "open" ? "bad" : alert.status === "acknowledged" ? "warn" : "ok"
                           }
                         >
-                          {alert.status}
+                          {enumLabel(alert.status)}
                         </StatusPill>
                         <span className="chip">{alert.zone_code}</span>
                         <span className="font-mono text-[9.5px] text-muted">{formatUtc(alert.created_at)}</span>
@@ -268,22 +268,22 @@ export default function AlertsPage() {
                         className="mt-2 inline-flex items-center gap-1 text-[10.5px] font-semibold text-sea"
                       >
                         {isOpen ? <ChevronUp className="h-3 w-3" aria-hidden /> : <ChevronDown className="h-3 w-3" aria-hidden />}
-                        {isOpen ? "Collapse note" : "Read full note"}
+                        {isOpen ? "Sembunyikan catatan" : "Baca catatan lengkap"}
                       </button>
 
                       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[10px] text-muted">
                         <span>
-                          Created <strong className="font-semibold text-ink">{formatUtc(alert.created_at)}</strong>
+                          Dibuat <strong className="font-semibold text-ink">{formatUtc(alert.created_at)}</strong>
                         </span>
                         <span>
-                          Acknowledged{" "}
+                          Diakui{" "}
                           <strong className="font-semibold text-ink">
                             {alert.acknowledged_at ? formatUtc(alert.acknowledged_at) : "—"}
                           </strong>
                           {alert.acknowledged_by ? ` · ${alert.acknowledged_by}` : ""}
                         </span>
                         <span>
-                          Resolved{" "}
+                          Selesai{" "}
                           <strong className="font-semibold text-ink">
                             {alert.resolved_at ? formatUtc(alert.resolved_at) : "—"}
                           </strong>
@@ -299,8 +299,8 @@ export default function AlertsPage() {
                           disabled={busy === alert.id}
                           className="btn btn-ghost btn-sm"
                         >
-                          {busy === alert.id ? <InlineSpinner label="Saving" /> : <Check className="h-3.5 w-3.5" aria-hidden />}
-                          Acknowledge
+                          {busy === alert.id ? <InlineSpinner label="Menyimpan" /> : <Check className="h-3.5 w-3.5" aria-hidden />}
+                          Akui
                         </button>
                       ) : null}
                       {alert.status !== "resolved" ? (
@@ -310,11 +310,11 @@ export default function AlertsPage() {
                           disabled={busy === alert.id}
                           className="btn btn-dark btn-sm"
                         >
-                          Resolve
+                          Selesaikan
                         </button>
                       ) : (
                         <span className="rounded-[10px] border border-line px-3 py-2 text-center text-[10.5px] text-muted">
-                          Closed
+                          Ditutup
                         </span>
                       )}
                       {alert.status === "acknowledged" ? (
@@ -324,7 +324,7 @@ export default function AlertsPage() {
                           disabled={busy === alert.id}
                           className="btn btn-ghost btn-sm"
                         >
-                          <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Reopen
+                          <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Buka kembali
                         </button>
                       ) : null}
                     </div>
@@ -336,9 +336,9 @@ export default function AlertsPage() {
         )}
 
         <div className="border-t border-line pt-3 text-[10.5px] leading-relaxed text-muted">
-          <strong className="text-ink">Lifecycle rules.</strong> Open → acknowledged → resolved is the
-          intended path. Resolved alerts cannot be reopened (409 from the API), which preserves an honest
-          audit trail. Acknowledgement stores the actor label and a UTC timestamp.
+          <strong className="text-ink">Aturan siklus hidup.</strong> Terbuka → diakui → selesai adalah
+          alur yang dimaksud. Peringatan selesai tidak dapat dibuka kembali (409 dari API), sehingga
+          jejak audit tetap jujur. Pengakuan menyimpan label aktor dan stempel waktu UTC.
         </div>
       </div>
     </>

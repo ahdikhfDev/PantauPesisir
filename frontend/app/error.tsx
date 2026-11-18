@@ -11,19 +11,19 @@ export default function DashboardError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("CEWS dashboard error", error);
+    console.error("PantauPesisir dashboard error", error);
   }, [error]);
 
   return (
     <div className="mx-auto max-w-xl py-16">
       <div className="card border-l-2 border-l-signal p-6">
         <p className="flex items-center gap-1.5 text-[10px] font-semibold text-signal-dark">
-          <AlertTriangle className="h-3 w-3" aria-hidden /> Console error
+          <AlertTriangle className="h-3 w-3" aria-hidden /> Kesalahan konsol
         </p>
-        <h1 className="mt-3 text-[20px] font-semibold">This console view could not render</h1>
+        <h1 className="mt-3 text-[20px] font-semibold">Tampilan konsol ini gagal dirender</h1>
         <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
-          The rest of the application is still available. Try again, or open another workspace from the
-          navigation.
+          Bagian lain aplikasi masih bisa dipakai. Coba lagi, atau buka ruang kerja lain dari
+          navigasi.
         </p>
         <pre className="mt-4 overflow-auto rounded-[10px] bg-paper p-3 text-[10px] leading-relaxed text-ink-soft">
           {error.message}
@@ -31,10 +31,10 @@ export default function DashboardError({
         </pre>
         <div className="mt-4 flex gap-2">
           <button type="button" onClick={reset} className="btn btn-primary btn-sm">
-            <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Try again
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Coba lagi
           </button>
           <a href="/ocean" className="btn btn-ghost btn-sm">
-            Open ocean console
+            Buka konsol laut
           </a>
         </div>
       </div>

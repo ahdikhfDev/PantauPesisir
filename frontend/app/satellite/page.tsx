@@ -15,7 +15,7 @@ import {
   StatusPill,
 } from "@/components/ui";
 import { API_BASE_URL, ApiError, apiSend, apiUrl } from "@/lib/api";
-import { cn, fixed, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, enumLabel, fixed, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import { useApiKey } from "@/lib/use-api-key";
 import type {
@@ -62,9 +62,9 @@ export default function SatellitePage() {
     handledJob.current = job.data.id;
     setNotice(
       job.data.status === "failed"
-        ? `Sync failed: ${job.data.error_message ?? "provider unavailable"}`
-        : `${job.data.datasets_stored} new record(s) stored from ${job.data.datasets_found} match(es).${
-            job.data.used_cache ? " Provider unreachable — cached metadata is shown." : ""
+        ? `Sinkronisasi gagal: ${job.data.error_message ?? "penyedia tidak tersedia"}`
+        : `${job.data.datasets_stored} catatan baru tersimpan dari ${job.data.datasets_found} hasil cocok.${
+            job.data.used_cache ? " Penyedia tidak dapat dijangkau — metadata tersimpan ditampilkan." : ""
           }`,
     );
     datasets.refresh();
@@ -96,7 +96,7 @@ export default function SatellitePage() {
       setJobId(response.job.id);
       setNotice(response.acceptance_note);
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Sync failed");
+      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Sinkronisasi gagal");
     } finally {
       setBusy(false);
     }
@@ -105,14 +105,14 @@ export default function SatellitePage() {
   return (
     <>
       <PageHero
-        eyebrow="Satellite & geospatial"
+        eyebrow="Satelit & geospasial"
         title={
           <>
-            Coastal context from{" "}
+            Konteks pesisir dari{" "}
             <span className="text-sea">Copernicus.</span>
           </>
         }
-        description="Real Sentinel-2 L2A catalogue records, retrieved live from the Copernicus Data Space Ecosystem STAC API: footprints, acquisition times, cloud statistics and cached quicklooks. Optical imagery is context — never a wave-height measurement."
+        description="Catatan katalog Sentinel-2 L2A nyata, diambil langsung dari STAC API Copernicus Data Space Ecosystem: cakupan area, waktu akuisisi, statistik awan, dan pratinjau tersimpan. Citra optik adalah konteks — bukan pengukuran tinggi gelombang."
         right={
           <div className="flex flex-col items-start gap-2 lg:items-end">
             <SourceBadge kind="satellite" />
@@ -126,8 +126,8 @@ export default function SatellitePage() {
               }
             >
               {provider.data?.source_status === "unavailable" && (datasets.data?.length ?? 0) > 0
-                ? "cache available"
-                : provider.data?.source_status ?? "checking"}
+                ? "cache tersedia"
+                : provider.data?.source_status ?? "memeriksa"}
             </StatusPill>
             <a
               href={provider.data?.docs_url ?? "https://documentation.dataspace.copernicus.eu/APIs/STAC.html"}
@@ -135,7 +135,7 @@ export default function SatellitePage() {
               rel="noreferrer"
               className="text-[11px] font-semibold text-sea underline underline-offset-2"
             >
-              Provider docs <ExternalLink className="inline h-3 w-3" aria-hidden />
+              Dokumentasi penyedia <ExternalLink className="inline h-3 w-3" aria-hidden />
             </a>
           </div>
         }
@@ -145,21 +145,21 @@ export default function SatellitePage() {
         <div className="card grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           <Fact
             label="Dataset"
-            value={provider.data?.dataset ?? "Sentinel-2 L2A metadata"}
-            note={provider.data?.access ?? "Unauthenticated STAC search"}
+            value={provider.data?.dataset ?? "Metadata Sentinel-2 L2A"}
+            note={provider.data?.access ?? "Pencarian STAC tanpa autentikasi"}
           />
           <Fact
-            label="Licence"
-            value="Free and open Copernicus Sentinel data"
-            note={provider.data?.license ?? "Copernicus Data Space Ecosystem terms"}
+            label="Lisensi"
+            value="Data Copernicus Sentinel bebas dan terbuka"
+            note={provider.data?.license ?? "Ketentuan Copernicus Data Space Ecosystem"}
           />
           <Fact
-            label="Cached records"
-            value={`${datasets.data?.length ?? 0} acquisition(s)`}
+            label="Catatan tersimpan"
+            value={`${datasets.data?.length ?? 0} akuisisi`}
             note={
               datasets.data?.[0]
-                ? `Latest ${formatShortUtc(datasets.data[0].acquired_at)} UTC`
-                : "Run a sync to populate"
+                ? `Terbaru ${formatShortUtc(datasets.data[0].acquired_at)} UTC`
+                : "Jalankan sinkronisasi untuk mengisi"
             }
           />
         </div>
@@ -168,17 +168,17 @@ export default function SatellitePage() {
           <div className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
               <div>
-                <h2 className="text-[14px] font-semibold">Coastal map</h2>
+                <h2 className="text-[14px] font-semibold">Peta pesisir</h2>
                 <p className="mt-0.5 text-[10.5px] text-muted">
-                  Prototype zone polygons, virtual buoys and historical satellite footprints.
+                  Poligon zona prototipe, buoy virtual, dan cakupan area satelit historis.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3.5">
                 {(
                   [
-                    ["zones", "Zones"],
-                    ["buoys", "Buoys"],
-                    ["footprints", "Footprints"],
+                    ["zones", "Zona"],
+                    ["buoys", "Buoy"],
+                    ["footprints", "Cakupan area"],
                   ] as const
                 ).map(([key, label]) => (
                   <button
@@ -203,43 +203,43 @@ export default function SatellitePage() {
               {zones.data ? (
                 <ZoneMap zones={zones.data} latest={latest.data} datasets={datasets.data ?? []} layers={layers} />
               ) : (
-                <div className="grid h-full place-items-center text-[12px] text-muted">Loading map…</div>
+                <div className="grid h-full place-items-center text-[12px] text-muted">Memuat peta…</div>
               )}
             </div>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line px-5 py-3 text-[10px] text-muted">
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full border border-signal bg-signal/10" aria-hidden />
-                Prototype zone polygon
+                Poligon zona prototipe
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full border-2 border-sea-deep bg-signal" aria-hidden />
-                Virtual buoy
+                Buoy virtual
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 border border-sea bg-sea/15" aria-hidden />
-                Sentinel-2 footprint (historical)
+                Cakupan area Sentinel-2 (historis)
               </span>
-              <span className="ml-auto">Base map © OpenStreetMap contributors</span>
+              <span className="ml-auto">Peta dasar © kontributor OpenStreetMap</span>
             </div>
           </div>
 
           <div className="card p-5">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[14px] font-semibold">Sync a window</h2>
+              <h2 className="text-[14px] font-semibold">Sinkronkan rentang</h2>
               <StatusPill tone={job.data ? statusTone(job.data.status) : "neutral"}>
-                {job.data?.status ?? "idle"}
+                {job.data?.status ?? "siaga"}
               </StatusPill>
             </div>
             <p className="mt-1 text-[11px] leading-relaxed text-muted">
-              Queues a real STAC search for the zone envelope, stores metadata and caches one quicklook
-              per acquisition. No raster download and no API secret required.
+              Mengantrekan pencarian STAC nyata untuk cakupan zona, menyimpan metadata, dan menyimpan satu
+              pratinjau per akuisisi. Tanpa unduhan raster dan tanpa rahasia API.
             </p>
 
             <div className="mt-4 grid gap-3">
               <div>
                 <label className="label" htmlFor="sat-zone">
-                  Zone
+                  Zona
                 </label>
                 <select id="sat-zone" className="input" value={zoneCode} onChange={(event) => setZoneCode(event.target.value)}>
                   {(zones.data ?? []).map((zone) => (
@@ -252,13 +252,13 @@ export default function SatellitePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label" htmlFor="sat-from">
-                    From
+                    Dari
                   </label>
                   <input id="sat-from" type="date" className="input" value={dateFrom} max={dateTo} onChange={(event) => setDateFrom(event.target.value)} />
                 </div>
                 <div>
                   <label className="label" htmlFor="sat-to">
-                    To
+                    Sampai
                   </label>
                   <input id="sat-to" type="date" className="input" value={dateTo} min={dateFrom} onChange={(event) => setDateTo(event.target.value)} />
                 </div>
@@ -266,7 +266,7 @@ export default function SatellitePage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="label" htmlFor="sat-cloud">
-                    Max cloud %
+                    Tutupan awan maks %
                   </label>
                   <input
                     id="sat-cloud"
@@ -280,7 +280,7 @@ export default function SatellitePage() {
                 </div>
                 <div>
                   <label className="label" htmlFor="sat-count">
-                    Max products
+                    Maks produk
                   </label>
                   <input
                     id="sat-count"
@@ -295,8 +295,8 @@ export default function SatellitePage() {
               </div>
               <ApiKeyField value={apiKey} onChange={setApiKey} />
               <button type="button" className="btn btn-primary btn-sm" onClick={submit} disabled={busy}>
-                {busy ? <InlineSpinner label="Queueing…" /> : <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
-                Query Copernicus STAC
+                {busy ? <InlineSpinner label="Mengantrekan…" /> : <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
+                Kueri Copernicus STAC
               </button>
             </div>
 
@@ -313,16 +313,16 @@ export default function SatellitePage() {
             {job.data ? (
               <div className="mt-3 space-y-1.5 rounded-[10px] border border-line bg-paper/70 px-3 py-2.5 text-[11px]">
                 <p className="flex justify-between gap-3">
-                  <span className="text-muted">Found</span>
+                  <span className="text-muted">Ditemukan</span>
                   <span className="font-semibold">{job.data.datasets_found}</span>
                 </p>
                 <p className="flex justify-between gap-3">
-                  <span className="text-muted">Stored</span>
+                  <span className="text-muted">Tersimpan</span>
                   <span className="font-semibold">{job.data.datasets_stored}</span>
                 </p>
                 <p className="flex justify-between gap-3">
-                  <span className="text-muted">Cached fallback</span>
-                  <span className="font-semibold">{job.data.used_cache ? "yes" : "no"}</span>
+                  <span className="text-muted">Cadangan tersimpan</span>
+                  <span className="font-semibold">{job.data.used_cache ? "ya" : "tidak"}</span>
                 </p>
                 {job.data.error_message ? (
                   <p className="pt-1 text-[10px] leading-snug text-signal-dark">{job.data.error_message}</p>
@@ -338,7 +338,7 @@ export default function SatellitePage() {
             ) : null}
 
             <div className="mt-4">
-              <CaveatNote tone="sea">{provider.data?.note ?? "Optical imagery is not a wave measurement."}</CaveatNote>
+              <CaveatNote tone="sea">{provider.data?.note ?? "Citra optik bukan pengukuran gelombang."}</CaveatNote>
             </div>
           </div>
         </div>
@@ -346,15 +346,15 @@ export default function SatellitePage() {
         <section>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <span className="eyebrow">Acquisition catalogue</span>
-              <h2 className="mt-2 text-[20px] font-semibold">Stored Sentinel-2 records</h2>
+              <span className="eyebrow">Katalog akuisisi</span>
+              <h2 className="mt-2 text-[20px] font-semibold">Catatan Sentinel-2 tersimpan</h2>
               <p className="mt-1 text-[12px] text-muted">
-                All cached acquisitions, newest first. Quicklooks are stored locally; acquisition times
-                and zone attribution are unchanged from the provider response.
+                Semua akuisisi tersimpan, terbaru lebih dulu. Pratinjau disimpan secara lokal; waktu akuisisi
+                dan atribusi zona tidak diubah dari respons penyedia.
               </p>
             </div>
             <button type="button" className="btn btn-ghost btn-sm" onClick={() => datasets.refresh()}>
-              <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Refresh catalogue
+              <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Segarkan katalog
             </button>
           </div>
 
@@ -369,8 +369,8 @@ export default function SatellitePage() {
               </div>
             ) : catalogue.length === 0 ? (
               <EmptyState
-                title="No acquisitions stored yet"
-                description="Run a STAC search above. Records are only stored after the provider returns a real acquisition; nothing is fabricated when the provider is unavailable."
+                title="Belum ada akuisisi tersimpan"
+                description="Jalankan pencarian STAC di atas. Catatan hanya disimpan setelah penyedia mengembalikan akuisisi nyata; tidak ada data yang dibuat-buat saat penyedia tidak tersedia."
               />
             ) : (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -381,14 +381,14 @@ export default function SatellitePage() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={apiUrl(dataset.thumbnail_url)}
-                          alt={`Sentinel-2 quicklook ${dataset.product_id}`}
+                          alt={`Pratinjau Sentinel-2 ${dataset.product_id}`}
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />
                       ) : (
                         <div className="grid h-full place-items-center text-[11px] text-sea">
                           <span className="flex items-center gap-1.5">
-                            <ImageIcon className="h-3.5 w-3.5" aria-hidden /> No cached quicklook
+                            <ImageIcon className="h-3.5 w-3.5" aria-hidden /> Tidak ada pratinjau tersimpan
                           </span>
                         </div>
                       )}
@@ -401,23 +401,23 @@ export default function SatellitePage() {
                       <h3 className="mt-1 break-all text-[12px] font-semibold leading-snug">{dataset.product_id}</h3>
 
                       <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10.5px]">
-                        <dt className="text-muted">Acquired</dt>
+                        <dt className="text-muted">Diakuisisi</dt>
                         <dd className="text-right font-semibold">{formatUtc(dataset.acquired_at)}</dd>
-                        <dt className="text-muted">Cloud cover</dt>
+                        <dt className="text-muted">Tutupan awan</dt>
                         <dd className="text-right font-semibold">{fixed(dataset.cloud_cover_percent, 1)}%</dd>
-                        <dt className="text-muted">Resolution</dt>
+                        <dt className="text-muted">Resolusi</dt>
                         <dd className="text-right font-semibold">{fixed(dataset.resolution_m, 0)} m</dd>
                         <dt className="text-muted">CRS</dt>
                         <dd className="text-right font-mono text-[10px]">{dataset.crs ?? "—"}</dd>
-                        <dt className="text-muted">Processing</dt>
-                        <dd className="text-right font-semibold">{dataset.processing_status}</dd>
+                        <dt className="text-muted">Pemrosesan</dt>
+                        <dd className="text-right font-semibold">{enumLabel(dataset.processing_status)}</dd>
                       </dl>
 
                       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
                         <SourceBadge kind="satellite" />
                         <span className="chip">{dataset.provider}</span>
                         <span className="chip">
-                          {zones.data?.find((zone) => zone.id === dataset.zone_id)?.zone_code ?? "zone n/a"}
+                          {zones.data?.find((zone) => zone.id === dataset.zone_id)?.zone_code ?? "zona n/a"}
                         </span>
                       </div>
 
@@ -427,7 +427,7 @@ export default function SatellitePage() {
                         className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-sea"
                       >
                         <Layers className="h-3 w-3" aria-hidden />
-                        {expanded === dataset.id ? "Hide metadata" : "Provider metadata"}
+                        {expanded === dataset.id ? "Sembunyikan metadata" : "Metadata penyedia"}
                       </button>
                       {expanded === dataset.id ? (
                         <pre className="mt-2 max-h-40 overflow-auto rounded-[8px] bg-paper p-2 text-[9px] leading-relaxed text-ink-soft">
@@ -445,10 +445,9 @@ export default function SatellitePage() {
         </section>
 
         <p className="rounded-[14px] border border-line bg-surface px-5 py-4 text-[10.5px] leading-relaxed text-muted">
-          API base <span className="font-mono text-ink">{API_BASE_URL}</span> · Full-resolution Sentinel-2 product
-          download requires a free Copernicus account (OIDC/S3) and is out of scope for this prototype. The
-          catalogue endpoint and quicklooks are sufficient to demonstrate provenance, acquisition metadata and
-          graceful fallback.
+          Basis API <span className="font-mono text-ink">{API_BASE_URL}</span> · Unduhan produk Sentinel-2 resolusi
+          penuh memerlukan akun Copernicus gratis (OIDC/S3) dan di luar cakupan prototipe ini. Endpoint katalog
+          dan pratinjau cukup untuk menunjukkan provenans, metadata akuisisi, dan fallback yang baik.
         </p>
       </div>
     </>

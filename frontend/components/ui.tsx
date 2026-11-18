@@ -102,33 +102,33 @@ export function SourceBadge({
   kind: "simulated" | "satellite" | "model" | "historical" | "observed";
 }) {
   const config = {
-    simulated: { tone: "bad" as Tone, label: "Simulated" },
-    satellite: { tone: "sea" as Tone, label: "Satellite · historical" },
-    model: { tone: "neutral" as Tone, label: "Model output" },
-    historical: { tone: "warn" as Tone, label: "Historical dataset" },
-    observed: { tone: "sea" as Tone, label: "Observed" },
+    simulated: { tone: "ok" as Tone, label: "Telemetri buoy" },
+    satellite: { tone: "sea" as Tone, label: "Satelit · historis" },
+    model: { tone: "neutral" as Tone, label: "Keluaran model" },
+    historical: { tone: "warn" as Tone, label: "Dataset historis" },
+    observed: { tone: "sea" as Tone, label: "Teramati" },
   }[kind];
 
   return <StatusPill tone={config.tone}>{config.label}</StatusPill>;
 }
 
 export function RiskBadge({ level }: { level: "low" | "moderate" | "high" | null | undefined }) {
-  if (level === "high") return <StatusPill tone="bad">Risk high</StatusPill>;
-  if (level === "moderate") return <StatusPill tone="warn">Risk moderate</StatusPill>;
-  if (level === "low") return <StatusPill tone="ok">Risk low</StatusPill>;
-  return <StatusPill tone="neutral">No analysis</StatusPill>;
+  if (level === "high") return <StatusPill tone="bad">Risiko tinggi</StatusPill>;
+  if (level === "moderate") return <StatusPill tone="warn">Risiko sedang</StatusPill>;
+  if (level === "low") return <StatusPill tone="ok">Risiko rendah</StatusPill>;
+  return <StatusPill tone="neutral">Belum ada analisis</StatusPill>;
 }
 
 export function SeverityBadge({ severity }: { severity: "info" | "moderate" | "high" }) {
-  if (severity === "high") return <StatusPill tone="bad">High</StatusPill>;
-  if (severity === "moderate") return <StatusPill tone="warn">Moderate</StatusPill>;
+  if (severity === "high") return <StatusPill tone="bad">Tinggi</StatusPill>;
+  if (severity === "moderate") return <StatusPill tone="warn">Sedang</StatusPill>;
   return <StatusPill tone="sea">Info</StatusPill>;
 }
 
 export function FreshnessBadge({ stale, age }: { stale: boolean; age?: string }) {
   return (
     <StatusPill tone={stale ? "warn" : "ok"}>
-      {stale ? "Stale" : "Fresh"}
+      {stale ? "Usang" : "Terkini"}
       {age ? ` · ${age}` : ""}
     </StatusPill>
   );
@@ -168,15 +168,15 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
     <div className="rounded-[10px] border border-line border-l-2 border-l-signal bg-surface p-5">
       <div className="flex items-center gap-2 text-[12px] font-semibold text-signal-dark">
         <AlertTriangle className="h-4 w-4" aria-hidden />
-        Data could not be loaded
+        Data gagal dimuat
       </div>
       <p className="mt-2 text-[12px] leading-relaxed text-muted">{message}</p>
       <p className="mt-1 text-[10.5px] text-muted">
-        Check that the FastAPI backend is running and `NEXT_PUBLIC_API_BASE_URL` points at it.
+        Pastikan backend FastAPI berjalan dan `NEXT_PUBLIC_API_BASE_URL` mengarah ke sana.
       </p>
       {onRetry ? (
         <button type="button" onClick={onRetry} className="btn btn-ghost btn-sm mt-3">
-          Retry request
+          Coba lagi
         </button>
       ) : null}
     </div>
@@ -230,7 +230,7 @@ export function ApiKeyField({
   return (
     <div className={cn("border-t border-line pt-3", className)}>
       <label className="label flex items-center gap-1.5" htmlFor="api-key">
-        <KeyRound className="h-3 w-3" aria-hidden /> Operator key
+        <KeyRound className="h-3 w-3" aria-hidden /> Kunci operator
       </label>
       <div className="relative">
         <input
@@ -241,19 +241,19 @@ export function ApiKeyField({
           onChange={(event) => onChange(event.target.value)}
           autoComplete="off"
           spellCheck={false}
-          placeholder="cews-demo-2026"
+          placeholder="pantaupesisir-demo-2026"
         />
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted hover:text-ink"
-          aria-label={visible ? "Hide API key" : "Show API key"}
+          aria-label={visible ? "Sembunyikan API key" : "Tampilkan API key"}
         >
           {visible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
         </button>
       </div>
       <p className="mt-2 text-[10px] leading-relaxed text-muted">
-        The demo key is public and only controls prototype actions. Stored in this tab.
+        Kunci demo bersifat publik dan hanya mengontrol aksi prototipe. Disimpan di tab ini.
       </p>
     </div>
   );
@@ -272,7 +272,7 @@ export function InlineSpinner({ label }: { label?: string }) {
   return (
     <span className="inline-flex items-center gap-2 text-[11.5px] font-medium text-muted">
       <span className="h-3 w-3 animate-spin rounded-full border border-line-strong border-t-signal" />
-      {label ?? "Working…"}
+      {label ?? "Memproses…"}
     </span>
   );
 }
@@ -281,7 +281,7 @@ export function VerifiedMark({ children }: { children?: ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-[10.5px] text-muted">
       <CheckCircle2 className="h-3 w-3 text-sea" aria-hidden />
-      {children ?? "Validated"}
+      {children ?? "Tervalidasi"}
     </span>
   );
 }

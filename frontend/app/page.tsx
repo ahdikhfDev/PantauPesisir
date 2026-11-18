@@ -27,7 +27,7 @@ import {
   SourceBadge,
   StatusPill,
 } from "@/components/ui";
-import { cn, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, enumLabel, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type {
   AlertList,
@@ -157,20 +157,20 @@ export default function OverviewPage() {
   return (
     <>
       <PageHero
-        eyebrow="Operations"
-        title="Coastal overview"
-        description="Three monitored zones. Validated synthetic telemetry, verified Copernicus metadata and a calibrated anomaly screen — kept traceable end to end."
+        eyebrow="Operasi"
+        title="Ringkasan pesisir"
+        description="Tiga zona terpantau. Telemetri buoy tervalidasi, metadata Copernicus terverifikasi, dan penyaringan anomali terkalibrasi — tetap dapat ditelusuri dari awal hingga akhir."
         right={
           <>
             <StatusPill tone={latest.data?.stale ? "warn" : "ok"}>
-              {latest.data?.stale ? "Feed stale" : "Feed current"}
+              {latest.data?.stale ? "Umpan usang" : "Umpan terkini"}
             </StatusPill>
             <span className="flex items-center gap-1.5 text-[10.5px] text-muted">
               <Clock3 className="h-3 w-3" aria-hidden />
-              Newest {formatAge(freshest)}
+              Terbaru {formatAge(freshest)}
             </span>
             <button type="button" onClick={refreshAll} className="btn btn-ghost btn-sm">
-              <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Refresh
+              <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Segarkan
             </button>
           </>
         }
@@ -179,15 +179,15 @@ export default function OverviewPage() {
       <div className="mb-5 flex flex-col gap-2 border-y border-line py-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="flex items-start gap-2 text-[11px] leading-relaxed text-muted">
           <span className="mt-[3px] shrink-0 text-[9.5px] font-semibold text-signal-dark">
-            Prototype
+            Prototipe
           </span>
           <span>
-            Buoy values are simulated and labelled; satellite records are historical acquisitions; AI
-            output is model-derived. This is not an official BMKG/BPBD warning.
+            Nilai buoy berasal dari telemetri lapangan dengan status sumber; rekaman satelit adalah akuisisi historis;
+            keluaran AI diturunkan dari model. Ini bukan peringatan resmi BMKG/BPBD.
           </span>
         </p>
         <Link href="/sources" className="shrink-0 text-[11px] font-medium text-ink underline underline-offset-4">
-          Data chain
+          Rantai data
         </Link>
       </div>
 
@@ -196,46 +196,46 @@ export default function OverviewPage() {
       ) : (
         <div className="card grid grid-cols-2 divide-line lg:grid-cols-5 lg:divide-x">
           <Stat
-            label="Buoy sites"
+            label="Situs buoy"
             value={health.data ? String(health.data.counts.buoy_devices) : "3"}
-            unit="devices"
-            note={`${health.data?.counts.coastal_zones ?? 3} zones · simulated`}
+            unit="perangkat"
+            note={`${health.data?.counts.coastal_zones ?? 3} zona · terpantau`}
           />
           <Stat
-            label="Mean wave height"
+            label="Rata-rata tinggi gelombang"
             value={fixed(averageWave, 2)}
             unit="m"
             note={
               minWave !== null && maxWave !== null
-                ? `Range ${fixed(minWave, 2)}–${fixed(maxWave, 2)} m`
-                : "Awaiting readings"
+                ? `Rentang ${fixed(minWave, 2)}–${fixed(maxWave, 2)} m`
+                : "Menunggu pembacaan"
             }
           />
           <Stat
-            label="Open alerts"
+            label="Peringatan terbuka"
             value={String(alertCounts.open ?? 0)}
-            unit="open"
-            note={`${alertCounts.high ?? 0} high severity total`}
+            unit="terbuka"
+            note={`${alertCounts.high ?? 0} total tingkat tinggi`}
           />
           <Stat
-            label="Sentinel-2 records"
+            label="Rekaman Sentinel-2"
             value={String(satellite.dataset_count ?? 0)}
-            unit="cached"
+            unit="tersimpan"
             note={
               satellite.latest_acquired_at
-                ? `Latest ${formatShortUtc(satellite.latest_acquired_at)} UTC`
-                : "No acquisition stored"
+                ? `Terbaru ${formatShortUtc(satellite.latest_acquired_at)} UTC`
+                : "Belum ada akuisisi tersimpan"
             }
           />
           <Stat
-            label="Normal-window flag rate"
+            label="Rasio penandaan jendela normal"
             value={
               calibration?.target_false_alarm_rate !== undefined
                 ? String(Math.round(calibration.target_false_alarm_rate * 100))
                 : "10"
             }
             unit="%"
-            note={health.data?.model.version ?? "model unavailable"}
+            note={health.data?.model.version ?? "model tidak tersedia"}
           />
         </div>
       )}
@@ -244,12 +244,12 @@ export default function OverviewPage() {
         <section className="card overflow-hidden xl:col-span-2">
           <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Sea state</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Kondisi laut</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
                 {chartZone === "ALL"
-                  ? "Mean of all zones"
+                  ? "Rata-rata semua zona"
                   : zones.find((zone) => zone.zone_code === chartZone)?.zone_name ?? chartZone}{" "}
-                · wave height (m) and wind (m/s) · UTC
+                · tinggi gelombang (m) dan angin (m/s) · UTC
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -257,9 +257,9 @@ export default function OverviewPage() {
                 className="h-8 rounded-[7px] border border-line bg-transparent px-2 text-[11px] text-ink-soft outline-none focus:border-sea"
                 value={chartZone}
                 onChange={(event) => setChartZone(event.target.value)}
-                aria-label="Chart scope"
+                aria-label="Cakupan grafik"
               >
-                <option value="ALL">All zones, mean</option>
+                <option value="ALL">Semua zona, rata-rata</option>
                 {zones.map((zone) => (
                   <option key={zone.zone_code} value={zone.zone_code}>
                     {zone.zone_name}
@@ -298,16 +298,16 @@ export default function OverviewPage() {
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line px-5 py-3">
             <span className="flex items-center gap-4 text-[10px] text-muted">
               <span className="flex items-center gap-1.5">
-                <span className="h-[2px] w-4 bg-signal" aria-hidden /> Wave height, m
+                <span className="h-[2px] w-4 bg-signal" aria-hidden /> Tinggi gelombang, m
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-[2px] w-4 border-t border-dashed border-sea" aria-hidden /> Wind, m/s
+                <span className="h-[2px] w-4 border-t border-dashed border-sea" aria-hidden /> Angin, m/s
               </span>
             </span>
             <span className="flex items-center gap-3">
               <SourceBadge kind="simulated" />
               <Link href="/ocean" className="inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
-                Ocean console <ArrowUpRight className="h-3 w-3" aria-hidden />
+                Konsol laut <ArrowUpRight className="h-3 w-3" aria-hidden />
               </Link>
             </span>
           </div>
@@ -316,16 +316,16 @@ export default function OverviewPage() {
         <section className="card flex flex-col overflow-hidden">
           <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Zone status</h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">Latest valid reading per site</p>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Status zona</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">Pembacaan valid terbaru per situs</p>
             </div>
-            <span className="font-mono text-[10px] text-muted">{zones.length} zones</span>
+            <span className="font-mono text-[10px] text-muted">{zones.length} zona</span>
           </div>
 
           <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 border-b border-line px-5 py-2 text-[9.5px] text-muted">
-            <span>Zone</span>
-            <span className="text-right">Wave</span>
-            <span className="w-[58px] text-right">Risk</span>
+            <span>Zona</span>
+            <span className="text-right">Gelombang</span>
+            <span className="w-[58px] text-right">Risiko</span>
           </div>
 
           <div className="flex-1 divide-y divide-line">
@@ -360,7 +360,7 @@ export default function OverviewPage() {
                     {risk ? (
                       <RiskBadge level={risk} />
                     ) : (
-                      <span className="text-[9.5px] text-muted">not run</span>
+                      <span className="text-[9.5px] text-muted">belum dijalankan</span>
                     )}
                   </div>
                 </Link>
@@ -370,7 +370,7 @@ export default function OverviewPage() {
 
           <div className="border-t border-line px-5 py-3">
             <Link href="/satellite" className="inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
-              Satellite context <ArrowUpRight className="h-3 w-3" aria-hidden />
+              Konteks satelit <ArrowUpRight className="h-3 w-3" aria-hidden />
             </Link>
           </div>
         </section>
@@ -380,15 +380,15 @@ export default function OverviewPage() {
         <section className="card overflow-hidden xl:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">AI risk screening</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Penyaringan risiko AI</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
-                Isolation Forest on NOAA NDBC data · rubric prototype_rubric_v1
+                Isolation Forest pada data NOAA NDBC · rubrik prototype_rubric_v1
               </p>
             </div>
             <div className="flex items-center gap-3">
               <SourceBadge kind="model" />
               <Link href="/ai" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
-                Workspace
+                Ruang kerja
               </Link>
             </div>
           </div>
@@ -399,7 +399,7 @@ export default function OverviewPage() {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <RiskBadge level={prediction.risk_level} />
                   <span className="text-[9.5px] font-medium text-muted">
-                    latest run · {prediction.zone_code} · {formatShortUtc(prediction.created_at)} UTC
+                    eksekusi terbaru · {prediction.zone_code} · {formatShortUtc(prediction.created_at)} UTC
                   </span>
                 </div>
 
@@ -408,9 +408,9 @@ export default function OverviewPage() {
                     {fixed(prediction.anomaly_score, 2)}
                   </p>
                   <p className="text-right text-[10px] leading-snug text-muted">
-                    anomaly index
+                    indeks anomali
                     <br />
-                    threshold {fixed(prediction.anomaly_threshold, 2)}
+                    ambang {fixed(prediction.anomaly_threshold, 2)}
                   </p>
                 </div>
                 <div className="relative mt-3 h-[5px] rounded-full bg-line">
@@ -429,20 +429,20 @@ export default function OverviewPage() {
                 </div>
                 <div className="mt-1 flex justify-between font-mono text-[9px] text-muted">
                   <span>0.00</span>
-                  <span>calibrated threshold</span>
+                  <span>ambang terkalibrasi</span>
                   <span>1.00</span>
                 </div>
 
                 <dl className="mt-5 grid grid-cols-2 gap-x-4 border-t border-line pt-3">
                   <div>
-                    <dt className="text-[9.5px] text-muted">Rubric score</dt>
+                    <dt className="text-[9.5px] text-muted">Skor rubrik</dt>
                     <dd className="metric mt-0.5 text-[13px] font-medium">
                       {fixed(prediction.risk_score, 1)}
                       <span className="text-[9px] font-normal text-muted"> /100</span>
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-[9.5px] text-muted">Observations</dt>
+                    <dt className="text-[9.5px] text-muted">Observasi</dt>
                     <dd className="metric mt-0.5 text-[13px] font-medium">
                       {prediction.input_observation_count}
                     </dd>
@@ -450,13 +450,13 @@ export default function OverviewPage() {
                 </dl>
 
                 <p className="mt-4 border-l-2 border-l-signal pl-3 text-[10.5px] leading-relaxed text-muted">
-                  Prototype advisory only. Verify with BMKG/BPBD before operational action.
+                  Hanya saran prototipe. Verifikasi dengan BMKG/BPBD sebelum tindakan operasional.
                 </p>
               </div>
 
               <div>
                 <p className="text-[9.5px] font-semibold text-muted">
-                  Contributing factors
+                  Faktor kontributor
                 </p>
                 <ul className="mt-2 divide-y divide-line">
                   {prediction.contributing_factors.slice(0, 3).map((factor) => (
@@ -483,25 +483,25 @@ export default function OverviewPage() {
                     </li>
                   ))}
                   {prediction.contributing_factors.length === 0 ? (
-                    <li className="py-2 text-[11px] text-muted">No factor exceeded the reporting band.</li>
+                    <li className="py-2 text-[11px] text-muted">Tidak ada faktor yang melewati ambang pelaporan.</li>
                   ) : null}
                 </ul>
                 <p className="mt-3 line-clamp-3 text-[10.5px] leading-relaxed text-muted">
                   {prediction.explanation}
                 </p>
                 <Link href="/ai" className="mt-3 inline-flex items-center gap-1 text-[10.5px] font-medium text-ink">
-                  Full analysis <ArrowUpRight className="h-3 w-3" aria-hidden />
+                  Analisis lengkap <ArrowUpRight className="h-3 w-3" aria-hidden />
                 </Link>
               </div>
             </div>
           ) : (
             <div className="p-5">
               <EmptyState
-                title="No analysis has been run"
-                description="Screen the latest window to see the anomaly score, rubric and contributing factors."
+                title="Belum ada analisis"
+                description="Saring jendela terbaru untuk melihat skor anomali, rubrik, dan faktor kontributor."
                 action={
                   <Link href="/ai" className="btn btn-primary btn-sm">
-                    Run analysis
+                    Jalankan analisis
                   </Link>
                 }
               />
@@ -512,13 +512,13 @@ export default function OverviewPage() {
         <section className="card flex flex-col overflow-hidden">
           <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Alert queue</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Antrean peringatan</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
-                {alertCounts.open ?? 0} open · {alertCounts.acknowledged ?? 0} acknowledged
+                {alertCounts.open ?? 0} terbuka · {alertCounts.acknowledged ?? 0} diakui
               </p>
             </div>
             <Link href="/alerts" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
-              All
+              Semua
             </Link>
           </div>
 
@@ -541,7 +541,7 @@ export default function OverviewPage() {
                       </div>
                       <p className="mt-1 line-clamp-1 text-[11px] font-medium">{alert.title}</p>
                       <p className="mt-0.5 text-[9.5px] text-muted">
-                        {alert.zone_code} · {alert.status}
+                        {alert.zone_code} · {enumLabel(alert.status)}
                       </p>
                     </Link>
                   </li>
@@ -550,17 +550,17 @@ export default function OverviewPage() {
             ) : (
               <div className="p-5">
                 <p className="flex items-center gap-1.5 text-[11px] font-medium text-ink">
-                  <ShieldCheck className="h-3.5 w-3.5 text-sea" aria-hidden /> No prototype alerts
+                  <ShieldCheck className="h-3.5 w-3.5 text-sea" aria-hidden /> Tidak ada peringatan prototipe
                 </p>
                 <p className="mt-1 text-[10.5px] leading-relaxed text-muted">
-                  Alerts open only when the rubric reaches moderate or high.
+                  Peringatan terbuka hanya saat rubrik mencapai sedang atau tinggi.
                 </p>
               </div>
             )}
           </div>
 
           <div className="border-t border-line px-5 py-2.5 text-[9.5px] text-muted">
-            Prototype advisories, not official warnings.
+            Saran prototipe, bukan peringatan resmi.
           </div>
         </section>
       </div>
@@ -569,11 +569,11 @@ export default function OverviewPage() {
         <section className="card overflow-hidden">
           <div className="flex items-baseline justify-between border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Source freshness</h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">Last observed and received, from the database</p>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Kesegaran sumber</h2>
+              <p className="mt-0.5 text-[10.5px] text-muted">Terakhir teramati dan diterima, dari database</p>
             </div>
             <Link href="/sources" className="text-[10.5px] font-medium text-ink underline underline-offset-4">
-              Details
+              Detail
             </Link>
           </div>
           <div className="divide-y divide-line">
@@ -597,7 +597,7 @@ export default function OverviewPage() {
                     <p className="truncate text-[11px] font-medium">
                       {String(source.metadata?.label ?? source.source_name)}
                     </p>
-                    <p className="text-[9px] text-muted">{source.source_type}</p>
+                    <p className="text-[9px] text-muted">{enumLabel(source.source_type)}</p>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-4">
@@ -624,19 +624,19 @@ export default function OverviewPage() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Simulator</h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">Synthetic telemetry generator</p>
+              <p className="mt-0.5 text-[10.5px] text-muted">Sumber telemetri buoy</p>
             </div>
             <StatusPill tone={overview.data?.simulator.running ? "ok" : "neutral"}>
-              {overview.data?.simulator.running ? "Running" : "Idle"}
+              {overview.data?.simulator.running ? "Berjalan" : "Menganggur"}
             </StatusPill>
           </div>
 
           <dl className="mt-4 grid grid-cols-3 divide-x divide-line">
             {[
               ["Interval", `${overview.data?.simulator.interval_seconds ?? 60}s`],
-              ["Generated", String(overview.data?.simulator.observations_generated ?? 0)],
+              ["Dihasilkan", String(overview.data?.simulator.observations_generated ?? 0)],
               [
-                "Last tick",
+                "Tick terakhir",
                 overview.data?.simulator.last_tick_at
                   ? formatShortUtc(overview.data.simulator.last_tick_at)
                   : "—",
@@ -650,15 +650,15 @@ export default function OverviewPage() {
           </dl>
 
           <p className="mt-4 text-[10.5px] leading-relaxed text-muted">
-            Trigger a storm replay to exercise ingestion, validation, analytics and the alert workflow.
-            Generated values are labelled simulated.
+            Picu pemutaran ulang badai untuk menguji penerimaan data, validasi, analitik, dan alur
+            peringatan. Nilai yang dihasilkan dilengkapi status sumber dan tercatat pada jejak data.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link href="/ocean#simulator" className="btn btn-dark btn-sm">
-              <Radar className="h-3.5 w-3.5" aria-hidden /> Open simulator
+              <Radar className="h-3.5 w-3.5" aria-hidden /> Buka simulator
             </Link>
             <Link href="/alerts" className="btn btn-ghost btn-sm">
-              <BellRing className="h-3.5 w-3.5" aria-hidden /> Alerts
+              <BellRing className="h-3.5 w-3.5" aria-hidden /> Peringatan
             </Link>
           </div>
         </section>
@@ -666,12 +666,12 @@ export default function OverviewPage() {
 
       <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-3 text-[9.5px] text-muted">
         <span className="flex items-center gap-1.5">
-          <Database className="h-3 w-3" aria-hidden /> All values from the API
+          <Database className="h-3 w-3" aria-hidden /> Semua nilai dari API
         </span>
         <SourceBadge kind="simulated" />
         <SourceBadge kind="satellite" />
         <SourceBadge kind="model" />
-        <span className="ml-auto font-mono">refreshed {formatUtc(overview.data?.generated_at)}</span>
+        <span className="ml-auto font-mono">diperbarui {formatUtc(overview.data?.generated_at)}</span>
       </div>
     </>
   );

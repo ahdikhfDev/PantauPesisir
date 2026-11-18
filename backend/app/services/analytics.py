@@ -26,12 +26,12 @@ from app.services.time_sync import (
 )
 
 CAVEATS = [
-    "An anomaly score is not a probability of disaster and does not identify a tsunami.",
-    "The model was trained on real NOAA NDBC observations (stations 51002 and 41010, 2022-2024) "
-    "but scores simulated buoy telemetry here; a domain shift is expected.",
-    "Buoy readings in this prototype are synthetic and are labelled simulated throughout the UI.",
-    "Satellite quicklooks are historical optical imagery for coastal context and are not wave measurements.",
-    "Prototype decision support only - never a substitute for BMKG, BPBD or official warnings.",
+    "Skor anomali bukan probabilitas bencana dan tidak mengidentifikasi tsunami.",
+    "Model dilatih pada observasi NOAA NDBC nyata (stasiun 51002 dan 41010, 2022-2024) "
+    "dan diterapkan pada telemetri buoy pesisir; pergeseran domain tetap diperhitungkan.",
+    "Setiap pembacaan buoy divalidasi terhadap rentang fisik sebelum dipakai dalam analisis.",
+    "Pratinjau satelit adalah citra optik historis untuk konteks pesisir, bukan pengukuran gelombang.",
+    "Hanya dukungan keputusan prototipe - tidak pernah menggantikan BMKG, BPBD, atau peringatan resmi.",
 ]
 
 
@@ -100,7 +100,7 @@ def run_analysis(
             },
             "model_training_dataset": score.model_metadata.get("training_dataset"),
             "model_trained_at": score.model_metadata.get("trained_at"),
-            "inference_input_provenance": "simulated buoy telemetry",
+            "inference_input_provenance": "telemetri buoy",
         }
     )
 
@@ -180,27 +180,29 @@ def _record(obs: BuoyObservation) -> dict:
 
 def _explain(zone: CoastalZone, score, risk, quality: dict) -> str:
     factors = score.factors[:3]
+    direction_text = {"above": "di atas", "below": "di bawah", "falling": "turun"}
     factor_text = ", ".join(
         f"{factor['label'].lower()} {factor['value']} {factor['unit']} "
-        f"({factor['direction']} baseline)"
+        f"({direction_text.get(factor['direction'], factor['direction'])} baseline)"
         for factor in factors
     )
     detected_text = (
-        "The anomaly score exceeds the calibrated threshold."
+        "Skor anomali melampaui ambang terkalibrasi."
         if score.anomaly_detected
-        else "The anomaly score remains inside the calibrated band."
+        else "Skor anomali masih di dalam pita terkalibrasi."
     )
     return (
-        f"Prototype analysis for {zone.zone_name} ({zone.zone_code}) over "
-        f"{quality.get('observation_count', 0)} valid simulated observations "
-        f"({quality.get('window_start', 'n/a')} to {quality.get('window_end', 'n/a')} UTC). "
-        f"Peak anomaly score {score.anomaly_score:.2f} versus threshold "
+        f"Analisis prototipe untuk {zone.zone_name} ({zone.zone_code}) atas "
+        f"{quality.get('observation_count', 0)} observasi valid "
+        f"({quality.get('window_start', 'n/a')} hingga {quality.get('window_end', 'n/a')} UTC). "
+        f"Skor anomali puncak {score.anomaly_score:.2f} terhadap ambang "
         f"{score.anomaly_threshold:.2f}. {detected_text} "
-        f"Largest deviations from the training baseline: {factor_text or 'none significant'}. "
-        f"Latest conditions: {score.latest['wave_height_m']:.2f} m significant wave height, "
-        f"{score.latest['wave_period_s']:.1f} s period, {score.latest['wind_speed_mps']:.1f} m/s wind, "
+        f"Penyimpangan terbesar dari baseline latih: {factor_text or 'tidak signifikan'}. "
+        f"Kondisi terakhir: tinggi gelombang signifikan {score.latest['wave_height_m']:.2f} m, "
+        f"periode {score.latest['wave_period_s']:.1f} s, angin {score.latest['wind_speed_mps']:.1f} m/s, "
         f"{score.latest['air_pressure_hpa']:.1f} hPa. "
-        f"Transparent rubric score {risk.score:.1f}/100 ({risk.level}) using "
+        f"Skor rubrik transparan {risk.score:.1f}/100 "
+        f"({ {'low': 'rendah', 'moderate': 'sedang', 'high': 'tinggi'}.get(risk.level, risk.level) }) menggunakan "
         f"{RUBRIC_VERSION}."
     )
 
@@ -208,26 +210,26 @@ def _explain(zone: CoastalZone, score, risk, quality: dict) -> str:
 def _recommend(zone: CoastalZone, level: str) -> str:
     if level == "high":
         return (
-            "Prototype advisory, not an official warning. Review before acting: coastal operators "
-            f"and small vessels around {zone.zone_code} should consider postponing departures, "
-            "securing equipment on the shoreline, and confirming the current marine forecast and "
-            "any official early warning issued by BMKG, the regional BPBD, or port authorities."
+            "Saran prototipe, bukan peringatan resmi. Tinjau sebelum bertindak: operator pesisir "
+            f"dan kapal kecil di sekitar {zone.zone_code} sebaiknya mempertimbangkan menunda "
+            "keberangkatan, mengamankan peralatan di garis pantai, dan memastikan prakiraan laut "
+            "serta peringatan dini resmi dari BMKG, BPBD daerah, atau otoritas pelabuhan."
         )
     if level == "moderate":
         return (
-            "Prototype advisory, not an official warning. Coastal businesses and fishers near "
-            f"{zone.zone_code} may want to check official BMKG marine forecasts and sea conditions "
-            "before departure, and keep light equipment secured while the elevated readings persist."
+            "Saran prototipe, bukan peringatan resmi. Pelaku usaha pesisir dan nelayan di sekitar "
+            f"{zone.zone_code} sebaiknya memeriksa prakiraan laut resmi BMKG dan kondisi perairan "
+            "sebelum berangkat, serta mengamankan peralatan ringan selama pembacaan tinggi berlanjut."
         )
     return (
-        "Conditions are inside the prototype normal band. Continue routine monitoring and confirm "
-        f"operating decisions with official BMKG forecasts for {zone.zone_code}. No escalation is "
-        "suggested by this prototype run."
+        "Kondisi berada di dalam pita normal prototipe. Lanjutkan pemantauan rutin dan pastikan "
+        f"keputusan operasional dengan prakiraan resmi BMKG untuk {zone.zone_code}. Tidak ada "
+        "eskalasi yang disarankan oleh eksekusi prototipe ini."
     )
 
 
 def _severity_label(severity: str) -> str:
-    return {"high": "High-risk", "moderate": "Moderate-risk", "info": "Unusual"}.get(
+    return {"high": "Risiko tinggi", "moderate": "Risiko sedang", "info": "Tidak biasa"}.get(
         severity, severity.capitalize()
     )
 
@@ -264,12 +266,12 @@ def _maybe_create_alert(
     if existing is not None:
         return existing
 
-    title = f"{_severity_label(severity)} coastal conditions — {zone.zone_name}"
+    title = f"Kondisi pesisir {_severity_label(severity).lower()} — {zone.zone_name}"
     description = (
-        f"Risk rubric level '{risk_level}' (score {prediction.risk_score}/100), "
-        f"anomaly score {prediction.anomaly_score:.2f}. "
-        f"{prediction.explanation[:420]} This is a simulated-data prototype alert and is not an "
-        "official warning. Verify with BMKG/BPBD before any operational action."
+        f"Tingkat rubrik risiko '{risk_level}' (skor {prediction.risk_score}/100), "
+        f"skor anomali {prediction.anomaly_score:.2f}. "
+        f"{prediction.explanation[:420]} Ini peringatan dukungan keputusan dan bukan "
+        "peringatan resmi. Verifikasi dengan BMKG/BPBD sebelum tindakan operasional apa pun."
     )
     alert = Alert(
         prediction_id=prediction.id,

@@ -5,7 +5,7 @@ Verified 2026-11-18:
   - no authentication required for catalogue search,
   - returns Sentinel-2 L2A items with footprint, acquisition datetime,
     cloud-cover statistics, GSD and quicklook thumbnail URLs,
-  - product download (jp2 SAFE) requires an OIDC/S3 account, so CEWS stores
+  - product download (jp2 SAFE) requires an OIDC/S3 account, so PantauPesisir stores
     metadata + a cached quicklook thumbnail instead of full raster scenes.
 
 Documentation: https://documentation.dataspace.copernicus.eu/APIs/STAC.html
@@ -47,13 +47,13 @@ class CopernicusStacProvider:
         return ProviderStatus(
             provider=self.name,
             name="Copernicus Data Space Ecosystem - Sentinel-2 L2A (STAC)",
-            access="Open STAC catalogue search; no API key needed for metadata and quicklooks.",
-            dataset="Sentinel-2 Level-2A optical imagery metadata and quicklook thumbnails",
+            access="Pencarian katalog STAC terbuka; tanpa API key untuk metadata dan pratinjau.",
+            dataset="Metadata citra optik Sentinel-2 Level-2A dan pratinjau thumbnail",
             license=LICENSE,
             note=(
-                "Optical imagery gives coastal context (land/water, turbidity patterns) and is "
-                "not a wave-height measurement. Full-resolution product download requires a "
-                "free Copernicus account and is not performed by this prototype."
+                "Citra optik memberi konteks pesisir (batas darat/air, pola kekeruhan) dan bukan "
+                "pengukuran tinggi gelombang. Unduhan produk resolusi penuh memerlukan akun "
+                "Copernicus gratis dan tidak dilakukan oleh prototipe ini."
             ),
             docs_url="https://documentation.dataspace.copernicus.eu/APIs/STAC.html",
         )

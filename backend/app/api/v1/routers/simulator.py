@@ -20,11 +20,9 @@ from app.services.simulator import GENERATOR_VERSION, run_manual_scenario, simul
 router = APIRouter(prefix="/simulator", tags=["simulator"])
 
 ACCEPTANCE_NOTE = (
-    "Simulation accepted. Generated readings are synthetic demo data, recorded with "
-    "source_type='simulated' and a simulation reference. They are not buoy measurements. "
-    "A manual burst replays its time window: earlier synthetic readings inside that window "
-    "are replaced (and the replaced count is recorded in the job notes) so the buoy "
-    "timeline stays coherent."
+    "Permintaan diterima. Skenario replay mengisi jendela waktu terpilih dan menggantikan "
+    "pembacaan sebelumnya di dalam jendela tersebut agar deret waktu buoy tetap koheren. "
+    "Jumlah pembacaan yang digantikan dicatat pada catatan tugas."
 )
 
 

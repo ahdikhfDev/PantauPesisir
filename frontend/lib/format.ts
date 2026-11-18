@@ -6,7 +6,7 @@ export function formatUtc(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  const formatted = new Intl.DateTimeFormat("en-GB", {
+  const formatted = new Intl.DateTimeFormat("id-ID", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -22,7 +22,7 @@ export function formatShortUtc(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("id-ID", {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -33,11 +33,11 @@ export function formatShortUtc(value: string | null | undefined): string {
 }
 
 export function formatAge(seconds: number | null | undefined): string {
-  if (seconds === null || seconds === undefined) return "unknown";
-  if (seconds < 60) return `${Math.round(seconds)}s ago`;
-  if (seconds < 3600) return `${Math.round(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${(seconds / 3600).toFixed(1)}h ago`;
-  return `${(seconds / 86400).toFixed(1)}d ago`;
+  if (seconds === null || seconds === undefined) return "tidak diketahui";
+  if (seconds < 60) return `${Math.round(seconds)} dtk lalu`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)} mnt lalu`;
+  if (seconds < 86400) return `${(seconds / 3600).toFixed(1)} jam lalu`;
+  return `${(seconds / 86400).toFixed(1)} hari lalu`;
 }
 
 export function compass(degrees: number): string {
@@ -57,10 +57,54 @@ export function percent(value: number | null | undefined): string {
 }
 
 export const riskCopy: Record<string, { label: string; tone: "low" | "moderate" | "high" }> = {
-  low: { label: "Low", tone: "low" },
-  moderate: { label: "Moderate", tone: "moderate" },
-  high: { label: "High", tone: "high" },
+  low: { label: "Rendah", tone: "low" },
+  moderate: { label: "Sedang", tone: "moderate" },
+  high: { label: "Tinggi", tone: "high" },
 };
+
+const ENUM_LABELS: Record<string, string> = {
+  open: "Terbuka",
+  acknowledged: "Diakui",
+  resolved: "Selesai",
+  valid: "Valid",
+  invalid: "Tidak valid",
+  simulated: "Telemetri buoy",
+  satellite: "Satelit",
+  observed: "Teramati",
+  historical: "Historis",
+  historical_dataset: "Dataset historis",
+  model: "Model",
+  completed: "Selesai",
+  completed_with_fallback: "Selesai (cadangan)",
+  running: "Berjalan",
+  queued: "Antrean",
+  pending: "Menunggu",
+  failed: "Gagal",
+  metadata_only: "Hanya metadata",
+  thumbnail_cached: "Pratinjau tersimpan",
+  normal: "Normal",
+  warning: "Waspada",
+  extreme: "Ekstrem",
+  storm: "Badai",
+  tsunami_watch: "Siaga tsunami",
+  ok: "Normal",
+  online: "Daring",
+  offline: "Luring",
+  degraded: "Menurun",
+  unavailable: "Tidak tersedia",
+  stale_cache: "Cache usang",
+  not_synced: "Belum tersinkron",
+  unknown: "Tidak diketahui",
+  idle: "Menganggur",
+  active: "Aktif",
+  archived: "Diarsipkan",
+};
+
+/** Translate a backend enum value for display without touching the raw value. */
+export function enumLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  return ENUM_LABELS[value.toLowerCase()] ?? value;
+}
 
 export function statusTone(value: string): "ok" | "warn" | "bad" | "neutral" {
   const normalised = value.toLowerCase();

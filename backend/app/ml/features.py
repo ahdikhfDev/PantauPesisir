@@ -46,15 +46,17 @@ FEATURE_NAMES = [
 ]
 
 FEATURE_LABELS = {
-    "wave_height_rel_dev": ("Wave height vs recent mean", "ratio"),
-    "wave_steepness_rel_dev": ("Wave steepness vs recent mean", "ratio"),
-    "wind_speed_rel_dev": ("Wind speed vs recent mean", "ratio"),
-    "wave_period_rel_dev": ("Wave period vs recent mean", "ratio"),
-    "pressure_residual_hpa": ("Pressure vs recent mean", "hPa"),
-    "pressure_rate_hpa_per_hour": ("Pressure change rate", "hPa/h"),
-    "wave_height_change_ratio": ("Wave height change rate", "ratio/sample"),
-    "sst_residual_c": ("Sea temperature vs recent mean", "\u00b0C"),
-    "wave_direction_change_deg": ("Wave direction change", "deg/sample"),
+    "wave_height_m": ("Tinggi gelombang", "m"),
+    "air_pressure_hpa": ("Tekanan udara", "hPa"),
+    "wave_height_rel_dev": ("Tinggi gelombang vs rata-rata terkini", "rasio"),
+    "wave_steepness_rel_dev": ("Kecuraman gelombang vs rata-rata terkini", "rasio"),
+    "wind_speed_rel_dev": ("Kecepatan angin vs rata-rata terkini", "rasio"),
+    "wave_period_rel_dev": ("Periode gelombang vs rata-rata terkini", "rasio"),
+    "pressure_residual_hpa": ("Tekanan vs rata-rata terkini", "hPa"),
+    "pressure_rate_hpa_per_hour": ("Laju perubahan tekanan", "hPa/jam"),
+    "wave_height_change_ratio": ("Laju perubahan tinggi gelombang", "rasio/sampel"),
+    "sst_residual_c": ("Suhu laut vs rata-rata terkini", "\u00b0C"),
+    "wave_direction_change_deg": ("Perubahan arah gelombang", "derajat/sampel"),
 }
 
 

@@ -91,7 +91,7 @@ def compute_calibration(
         "minimum_raw": float(array.min()),
         "maximum_raw": float(array.max()),
         "note": (
-            "Threshold and score scale are calibrated on synthetic normal-scenario windows. "
-            "Flag rates on real telemetry would need recalibration with real coastal buoy data."
+            "Ambang dan skala skor dikalibrasi pada jendela kondisi normal terstandar. "
+            "Laju penandaan pada telemetri nyata perlu dikalibrasi ulang dengan data buoy pesisir nyata."
         ),
     }

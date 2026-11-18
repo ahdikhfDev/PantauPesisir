@@ -47,7 +47,7 @@ export function useApi<T>(path: string | null, pollMs?: number): ApiState<T> {
               ? err.detail
               : err instanceof Error
                 ? err.message
-                : "Unable to reach the CEWS API";
+                : "Tidak dapat menjangkau API PantauPesisir";
           setError(message);
         }
       } finally {

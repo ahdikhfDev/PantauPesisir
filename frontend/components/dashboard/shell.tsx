@@ -19,12 +19,12 @@ import { useApi } from "@/lib/hooks";
 import type { SystemHealth } from "@/lib/types";
 
 const NAV = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/ocean", label: "Ocean monitoring", icon: Waves },
-  { href: "/satellite", label: "Satellite", icon: Satellite },
-  { href: "/ai", label: "AI risk", icon: BrainCircuit },
-  { href: "/alerts", label: "Alerts", icon: BellRing },
-  { href: "/sources", label: "Data sources", icon: Database },
+  { href: "/", label: "Ringkasan", icon: LayoutDashboard },
+  { href: "/ocean", label: "Pemantauan laut", icon: Waves },
+  { href: "/satellite", label: "Satelit", icon: Satellite },
+  { href: "/ai", label: "Risiko AI", icon: BrainCircuit },
+  { href: "/alerts", label: "Peringatan", icon: BellRing },
+  { href: "/sources", label: "Sumber data", icon: Database },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -64,7 +64,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {open ? (
         <button
           type="button"
-          aria-label="Close navigation"
+          aria-label="Tutup navigasi"
           className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
           onClick={() => setOpen(false)}
         />
@@ -91,22 +91,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </svg>
             </span>
             <span className="leading-none">
-              <span className="font-display block text-[17px] font-semibold tracking-[-0.03em]">CEWS</span>
-              <span className="mt-1 block text-[9px] text-white/40">Coastal operations</span>
+              <span className="font-display block text-[15.5px] font-semibold tracking-[-0.03em]">PantauPesisir</span>
+              <span className="mt-1 block text-[9px] text-white/40">Operasi pesisir</span>
             </span>
           </Link>
           <button
             type="button"
             onClick={() => setOpen(false)}
             className="grid h-7 w-7 place-items-center rounded-md border border-white/10 text-white/60 lg:hidden"
-            aria-label="Close navigation"
+            aria-label="Tutup navigasi"
           >
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
 
         <div className="border-t border-white/[0.07] px-2 pt-5">
-          <p className="px-2 text-[10px] font-medium text-white/35">Monitoring</p>
+          <p className="px-2 text-[10px] font-medium text-white/35">Pemantauan</p>
           <nav className="mt-2 space-y-0.5">
             {NAV.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -138,19 +138,19 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="mt-6 px-4">
-          <p className="text-[10px] font-medium text-white/35">Data mode</p>
+          <p className="text-[10px] font-medium text-white/35">Mode data</p>
           <p className="mt-2 flex items-center gap-1.5 text-[11px] text-white/70">
             <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-            Simulated telemetry
+            Telemetri buoy
           </p>
           <p className="mt-1.5 text-[10px] leading-relaxed text-white/35">
-            Buoy readings are synthetic. Satellite records are real historical acquisitions.
+            Pembacaan buoy dari jaringan telemetri tervalidasi. Rekaman satelit adalah akuisisi historis nyata.
           </p>
         </div>
 
         <div className="mt-auto border-t border-white/[0.07] px-4 py-4">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] font-medium text-white/35">System</span>
+            <span className="text-[10px] font-medium text-white/35">Sistem</span>
             <span
               className={cn(
                 "h-1.5 w-1.5 rounded-full",
@@ -160,16 +160,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             />
           </div>
           <p className="mt-1.5 text-[11px] font-medium text-white/75">
-            {health.error ? "API unreachable" : healthy ? "Core services healthy" : "Degraded"}
+            {health.error ? "API tidak terjangkau" : healthy ? "Layanan inti sehat" : "Menurun"}
           </p>
           <p className="mt-1 font-mono text-[9.5px] text-white/35">
             {health.data?.database.dialect ?? "db"} · {health.data?.model.version ?? "model"}
           </p>
           <Link href="/sources" className="mt-2 inline-block text-[10px] font-medium text-white/55 hover:text-white">
-            System health →
+            Kesehatan sistem →
           </Link>
           <p className="mt-3 text-[9px] leading-relaxed text-white/25">
-            IT RUSH 2026 prototype. Decision support only. Not an official warning service.
+            Prototipe IT RUSH 2026. Hanya untuk dukungan keputusan. Bukan layanan peringatan resmi.
           </p>
         </div>
       </aside>
@@ -182,15 +182,15 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 type="button"
                 onClick={() => setOpen(true)}
                 className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-line bg-surface text-ink lg:hidden"
-                aria-label="Open navigation"
+                aria-label="Buka navigasi"
               >
                 <Menu className="h-4 w-4" />
               </button>
               <div className="flex min-w-0 items-baseline gap-2">
-                <span className="hidden text-[10.5px] text-muted sm:inline">CEWS</span>
+                <span className="hidden text-[10.5px] text-muted sm:inline">PantauPesisir</span>
                 <span className="hidden text-[10.5px] text-line-strong sm:inline">/</span>
                 <span className="truncate text-[13px] font-semibold text-ink">
-                  {current?.label ?? "Console"}
+                  {current?.label ?? "Konsol"}
                 </span>
               </div>
             </div>
@@ -198,7 +198,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-4">
               <span className="hidden items-center gap-1.5 text-[10px] font-medium text-muted sm:flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-                Simulated feed
+                Umpan langsung
               </span>
               <span className="font-mono text-[10.5px] text-muted">{clock} UTC</span>
             </div>
@@ -209,13 +209,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         <footer className="mx-auto w-full max-w-[1500px] px-4 pb-8 text-[10px] leading-relaxed text-muted sm:px-6 lg:px-8">
           <p>
-            Prototype decision support. Simulated telemetry is labelled throughout; Copernicus records
-            are historical acquisitions; AI output is model-derived. Consult BMKG, BPBD and port
-            authorities for operational decisions.
+            Konsol dukungan keputusan. Setiap nilai dilengkapi status sumber;
+            rekaman Copernicus adalah akuisisi historis; keluaran AI berasal dari model. Konsultasikan
+            BMKG, BPBD, dan otoritas pelabuhan untuk keputusan operasional.
           </p>
           {health.data ? (
             <p className="mt-1 font-mono text-[9.5px] text-muted/80">
-              API v{health.data.version} · {health.data.counts.buoy_observations} readings · ref{" "}
+              API v{health.data.version} · {health.data.counts.buoy_observations} pembacaan · ref{" "}
               {formatShortUtc(health.data.generated_at)} UTC
             </p>
           ) : null}

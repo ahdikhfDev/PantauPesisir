@@ -1,4 +1,4 @@
-"""Train the CEWS anomaly detector on real NOAA NDBC observations.
+"""Train the PantauPesisir anomaly detector on real NOAA NDBC observations.
 
 Usage:
     python backend/scripts/train_model.py --version cews-iforest-v1
@@ -46,7 +46,7 @@ ARTIFACT_DIR = BACKEND_DIR / "ml" / "artifacts"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train the CEWS Isolation Forest model")
+    parser = argparse.ArgumentParser(description="Train the PantauPesisir Isolation Forest model")
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     parser.add_argument("--version", default="cews-iforest-v1")
     parser.add_argument("--contamination", type=float, default=0.01)
@@ -160,13 +160,13 @@ def main() -> int:
         "threshold_calibration": calibration,
         "proxy_evaluation": {
             "method": (
-                "Unsupervised model: no hazard labels exist. Discrimination is checked on the real "
-                "validation slice at a 1% reference threshold: do anomaly flags concentrate in the "
-                "top 5% of rapid pressure changes and rapid one-step wave-height changes?"
+                "Model tanpa pengawasan: tidak ada label bahaya. Daya diskriminasi diuji pada irisan "
+                "validasi nyata dengan ambang referensi 1%: apakah penanda anomali terkonsentrasi "
+                "pada 5% teratas perubahan tekanan cepat dan perubahan tinggi gelombang satu langkah?"
             ),
             "reference_threshold_raw": reference_threshold,
             "reference_threshold_note": (
-                "Not the deployed threshold; the deployed threshold is scenario-calibrated below."
+                "Bukan ambang yang dipakai; ambang terpasang dikalibrasi skenario di bawah ini."
             ),
             "recall_top5pct_pressure_change": recall_pressure,
             "recall_top5pct_wave_height_change": recall_wave_change,
@@ -203,10 +203,10 @@ def main() -> int:
             "model_version": args.version,
             "algorithm": "sklearn.ensemble.IsolationForest",
             "trained_at": trained_at,
-            "training_dataset": "NOAA NDBC historical stdmet (real observations, 2022-2024)",
+            "training_dataset": "NOAA NDBC stdmet historis (observasi nyata, 2022-2024)",
             "dataset_provenance": json.loads(provenance_text),
-            "purpose": "Prototype anomaly screening of coastal buoy telemetry; not a tsunami detector.",
-            "intended_use": "Demonstration decision support for coastal monitoring operators.",
+            "purpose": "Penyaringan anomali prototipe untuk telemetri buoy pesisir; bukan detektor tsunami.",
+            "intended_use": "Dukungan keputusan demonstrasi untuk operator pemantauan pesisir.",
             "random_seed": args.random_state,
         },
         "metrics": metrics,
@@ -266,7 +266,7 @@ def main() -> int:
                     source_name=TRAINING_SOURCE_NAME,
                     source_type="historical_dataset",
                     metadata={
-                        "label": "NOAA NDBC historical stdmet (training data)",
+                        "label": "NOAA NDBC stdmet historis (data latih)",
                         "access": "Public historical archive, no authentication",
                         "note": "Real historical observations used for offline model training only.",
                     },

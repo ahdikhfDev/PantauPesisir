@@ -30,33 +30,33 @@ logger = logging.getLogger(__name__)
 ZONE_DEFINITIONS = [
     {
         "zone_code": "JKT-BAY",
-        "zone_name": "Jakarta Bay",
-        "description": "Prototype monitoring area for Jakarta Bay, covering the inner bay and "
-        "the approach to Tanjung Priok. Approximate polygon drawn for demonstration.",
+        "zone_name": "Teluk Jakarta",
+        "description": "Area pemantauan prototipe untuk Teluk Jakarta, mencakup bagian dalam teluk dan "
+        "pendekatan menuju Tanjung Priok. Poligon perkiraan untuk demonstrasi.",
         "bounds": (106.72, -6.15, 107.00, -5.88),
         "buoy": {"buoy_code": "BUOY-001", "longitude": 106.850, "latitude": -6.105},
     },
     {
         "zone_code": "SMR-UTC",
-        "zone_name": "Semarang Coast",
-        "description": "Prototype monitoring area off Semarang, Central Java, including the "
-        "harbour approach and low-lying coastal districts. Approximate polygon.",
+        "zone_name": "Pantai Semarang",
+        "description": "Area pemantauan prototipe di lepas Semarang, Jawa Tengah, termasuk pendekatan "
+        "pelabuhan dan kawasan pesisir dataran rendah. Poligon perkiraan.",
         "bounds": (110.30, -6.99, 110.55, -6.90),
         "buoy": {"buoy_code": "BUOY-002", "longitude": 110.420, "latitude": -6.945},
     },
     {
         "zone_code": "MKS-STR",
-        "zone_name": "Makassar Strait",
-        "description": "Prototype monitoring area in the southern Makassar Strait, a busy "
-        "inter-island shipping corridor. Approximate polygon.",
+        "zone_name": "Selat Makassar",
+        "description": "Area pemantauan prototipe di selatan Selat Makassar, koridor pelayaran "
+        "antarpulau yang sibuk. Poligon perkiraan.",
         "bounds": (117.30, -3.40, 117.65, -3.05),
         "buoy": {"buoy_code": "BUOY-003", "longitude": 117.480, "latitude": -3.220},
     },
 ]
 
 BOUNDARY_NOTE = (
-    "Approximate prototype monitoring polygon for the CEWS demonstration. "
-    "It is not an official administrative boundary or a BMKG forecast zone."
+    "Poligon pemantauan prototipe yang bersifat perkiraan untuk demonstrasi PantauPesisir. "
+    "Ini bukan batas administratif resmi atau zona prakiraan BMKG."
 )
 
 
@@ -184,9 +184,9 @@ def _ensure_reference_rows(db) -> None:
         source_name=TRAINING_SOURCE_NAME,
         source_type="historical_dataset",
         metadata={
-            "label": "NOAA NDBC historical stdmet (model training data)",
-            "access": "Public historical archive, no authentication",
-            "note": "Real historical observations used for offline model training only.",
+            "label": "NOAA NDBC stdmet historis (data latih model)",
+            "access": "Arsip historis publik, tanpa autentikasi",
+            "note": "Observasi historis nyata, hanya dipakai untuk pelatihan model secara offline.",
             "stations": ["51002", "41010"],
             "years": "2022-2024",
             "license": "Public domain (U.S. federal government work)",
@@ -198,10 +198,10 @@ def _ensure_reference_rows(db) -> None:
         source_name=SATELLITE_SOURCE_NAME,
         source_type="satellite",
         metadata={
-            "label": "Copernicus Sentinel-2 L2A (STAC metadata + quicklook)",
+            "label": "Copernicus Sentinel-2 L2A (metadata STAC + pratinjau)",
             "provider": "copernicus-stac",
-            "access": "Unauthenticated STAC search; quicklook download",
-            "note": "Optical imagery is contextual and is not a wave-height observation.",
+            "access": "Pencarian STAC tanpa autentikasi; unduhan pratinjau",
+            "note": "Citra optik bersifat kontekstual dan bukan pengukuran tinggi gelombang.",
         },
     )
     if satellite.status == "unknown":
@@ -219,14 +219,14 @@ def _register_model(db) -> None:
         return
     db.add(
         MLModel(
-            model_name="cews-anomaly-isolation-forest",
+            model_name="pantaupesisir-anomaly-isolation-forest",
             model_version=settings.ml_model_version,
             algorithm="IsolationForest",
             model_uri=str(settings.model_artifact_path),
             feature_schema=metrics.get("feature_names", []),
-            training_dataset="NOAA NDBC historical stdmet, stations 51002 + 41010, 2022-2024",
+            training_dataset="NOAA NDBC stdmet historis, stasiun 51002 + 41010, 2022-2024",
             training_period=(
-                f"{metrics['train_period'][0][:10]} to {metrics['train_period'][1][:10]}"
+                f"{metrics['train_period'][0][:10]} hingga {metrics['train_period'][1][:10]}"
                 if metrics.get("train_period")
                 else "2022-2024"
             ),

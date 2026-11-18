@@ -44,7 +44,7 @@ export function ZoneMap({
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · base map only'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> kontributor · hanya peta dasar'
       />
 
       {layers.zones
@@ -95,15 +95,15 @@ export function ZoneMap({
                         <p className="text-[10px] text-muted">{zone.zone_name} · simulated</p>
                         {observation ? (
                           <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-                            <dt className="text-muted">Wave</dt>
+                            <dt className="text-muted">Gelombang</dt>
                             <dd className="font-mono">{fixed(observation.parameters.wave_height_m, 2)} m</dd>
-                            <dt className="text-muted">Period</dt>
+                            <dt className="text-muted">Periode</dt>
                             <dd className="font-mono">{fixed(observation.parameters.wave_period_s, 1)} s</dd>
-                            <dt className="text-muted">Wind</dt>
+                            <dt className="text-muted">Angin</dt>
                             <dd className="font-mono">{fixed(observation.parameters.wind_speed_mps, 1)} m/s</dd>
-                            <dt className="text-muted">Pressure</dt>
+                            <dt className="text-muted">Tekanan</dt>
                             <dd className="font-mono">{fixed(observation.parameters.air_pressure_hpa, 1)} hPa</dd>
-                            <dt className="text-muted">Swell from</dt>
+                            <dt className="text-muted">Swell dari</dt>
                             <dd className="font-mono">
                               {compass(observation.parameters.wave_direction_deg)}{" "}
                               {fixed(observation.parameters.wave_direction_deg, 0)}°
@@ -140,11 +140,11 @@ export function ZoneMap({
                     <p className="font-semibold">{dataset.collection}</p>
                     <p className="mt-0.5 text-[10px] text-muted">{dataset.product_id}</p>
                     <p className="mt-1 text-[10px]">
-                      Acquired <strong>{formatShortUtc(dataset.acquired_at)} UTC</strong>
+                      Diakuisisi <strong>{formatShortUtc(dataset.acquired_at)} UTC</strong>
                     </p>
-                    <p className="text-[10px]">Cloud {fixed(dataset.cloud_cover_percent, 1)}%</p>
+                    <p className="text-[10px]">Awan {fixed(dataset.cloud_cover_percent, 1)}%</p>
                     <p className="mt-1 text-[9px] leading-snug text-muted">
-                      Historical Copernicus acquisition. Optical context only.
+                      Akuisisi Copernicus historis. Hanya sebagai konteks optik.
                     </p>
                   </div>
                 </Popup>

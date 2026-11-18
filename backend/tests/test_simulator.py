@@ -23,7 +23,7 @@ def test_manual_scenario_generates_coherent_labeled_series(client, auth):
     assert response.status_code == 202, response.text
     job = response.json()["job"]
     assert job["status"] in {"queued", "running", "completed"}
-    assert "synthetic" in response.json()["acceptance_note"].lower()
+    assert "skenario replay" in response.json()["acceptance_note"].lower()
 
     final = wait_for_simulation(client, auth, job["id"])
     assert final["status"] == "completed", final

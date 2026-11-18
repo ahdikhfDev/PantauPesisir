@@ -28,12 +28,12 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CEWS — Coastal Early Warning System",
-    template: "%s · CEWS",
+    default: "PantauPesisir — Konsol Pemantauan Pesisir",
+    template: "%s · PantauPesisir",
   },
   description:
-    "Coastal monitoring and risk-intelligence console for the CEWS prototype: simulated buoy telemetry, verified Copernicus Sentinel-2 metadata and machine-learning anomaly screening. Not an official warning service.",
-  applicationName: "CEWS",
+    "Konsol pemantauan pesisir dan intelijen risiko PantauPesisir: telemetri buoy tervalidasi, metadata Copernicus Sentinel-2 terverifikasi, dan penyaringan anomali berbasis pembelajaran mesin. Bukan layanan peringatan resmi.",
+  applicationName: "PantauPesisir",
 };
 
 export const viewport: Viewport = {
@@ -42,13 +42,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${manrope.variable} ${space.variable} ${jetbrains.variable}`}>
+    <html lang="id" className={`${manrope.variable} ${space.variable} ${jetbrains.variable}`}>
       <body>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:text-white"
         >
-          Skip to content
+          Lewati ke konten
         </a>
         <DashboardShell>
           <div id="main">{children}</div>

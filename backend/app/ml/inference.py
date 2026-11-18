@@ -220,7 +220,7 @@ def _contributing_factors(
             0,
             {
                 "feature": "pressure_drop_window",
-                "label": "Pressure drop over window",
+                "label": "Penurunan tekanan dalam jendela",
                 "value": round(pressure_drop, 1),
                 "unit": "hPa",
                 "baseline_mean": 0.0,

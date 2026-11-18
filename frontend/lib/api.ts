@@ -3,7 +3,7 @@ const API_BASE = (
 ).replace(/\/$/, "");
 
 export const API_BASE_URL = API_BASE;
-export const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "cews-demo-2026";
+export const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "pantaupesisir-demo-2026";
 
 export class ApiError extends Error {
   status: number;
@@ -43,7 +43,7 @@ async function parse<T>(response: Response): Promise<T> {
     const detail =
       body?.issues?.map((issue) => `${issue.location}: ${issue.message}`).join("; ") ||
       body?.detail ||
-      (typeof payload === "string" ? payload : `Request failed (${response.status})`);
+      (typeof payload === "string" ? payload : `Permintaan gagal (${response.status})`);
     throw new ApiError(response.status, detail);
   }
   return payload as T;
@@ -87,13 +87,13 @@ export async function apiSend<T>(
  */
 export function storedApiKey(): string {
   if (typeof window === "undefined") return "";
-  return window.sessionStorage.getItem("cews_api_key") ?? "";
+  return window.sessionStorage.getItem("pantaupesisir_api_key") ?? "";
 }
 
 export function saveApiKey(value: string): void {
   if (typeof window === "undefined") return;
-  if (value) window.sessionStorage.setItem("cews_api_key", value);
-  else window.sessionStorage.removeItem("cews_api_key");
+  if (value) window.sessionStorage.setItem("pantaupesisir_api_key", value);
+  else window.sessionStorage.removeItem("pantaupesisir_api_key");
 }
 
 export function activeApiKey(): string {

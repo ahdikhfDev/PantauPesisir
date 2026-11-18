@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     )
 
     # --- application ---
-    app_name: str = "CEWS - Coastal Early Warning System"
+    app_name: str = "PantauPesisir - Konsol Pemantauan Pesisir"
     app_version: str = "0.1.0"
     environment: Literal["development", "demo", "production", "test"] = "development"
     api_v1_prefix: str = "/api/v1"
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     # --- security ---
     # Privileged endpoints require X-API-Key. Empty + demo_mode=False fails closed.
     api_secret_key: str = ""
-    demo_api_key: str = "cews-demo-2026"
+    demo_api_key: str = "pantaupesisir-demo-2026"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     ingestion_rate_limit_per_minute: int = 240
 

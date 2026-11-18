@@ -125,10 +125,10 @@ def model_info(db: Session = Depends(get_db)) -> dict:
         "metrics": model.metrics,
         "feature_schema": model.feature_schema,
         "limitations": [
-            "Unsupervised anomaly screening, not hazard classification.",
-            "Trained on offshore NOAA NDBC stations, applied to simulated Indonesian buoy telemetry.",
-            "Anomaly score is not a probability of tsunami or any disaster.",
-            "Risk levels come from a transparent prototype rubric, not validated hazard classes.",
+            "Penyaringan anomali tanpa pengawasan, bukan klasifikasi bahaya.",
+            "Dilatih pada stasiun lepas pantai NOAA NDBC, diterapkan pada telemetri buoy pesisir Indonesia.",
+            "Skor anomali bukan probabilitas tsunami atau bencana apa pun.",
+            "Tingkat risiko berasal dari rubrik prototipe yang transparan, bukan kelas bahaya tervalidasi.",
         ],
     }
 

@@ -40,8 +40,8 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
   if (data.length < 2) {
     return (
       <EmptyState
-        title="Waiting for readings"
-        description="Start the simulator or widen the time window. Only valid rows are plotted."
+        title="Menunggu pembacaan"
+        description="Jalankan simulator atau perpanjang jendela waktu. Hanya baris valid yang digambar."
       />
     );
   }
@@ -93,7 +93,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             }}
             labelFormatter={(label) => `${timeLabel(label)} UTC`}
             formatter={(value, name) => [
-              `${fixed(Number(value), name === "Wave height" ? 2 : 1)} ${name === "Wave height" ? "m" : "m/s"}`,
+              `${fixed(Number(value), name === "Tinggi gelombang" ? 2 : 1)} ${name === "Tinggi gelombang" ? "m" : "m/s"}`,
               name,
             ]}
           />
@@ -101,7 +101,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             yAxisId="height"
             type="monotone"
             dataKey="height"
-            name="Wave height"
+            name="Tinggi gelombang"
             stroke="#d93a2b"
             strokeWidth={2}
             fill={`url(#${gradientId})`}
@@ -113,7 +113,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             yAxisId="wind"
             type="monotone"
             dataKey="wind"
-            name="Wind speed"
+            name="Kecepatan angin"
             stroke="#123f46"
             strokeWidth={1.5}
             strokeDasharray="5 4"

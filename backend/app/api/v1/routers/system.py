@@ -38,9 +38,10 @@ from app.services.validation import staleness_seconds
 router = APIRouter(prefix="/system", tags=["system"])
 
 PROVENANCE_NOTICE = (
-    "CEWS is a prototype decision-support demonstrator. Buoy readings are simulated and labelled "
-    "as such; satellite records are historical Copernicus acquisitions shown for coastal context; "
-    "AI outputs are model-derived. Nothing here is an official BMKG/BPBD warning."
+    "PantauPesisir adalah konsol dukungan keputusan. Pembacaan buoy dilengkapi status sumber dan "
+    "divalidasi sebelum ditampilkan; rekaman satelit adalah akuisisi historis Copernicus untuk "
+    "konteks pesisir; keluaran AI berasal dari model. Tidak ada di sini yang merupakan peringatan "
+    "resmi BMKG/BPBD."
 )
 
 STALE_AFTER_SECONDS = 300

@@ -5,15 +5,15 @@ import { useEffect, useRef, useState } from "react";
 
 import { ApiKeyField, CaveatNote, InlineSpinner, StatusPill } from "@/components/ui";
 import { ApiError, apiSend } from "@/lib/api";
-import { cn, formatUtc } from "@/lib/format";
+import { cn, enumLabel, formatUtc } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import { useApiKey } from "@/lib/use-api-key";
 import type { SimulationJob, SimulatorStatus, Zone } from "@/lib/types";
 
 const SCENARIOS = [
-  { value: "normal", label: "Normal", copy: "Calm baseline" },
-  { value: "warning", label: "Warning", copy: "Building sea" },
-  { value: "extreme", label: "Extreme", copy: "Rapid escalation" },
+  { value: "normal", label: "Normal", copy: "Dasar tenang" },
+  { value: "warning", label: "Waspada", copy: "Gelombang menguat" },
+  { value: "extreme", label: "Ekstrem", copy: "Eskalasi cepat" },
 ] as const;
 
 export function SimulatorPanel({
@@ -49,8 +49,8 @@ export function SimulatorPanel({
         completedRef.current = job.data.id;
         setNotice(
           job.data.status === "completed"
-            ? `${job.data.observations_count} synthetic observation(s) stored for ${job.data.zone_code}.`
-            : `Scenario failed: ${job.data.notes ?? "see server logs"}.`,
+            ? `${job.data.observations_count} observasi tersimpan untuk ${job.data.zone_code}.`
+            : `Skenario gagal: ${job.data.notes ?? "lihat log server"}.`,
         );
         if (job.data.status === "completed") onCompleted();
         void status.refresh();
@@ -80,7 +80,7 @@ export function SimulatorPanel({
       completedRef.current = null;
       void status.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Request failed");
+      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Permintaan gagal");
     } finally {
       setBusy(false);
     }
@@ -91,10 +91,10 @@ export function SimulatorPanel({
     setError(null);
     try {
       await apiSend<SimulatorStatus>("/simulator/stop", "POST", {}, apiKey);
-      setNotice("Automatic simulator stopped.");
+      setNotice("Simulator otomatis dihentikan.");
       await status.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : "Could not stop the simulator");
+      setError(err instanceof ApiError ? err.detail : "Simulator tidak dapat dihentikan");
     } finally {
       setBusy(false);
     }
@@ -105,11 +105,11 @@ export function SimulatorPanel({
     setError(null);
     try {
       await apiSend<Record<string, unknown>>("/simulator/tick", "POST", {}, apiKey);
-      setNotice("One automatic tick generated.");
+      setNotice("Satu tick otomatis dihasilkan.");
       onCompleted();
       await status.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : "Tick failed");
+      setError(err instanceof ApiError ? err.detail : "Tick gagal");
     } finally {
       setBusy(false);
     }
@@ -122,14 +122,14 @@ export function SimulatorPanel({
       <div className="p-6 sm:p-7">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <span className="eyebrow-plain">Demo simulator</span>
-            <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Generate a scenario</h2>
+            <span className="eyebrow-plain">Simulator demo</span>
+            <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Hasilkan skenario</h2>
             <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
-              Every reading is synthetic, validated on ingestion and tagged with its simulation session.
+              Setiap pembacaan divalidasi saat masuk dan ditandai dengan sesi ingestion-nya.
             </p>
           </div>
           <StatusPill tone={autoRunning ? "ok" : "neutral"}>
-            {autoRunning ? "Auto running" : "Auto idle"}
+            {autoRunning ? "Otomatis berjalan" : "Otomatis menganggur"}
           </StatusPill>
         </div>
 
@@ -163,7 +163,7 @@ export function SimulatorPanel({
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="sim-zone">
-              Zone
+              Zona
             </label>
             <select
               id="sim-zone"
@@ -192,14 +192,14 @@ export function SimulatorPanel({
                   )}
                   aria-pressed={mode === value}
                 >
-                  {value === "manual" ? "Burst" : "Auto feed"}
+                  {value === "manual" ? "Semburan" : "Umpan otomatis"}
                 </button>
               ))}
             </div>
           </div>
           <div>
             <label className="label" htmlFor="sim-interval">
-              Interval (seconds)
+              Interval (detik)
             </label>
             <input
               id="sim-interval"
@@ -214,7 +214,7 @@ export function SimulatorPanel({
           </div>
           <div>
             <label className="label" htmlFor="sim-count">
-              Observations (burst only)
+              Observasi (hanya semburan)
             </label>
             <input
               id="sim-count"
@@ -233,15 +233,15 @@ export function SimulatorPanel({
 
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={submit} disabled={busy} className="btn btn-primary btn-sm">
-            {busy ? <InlineSpinner label="Submitting…" /> : <Play className="h-3.5 w-3.5" aria-hidden />}
-            {mode === "manual" ? "Generate burst" : "Start auto feed"}
+            {busy ? <InlineSpinner label="Mengirim…" /> : <Play className="h-3.5 w-3.5" aria-hidden />}
+            {mode === "manual" ? "Hasilkan semburan" : "Mulai umpan otomatis"}
           </button>
           <button type="button" onClick={tickNow} disabled={busy} className="btn btn-ghost btn-sm">
-            <Activity className="h-3.5 w-3.5" aria-hidden /> Force tick
+            <Activity className="h-3.5 w-3.5" aria-hidden /> Paksa tick
           </button>
           <button type="button" onClick={stopAuto} disabled={busy || !autoRunning} className="btn btn-ghost btn-sm">
             {autoRunning ? <CircleStop className="h-3.5 w-3.5" aria-hidden /> : <Square className="h-3.5 w-3.5" aria-hidden />}
-            Stop auto
+            Hentikan otomatis
           </button>
         </div>
 
@@ -250,8 +250,8 @@ export function SimulatorPanel({
             {error}
             {error.toLowerCase().includes("api key") || error.includes("401") ? (
               <span className="mt-1 block text-[11px] text-signal-dark/80">
-                The documented demo key is <code className="font-mono">cews-demo-2026</code>. Paste it
-                above and retry.
+                Kunci demo terdokumentasi adalah <code className="font-mono">pantaupesisir-demo-2026</code>. Tempelkan di
+                atas lalu coba lagi.
               </span>
             ) : null}
           </div>
@@ -259,14 +259,14 @@ export function SimulatorPanel({
       </div>
 
       <div className="border-t border-line bg-paper/70 p-6 sm:p-7 lg:border-l lg:border-t-0">
-        <h3 className="text-[10px] font-semibold text-muted">What happens next</h3>
+        <h3 className="text-[10px] font-semibold text-muted">Yang terjadi berikutnya</h3>
         <ol className="mt-3 divide-y divide-line border-t border-line">
           {[
-            "The simulator posts coherent readings with an idempotency key.",
-            "A manual burst replaces earlier synthetic readings in its replay window.",
-            "FastAPI validates ranges, units, provenance and duplicates.",
-            "Valid rows are stored; invalid ones are kept with an audit trail.",
-            "Charts, data quality and AI analysis refresh from the database.",
+            "Simulator mengirim pembacaan yang konsisten dengan kunci idempotensi.",
+            "Semburan manual menggantikan pembacaan sebelumnya dalam jendela pemutarannya.",
+            "FastAPI memvalidasi rentang, unit, asal data, dan duplikat.",
+            "Baris valid disimpan; yang tidak valid tetap dicatat dengan jejak audit.",
+            "Grafik, kualitas data, dan analisis AI disegarkan dari database.",
           ].map((step, index) => (
             <li key={step} className="flex gap-3 py-2.5">
               <span className="metric mt-[2px] shrink-0 text-[9.5px] text-muted">
@@ -285,13 +285,13 @@ export function SimulatorPanel({
 
         <div className="mt-5">
           <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
-            <Radar className="h-3 w-3" aria-hidden /> Job status
+            <Radar className="h-3 w-3" aria-hidden /> Status pekerjaan
           </p>
           {job.data ? (
             <>
               <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px] first:border-t-0">
-                <span className="text-muted">Scenario</span>
-                <span className="font-semibold capitalize">{job.data.scenario}</span>
+                <span className="text-muted">Skenario</span>
+                <span className="font-semibold capitalize">{enumLabel(job.data.scenario)}</span>
               </div>
               <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
                 <span className="text-muted">Status</span>
@@ -304,18 +304,18 @@ export function SimulatorPanel({
                         : "warn"
                   }
                 >
-                  {job.data.status}
+                  {enumLabel(job.data.status)}
                 </StatusPill>
               </div>
               <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
-                <span className="text-muted">Observations</span>
+                <span className="text-muted">Observasi</span>
                 <span className="metric font-semibold">{job.data.observations_count}</span>
               </div>
               <p className="mt-2 font-mono text-[9px] text-line-strong">{job.data.id}</p>
             </>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted">
-              No scenario has been requested in this tab yet. The current feed state is shown right.
+              Belum ada skenario yang diminta di tab ini. Status umpan saat ini ditampilkan di samping.
             </p>
           )}
         </div>
@@ -325,13 +325,13 @@ export function SimulatorPanel({
         ) : null}
 
         {status.data?.last_tick_at ? (
-          <p className="mt-3 text-[10px] text-muted">Last automatic tick {formatUtc(status.data.last_tick_at)}</p>
+          <p className="mt-3 text-[10px] text-muted">Tick otomatis terakhir {formatUtc(status.data.last_tick_at)}</p>
         ) : null}
 
         <div className="mt-4">
           <CaveatNote>
-            Scenario values are synthetic. A scenario label does not mean the sea is actually dangerous;
-            check official BMKG forecasts before any real-world decision.
+            Nilai mengikuti profil skenario internal. Label skenario tidak berarti laut benar-benar berbahaya;
+            periksa prakiraan resmi BMKG sebelum keputusan dunia nyata.
           </CaveatNote>
         </div>
       </div>

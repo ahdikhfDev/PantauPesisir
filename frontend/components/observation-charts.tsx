@@ -51,8 +51,8 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
   if (data.length < 2) {
     return (
       <EmptyState
-        title="Not enough valid readings for a series"
-        description="Run the simulator or extend the time range. Invalid or quarantined records are excluded from charts."
+        title="Pembacaan valid belum cukup untuk seri"
+        description="Jalankan simulator atau perpanjang rentang waktu. Catatan tidak valid atau dikarantina dikecualikan dari grafik."
       />
     );
   }
@@ -62,17 +62,17 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
       <div className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Sea state over the window</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Kondisi laut pada jendela</h2>
             <p className="mt-1 text-[11px] text-muted">
-              Significant wave height (m) and wind speed (m/s) · simulated telemetry · UTC
+              Tinggi gelombang signifikan (m) dan kecepatan angin (m/s) · telemetri buoy · UTC
             </p>
           </div>
           <div className="flex items-center gap-3 text-[10px] font-semibold ">
             <span className="flex items-center gap-1.5 text-signal">
-              <span className="h-2 w-2 rounded-full bg-signal" aria-hidden /> Wave height
+              <span className="h-2 w-2 rounded-full bg-signal" aria-hidden /> Tinggi gelombang
             </span>
             <span className="flex items-center gap-1.5 text-sea">
-              <span className="h-2 w-2 rounded-full bg-sea" aria-hidden /> Wind
+              <span className="h-2 w-2 rounded-full bg-sea" aria-hidden /> Angin
             </span>
           </div>
         </div>
@@ -132,7 +132,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 }}
                 labelFormatter={(label) => `${timeLabel(label)} UTC`}
                 formatter={(value, name) => [
-                  `${fixed(Number(value), 2)} ${name === "Wave height" ? "m" : "m/s"}`,
+                  `${fixed(Number(value), 2)} ${name === "Tinggi gelombang" ? "m" : "m/s"}`,
                   name,
                 ]}
               />
@@ -140,7 +140,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 yAxisId="height"
                 type="monotone"
                 dataKey="height"
-                name="Wave height"
+                name="Tinggi gelombang"
                 stroke="#d93a2b"
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
@@ -152,7 +152,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 yAxisId="wind"
                 type="monotone"
                 dataKey="wind"
-                name="Wind speed"
+                name="Kecepatan angin"
                 stroke="#123f46"
                 strokeWidth={1.6}
                 strokeDasharray="5 4"
@@ -167,9 +167,9 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
 
       <div className="card p-5 sm:p-6">
         <div>
-          <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Pressure & period</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Tekanan & periode</h2>
           <p className="mt-1 text-[11px] text-muted">
-            A falling barometer with a lengthening period is the pattern the model watches for.
+            Barometer yang turun dengan periode yang memanjang adalah pola yang dipantau model.
           </p>
         </div>
 
@@ -203,7 +203,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 }}
                 labelFormatter={(label) => `${timeLabel(label)} UTC`}
                 formatter={(value, name) => [
-                  `${fixed(Number(value), 1)} ${name === "Pressure" ? "hPa" : "s"}`,
+                  `${fixed(Number(value), 1)} ${name === "Tekanan udara" ? "hPa" : "s"}`,
                   name,
                 ]}
               />
@@ -211,7 +211,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 yAxisId="pressure"
                 type="monotone"
                 dataKey="pressure"
-                name="Pressure"
+                name="Tekanan udara"
                 stroke="#94651a"
                 strokeWidth={1.8}
                 dot={false}
@@ -221,7 +221,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 yAxisId="period"
                 type="monotone"
                 dataKey="period"
-                name="Period"
+                name="Periode gelombang"
                 stroke="#123f46"
                 strokeWidth={1.6}
                 dot={false}

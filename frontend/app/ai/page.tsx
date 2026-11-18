@@ -89,12 +89,12 @@ export default function AiPage() {
       setPrediction(response.prediction);
       setNotice(
         response.prediction.alert_id
-          ? "Analysis complete and a prototype alert was opened. It is not an official warning."
-          : "Analysis complete. No alert threshold was crossed.",
+          ? "Analisis selesai dan peringatan prototipe telah dibuka. Ini bukan peringatan resmi."
+          : "Analisis selesai. Ambang peringatan tidak terlampaui.",
       );
       history.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Analysis failed");
+      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Analisis gagal");
     } finally {
       setBusy(false);
     }
@@ -108,7 +108,7 @@ export default function AiPage() {
       );
       if (!response.ok) return;
       setPrediction((await response.json()) as Prediction);
-      setNotice("Loaded a stored analysis from the database.");
+      setNotice("Analisis tersimpan dimuat dari basis data.");
     } catch {
       /* keep the current view */
     }
@@ -139,23 +139,23 @@ export default function AiPage() {
   return (
     <>
       <PageHero
-        eyebrow="AI risk intelligence"
+        eyebrow="Intelijen risiko AI"
         title={
           <>
-            Screening, <span className="text-signal">not prophecy.</span>
+            Penyaringan, <span className="text-signal">bukan ramalan.</span>
           </>
         }
-        description="An Isolation Forest trained on real NOAA NDBC observations scores how unusual the latest window is. A separate, readable rubric grades absolute severity. Both layers are shown — with their inputs, version and caveats — because an anomaly is not a hazard."
+        description="Isolation Forest yang dilatih pada observasi NOAA NDBC asli memberi skor seberapa tidak biasa jendela terbaru. Rubrik terpisah yang mudah dibaca menilai keparahan absolut. Kedua lapisan ditampilkan — beserta input, versi, dan catatannya — karena anomali bukan bahaya."
         right={
           <div className="flex flex-col items-start gap-2 lg:items-end">
             <SourceBadge kind="model" />
             <span className="chip border-line-strong">
-              {modelInfo.data?.model_version ?? "model loading"}
+              {modelInfo.data?.model_version ?? "memuat model"}
             </span>
             <StatusPill tone={modelInfo.data ? "ok" : "neutral"}>
               {calibration?.target_false_alarm_rate
-                ? `${percent(calibration.target_false_alarm_rate)} calibrated flag rate`
-                : "calibration loading"}
+                ? `${percent(calibration.target_false_alarm_rate)} laju penandaan terkalibrasi`
+                : "memuat kalibrasi"}
             </StatusPill>
           </div>
         }
@@ -165,27 +165,27 @@ export default function AiPage() {
         <div className="grid gap-5 xl:grid-cols-[1fr_1.05fr]">
           {/* model card */}
           <div className="card p-6">
-            <span className="eyebrow-plain">Model card snapshot</span>
+            <span className="eyebrow-plain">Ringkasan kartu model</span>
             <h2 className="mt-2 text-[19px] font-semibold">
-              {modelInfo.data?.model_name ?? "cews-anomaly-isolation-forest"}
+              {modelInfo.data?.model_name ?? "pantaupesisir-anomaly-isolation-forest"}
             </h2>
 
             <dl className="mt-4 divide-y divide-line">
-              <KeyValue label="Algorithm" value={modelInfo.data?.algorithm ?? "IsolationForest"} />
+              <KeyValue label="Algoritma" value={modelInfo.data?.algorithm ?? "IsolationForest"} />
               <KeyValue
-                label="Training data"
+                label="Data latih"
                 value={
                   <span className="text-[11px] leading-snug">
-                    NOAA NDBC stdmet · stations 51002 &amp; 41010 · 2022–2024
+                    NOAA NDBC stdmet · stasiun 51002 &amp; 41010 · 2022–2024
                   </span>
                 }
               />
               <KeyValue
-                label="Training rows"
+                label="Baris data latih"
                 value={metrics.training_rows ? metrics.training_rows.toLocaleString("en-GB") : "41,104"}
               />
               <KeyValue
-                label="Deployed flag rate"
+                label="Laju penandaan aktif"
                 value={
                   metrics.flagged_rate_validation_at_deployed_threshold !== undefined
                     ? percent(metrics.flagged_rate_validation_at_deployed_threshold)
@@ -193,30 +193,30 @@ export default function AiPage() {
                 }
               />
               <KeyValue
-                label="Calibration windows"
-                value={calibration?.windows ? `${calibration.windows} normal scenarios` : "90 normal scenarios"}
+                label="Jendela kalibrasi"
+                value={calibration?.windows ? `${calibration.windows} skenario normal` : "90 skenario normal"}
               />
               <KeyValue
-                label="Features"
-                value={`${modelInfo.data?.feature_schema.length ?? 11} trailing features`}
+                label="Fitur"
+                value={`${modelInfo.data?.feature_schema.length ?? 11} fitur bergulir`}
               />
             </dl>
 
             <div className="mt-4 flex flex-wrap gap-2">
               <SourceBadge kind="historical" />
-              <span className="chip">No hazard labels</span>
-              <span className="chip">Unsupervised</span>
+              <span className="chip">Tanpa label bahaya</span>
+              <span className="chip">Tanpa pengawasan</span>
             </div>
 
             <div className="mt-4 border-t border-line pt-3.5">
-              <p className="text-[10px] font-semibold text-muted">Evaluation proxy</p>
+              <p className="text-[10px] font-semibold text-muted">Proksi evaluasi</p>
               <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
                 {metrics.proxy_evaluation?.method ??
-                  "Flags are checked for concentration in rapid pressure and wave-height changes on the real validation slice."}
+                  "Penandaan diperiksa konsentrasinya pada perubahan tekanan dan tinggi gelombang yang cepat di irisan validasi nyata."}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-x-4 text-[10.5px]">
                 <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
-                  <p className="text-muted">Pressure-change recall</p>
+                  <p className="text-muted">Recall perubahan tekanan</p>
                   <p className="metric text-[13px] font-medium">
                     {metrics.proxy_evaluation?.recall_top5pct_pressure_change !== undefined
                       ? percent(metrics.proxy_evaluation.recall_top5pct_pressure_change)
@@ -224,7 +224,7 @@ export default function AiPage() {
                   </p>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
-                  <p className="text-muted">Random baseline</p>
+                  <p className="text-muted">Baseline acak</p>
                   <p className="metric text-[13px] font-medium">
                     {metrics.proxy_evaluation?.random_selection_baseline !== undefined
                       ? percent(metrics.proxy_evaluation.random_selection_baseline)
@@ -246,17 +246,17 @@ export default function AiPage() {
 
           {/* run panel */}
           <div className="card p-6">
-            <span className="eyebrow-plain">Run analysis</span>
-            <h2 className="mt-2 text-[19px] font-semibold">Screen a window</h2>
+            <span className="eyebrow-plain">Jalankan analisis</span>
+            <h2 className="mt-2 text-[19px] font-semibold">Saring jendela</h2>
             <p className="mt-1 max-w-md text-[11.5px] leading-relaxed text-muted">
-              Select a zone and window. The API loads stored valid observations, scores them, aligns
-              cached satellite records and writes a new analysis row.
+              Pilih zona dan jendela. API memuat observasi valid tersimpan, memberi skor, menyelaraskan
+              rekaman satelit tersinggah, dan menulis baris analisis baru.
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="label" htmlFor="ai-zone">
-                  Zone
+                  Zona
                 </label>
                 <select id="ai-zone" className="input" value={zoneCode} onChange={(event) => setZoneCode(event.target.value)}>
                   {(zones.data ?? []).map((zone) => (
@@ -267,7 +267,7 @@ export default function AiPage() {
                 </select>
               </div>
               <div>
-                <span className="label">Observation window</span>
+                <span className="label">Jendela observasi</span>
                 <div className="flex rounded-[10px] border border-line-strong bg-white p-1">
                   {WINDOWS.map((value) => (
                     <button
@@ -295,9 +295,9 @@ export default function AiPage() {
                 className="mt-0.5 h-3.5 w-3.5 accent-sea"
               />
               <span className="text-[11.5px] leading-relaxed text-ink-soft">
-                Open a prototype alert when the rubric reaches moderate or high.
+                Buka peringatan prototipe saat rubrik mencapai sedang atau tinggi.
                 <span className="mt-0.5 block text-[10px] text-muted">
-                  Alerts are labelled prototype advisories and can be acknowledged in the alert workspace.
+                  Peringatan ditandai sebagai imbauan prototipe dan dapat dikonfirmasi di ruang kerja peringatan.
                 </span>
               </span>
             </label>
@@ -305,8 +305,8 @@ export default function AiPage() {
             <ApiKeyField value={apiKey} onChange={setApiKey} className="mt-3" />
 
             <button type="button" onClick={run} disabled={busy} className="btn btn-primary mt-4 w-full">
-              {busy ? <InlineSpinner label="Scoring window…" /> : <Play className="h-4 w-4" aria-hidden />}
-              Run AI analysis
+              {busy ? <InlineSpinner label="Memberi skor jendela…" /> : <Play className="h-4 w-4" aria-hidden />}
+              Jalankan analisis AI
             </button>
 
             {error ? (
@@ -314,7 +314,7 @@ export default function AiPage() {
                 {error}
                 {error.toLowerCase().includes("observation") ? (
                   <span className="mt-1 block text-[10.5px]">
-                    Generate telemetry in the ocean console first, or widen the window.
+                    Hasilkan telemetri di konsol laut terlebih dahulu, atau perlebar jendela.
                   </span>
                 ) : null}
               </div>
@@ -329,9 +329,9 @@ export default function AiPage() {
             <div className="mt-4 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/70 px-3.5 py-3">
               <SlidersHorizontal className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
               <p className="text-[10.5px] leading-relaxed text-muted">
-                Risk levels come from a transparent rubric (<span className="font-mono">prototype_rubric_v1</span>)
-                using absolute wave height, wind, pressure drop and period. It is a demonstration scale, not
-                BMKG criteria.
+                Tingkat risiko berasal dari rubrik transparan (<span className="font-mono">prototype_rubric_v1</span>)
+                menggunakan tinggi gelombang absolut, angin, penurunan tekanan, dan periode. Ini skala demonstrasi,
+                bukan kriteria BMKG.
               </p>
             </div>
           </div>
@@ -344,27 +344,27 @@ export default function AiPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <RiskBadge level={prediction.risk_level} />
                 <span className="chip">{prediction.zone_code}</span>
-                <span className="chip">{prediction.windows_evaluated} scored windows</span>
+                <span className="chip">{prediction.windows_evaluated} jendela diskor</span>
                 {prediction.alert_id ? (
                   <Link href="/alerts" className="chip border-signal/25 bg-signal-soft text-signal-dark">
-                    Alert opened <ArrowUpRight className="h-3 w-3" aria-hidden />
+                    Peringatan dibuka <ArrowUpRight className="h-3 w-3" aria-hidden />
                   </Link>
                 ) : null}
               </div>
               <span className="font-mono text-[9.5px] text-muted">
-                analysis {prediction.id.slice(0, 8)} · {formatUtc(prediction.created_at)}
+                analisis {prediction.id.slice(0, 8)} · {formatUtc(prediction.created_at)}
               </span>
             </div>
 
             <div className="grid gap-6 p-6 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
-                <p className="text-[10px] font-semibold text-muted">Anomaly index</p>
+                <p className="text-[10px] font-semibold text-muted">Indeks anomali</p>
                 <p className="mt-1.5 flex items-baseline gap-2">
                   <span className="metric text-[38px] font-medium leading-none">
                     {fixed(prediction.anomaly_score, 2)}
                   </span>
                   <span className="text-[10.5px] text-muted">
-                    {prediction.anomaly_detected ? "flagged" : "inside band"}
+                    {prediction.anomaly_detected ? "ditandai" : "dalam rentang"}
                   </span>
                 </p>
                 <div className="relative mt-4 h-[5px] rounded-full bg-line">
@@ -384,14 +384,14 @@ export default function AiPage() {
                 <div className="mt-1.5 flex items-baseline justify-between text-[9.5px] text-muted">
                   <span className="metric">0.00</span>
                   <span>
-                    threshold <span className="metric">{fixed(prediction.anomaly_threshold, 2)}</span>
+                    ambang <span className="metric">{fixed(prediction.anomaly_threshold, 2)}</span>
                   </span>
                   <span className="metric">1.00</span>
                 </div>
 
                 <div className="mt-5">
                   <div className="flex items-center justify-between text-[10px] font-semibold text-muted">
-                    <span>Prototype risk score</span>
+                    <span>Skor risiko prototipe</span>
                     <span className="metric">{fixed(prediction.risk_score, 1)}/100</span>
                   </div>
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-line">
@@ -408,17 +408,17 @@ export default function AiPage() {
                     />
                   </div>
                   <p className="mt-1.5 text-[10px] text-muted">
-                    Method <span className="font-mono">{prediction.risk_method ?? "prototype_rubric_v1"}</span>
+                    Metode <span className="font-mono">{prediction.risk_method ?? "prototype_rubric_v1"}</span>
                   </p>
                 </div>
 
                 <dl className="mt-5 divide-y divide-line border-t border-line pt-2">
-                  <KeyValue label="Model version" value={<span className="font-mono text-[10px]">{prediction.model_version}</span>} />
-                  <KeyValue label="Window start" value={formatShortUtc(prediction.observation_window_start)} />
-                  <KeyValue label="Window end" value={formatShortUtc(prediction.observation_window_end)} />
-                  <KeyValue label="Observations" value={prediction.input_observation_count} />
+                  <KeyValue label="Versi model" value={<span className="font-mono text-[10px]">{prediction.model_version}</span>} />
+                  <KeyValue label="Awal jendela" value={formatShortUtc(prediction.observation_window_start)} />
+                  <KeyValue label="Akhir jendela" value={formatShortUtc(prediction.observation_window_end)} />
+                  <KeyValue label="Observasi" value={prediction.input_observation_count} />
                   <KeyValue
-                    label="Median sampling"
+                    label="Sampling median"
                     value={
                       quality?.median_sampling_seconds
                         ? `${fixed(quality.median_sampling_seconds / 60, 0)} min`
@@ -426,18 +426,18 @@ export default function AiPage() {
                     }
                   />
                   <KeyValue
-                    label="Satellite matches"
-                    value={`${quality?.satellite_alignment?.matched_pairs?.length ?? 0} pair(s)`}
+                    label="Kecocokan satelit"
+                    value={`${quality?.satellite_alignment?.matched_pairs?.length ?? 0} pasangan`}
                   />
-                  <KeyValue label="Input provenance" value={prediction.is_simulated ? "Simulated" : "Mixed"} />
+                  <KeyValue label="Asal input" value={prediction.is_simulated ? "Telemetri buoy" : "Campuran"} />
                 </dl>
               </div>
 
               <div>
-                <h3 className="text-[10px] font-semibold text-muted">Explanation</h3>
+                <h3 className="text-[10px] font-semibold text-muted">Penjelasan</h3>
                 <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-soft">{prediction.explanation}</p>
 
-                <h3 className="mt-5 text-[10px] font-semibold text-muted">Contributing factors</h3>
+                <h3 className="mt-5 text-[10px] font-semibold text-muted">Faktor kontributor</h3>
                 <ul className="mt-2 divide-y divide-line border-y border-line">
                   {prediction.contributing_factors.map((factor) => {
                     const magnitude = Math.min(Math.abs(factor.deviation_sigma) / 4, 1);
@@ -465,13 +465,13 @@ export default function AiPage() {
                   })}
                   {prediction.contributing_factors.length === 0 ? (
                     <li className="py-2.5 text-[12px] text-muted">
-                      No individual factor exceeded the reporting band.
+                      Tidak ada faktor individual yang melampaui ambang pelaporan.
                     </li>
                   ) : null}
                 </ul>
                 <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
-                  Deviation is expressed against the training baseline for the same feature. σ is a
-                  standardised distance, not a probability.
+                  Deviasi diukur terhadap baseline data latih untuk fitur yang sama. σ adalah
+                  jarak terstandardisasi, bukan probabilitas.
                 </p>
 
                 <div
@@ -485,7 +485,7 @@ export default function AiPage() {
                   )}
                 >
                   <p className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
-                    <Target className="h-3 w-3" aria-hidden /> Decision support
+                    <Target className="h-3 w-3" aria-hidden /> Dukungan keputusan
                   </p>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-ink-soft">{prediction.recommendation}</p>
                 </div>
@@ -497,7 +497,7 @@ export default function AiPage() {
                 <SourceBadge kind="model" />
                 <SourceBadge kind={prediction.is_simulated ? "simulated" : "observed"} />
                 <span className="text-[10.5px] text-muted">
-                  Model output derived from simulated telemetry · not an official warning.
+                  Keluaran model diturunkan dari telemetri buoy · bukan peringatan resmi.
                 </span>
               </div>
               <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
@@ -516,11 +516,11 @@ export default function AiPage() {
           <ErrorState message={history.error} onRetry={history.refresh} />
         ) : (
           <EmptyState
-            title="No analysis stored yet"
-            description="Run the simulator in the ocean console, then screen the window here. The API will refuse an empty window rather than inventing a result."
+            title="Belum ada analisis tersimpan"
+            description="Jalankan simulator di konsol laut, lalu saring jendela di sini. API akan menolak jendela kosong daripada mengarang hasil."
             action={
               <Link href="/ocean#simulator" className="btn btn-primary btn-sm">
-                <Database className="h-3.5 w-3.5" aria-hidden /> Generate telemetry first
+                <Database className="h-3.5 w-3.5" aria-hidden /> Hasilkan telemetri dahulu
               </Link>
             }
           />
@@ -530,14 +530,14 @@ export default function AiPage() {
         <section>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <span className="eyebrow">Analysis history</span>
-              <h2 className="mt-3 text-[22px] font-semibold tracking-[-0.035em]">Recent model runs</h2>
+              <span className="eyebrow">Riwayat analisis</span>
+              <h2 className="mt-3 text-[22px] font-semibold tracking-[-0.035em]">Eksekusi model terbaru</h2>
               <p className="mt-1 text-[12px] text-muted">
-                Stored in PostgreSQL/SQLite with model version, window and observation IDs.
+                Tersimpan di PostgreSQL/SQLite dengan versi model, jendela, dan ID observasi.
               </p>
             </div>
             <span className="chip">
-              <History className="h-3 w-3" aria-hidden /> {history.data?.length ?? 0} run(s)
+              <History className="h-3 w-3" aria-hidden /> {history.data?.length ?? 0} eksekusi
             </span>
           </div>
 
@@ -558,13 +558,13 @@ export default function AiPage() {
                 </div>
                 <p className="mt-3 text-[12px] font-semibold">{formatShortUtc(item.created_at)} UTC</p>
                 <div className="mt-2 flex items-center justify-between text-[10.5px] text-muted">
-                  <span className="metric">anomaly {fixed(item.anomaly_score, 2)}</span>
-                  <span className="metric">risk {fixed(item.risk_score, 0)}</span>
+                  <span className="metric">anomali {fixed(item.anomaly_score, 2)}</span>
+                  <span className="metric">risiko {fixed(item.risk_score, 0)}</span>
                 </div>
               </button>
             ))}
             {history.data?.length === 0 ? (
-              <p className="text-[12px] text-muted">No runs yet.</p>
+              <p className="text-[12px] text-muted">Belum ada eksekusi.</p>
             ) : null}
           </div>
         </section>

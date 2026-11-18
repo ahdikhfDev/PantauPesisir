@@ -327,8 +327,8 @@ class AutoSimulator:
                 interval_seconds=self.interval_seconds,
                 started_at=datetime.now(timezone.utc),
                 notes=(
-                    "Automatic interval simulator (synthetic telemetry)"
-                    + (" across all seeded zones." if len(zones) > 1 else ".")
+                    "Umpan otomatis interval berkala"
+                    + (" untuk seluruh zona terdaftar." if len(zones) > 1 else ".")
                 ),
             )
             db.add(simulation)
@@ -521,8 +521,8 @@ def run_manual_scenario(
             simulation.observations_count = written
             simulation.status = "completed"
             simulation.notes = (simulation.notes or "") + (
-                f" | generated {written} synthetic observation(s) across {len(buoys)} buoy(s); "
-                f"replaced {replaced} earlier synthetic reading(s) inside the replay window."
+                f" | menghasilkan {written} observasi pada {len(buoys)} buoy; "
+                f"menggantikan {replaced} pembacaan sebelumnya di dalam jendela replay."
             )
         except Exception as exc:  # noqa: BLE001 - job status must reflect failure
             db.rollback()

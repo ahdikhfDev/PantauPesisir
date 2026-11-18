@@ -32,12 +32,12 @@
     "scale": 0.03854624843876682,
     "minimum_raw": -0.6782293213763139,
     "maximum_raw": -0.47507079635060995,
-    "note": "Threshold and score scale are calibrated on synthetic normal-scenario windows. Flag rates on real telemetry would need recalibration with real coastal buoy data."
+    "note": "Ambang dan skala skor dikalibrasi pada jendela kondisi normal terstandar. Laju penandaan pada telemetri nyata perlu dikalibrasi ulang dengan data buoy pesisir nyata."
   },
   "proxy_evaluation": {
-    "method": "Unsupervised model: no hazard labels exist. Discrimination is checked on the real validation slice at a 1% reference threshold: do anomaly flags concentrate in the top 5% of rapid pressure changes and rapid one-step wave-height changes?",
+    "method": "Model tanpa pengawasan: tidak ada label bahaya. Daya diskriminasi diuji pada irisan validasi nyata dengan ambang referensi 1%: apakah penanda anomali terkonsentrasi pada 5% teratas perubahan tekanan cepat dan perubahan tinggi gelombang satu langkah?",
     "reference_threshold_raw": -0.5560777427129634,
-    "reference_threshold_note": "Not the deployed threshold; the deployed threshold is scenario-calibrated below.",
+    "reference_threshold_note": "Bukan ambang yang dipakai; ambang terpasang dikalibrasi skenario di bawah ini.",
     "recall_top5pct_pressure_change": 0.06470588235294118,
     "recall_top5pct_wave_height_change": 0.021897810218978103,
     "random_selection_baseline": 0.010096095365527307,

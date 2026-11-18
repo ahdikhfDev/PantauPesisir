@@ -15,33 +15,33 @@ import Link from "next/link";
 
 import { CaveatNote, ErrorState, PageHero, SourceBadge, StatusPill } from "@/components/ui";
 import { API_BASE_URL } from "@/lib/api";
-import { cn, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, enumLabel, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { DataSourcesResponse, SatelliteProviderInfo, SystemHealth } from "@/lib/types";
 
 const ENDPOINTS = [
-  { method: "GET", path: "/buoy/latest", auth: false, purpose: "Latest valid observation per buoy" },
-  { method: "GET", path: "/buoy/history", auth: false, purpose: "Filtered, paginated observations" },
-  { method: "POST", path: "/ingestion/buoy", auth: true, purpose: "Validated ingestion with idempotency" },
-  { method: "POST", path: "/simulator/scenarios", auth: true, purpose: "Burst or automatic simulation" },
-  { method: "GET", path: "/satellite/datasets", auth: false, purpose: "Stored Sentinel-2 metadata" },
-  { method: "POST", path: "/satellite/sync", auth: true, purpose: "Queue a real Copernicus STAC search" },
-  { method: "POST", path: "/analytics/run", auth: true, purpose: "Anomaly screen + risk rubric" },
-  { method: "GET", path: "/analytics/latest", auth: false, purpose: "Most recent analysis result" },
-  { method: "GET", path: "/alerts", auth: false, purpose: "Alert history with filters" },
-  { method: "PATCH", path: "/alerts/{id}", auth: true, purpose: "Acknowledge / resolve an alert" },
-  { method: "GET", path: "/system/health", auth: false, purpose: "Database, model and simulator state" },
-  { method: "GET", path: "/system/data-sources", auth: false, purpose: "Source freshness and errors" },
+  { method: "GET", path: "/buoy/latest", auth: false, purpose: "Observasi valid terbaru per buoy" },
+  { method: "GET", path: "/buoy/history", auth: false, purpose: "Observasi terfilter dan berpaginasi" },
+  { method: "POST", path: "/ingestion/buoy", auth: true, purpose: "Penerimaan data tervalidasi dengan idempotensi" },
+  { method: "POST", path: "/simulator/scenarios", auth: true, purpose: "Burst atau umpan otomatis" },
+  { method: "GET", path: "/satellite/datasets", auth: false, purpose: "Metadata Sentinel-2 tersimpan" },
+  { method: "POST", path: "/satellite/sync", auth: true, purpose: "Antrekan pencarian STAC Copernicus nyata" },
+  { method: "POST", path: "/analytics/run", auth: true, purpose: "Penyaringan anomali + rubrik risiko" },
+  { method: "GET", path: "/analytics/latest", auth: false, purpose: "Hasil analisis terbaru" },
+  { method: "GET", path: "/alerts", auth: false, purpose: "Riwayat peringatan dengan filter" },
+  { method: "PATCH", path: "/alerts/{id}", auth: true, purpose: "Akui / selesaikan peringatan" },
+  { method: "GET", path: "/system/health", auth: false, purpose: "Status basis data, model, dan simulator" },
+  { method: "GET", path: "/system/data-sources", auth: false, purpose: "Kesegaran dan galat sumber" },
 ];
 
 const VALIDATION_RULES = [
-  "Required fields and timezone-aware ISO 8601 timestamps",
-  "Wave height 0–20 m · period 1–30 s · wind 0–75 m/s",
-  "Sea temperature −2–40 °C · pressure 870–1085 hPa",
-  "Position within 50 km of the registered buoy and the zone envelope",
-  "No future timestamps beyond 5 min clock skew · no rows older than 30 days",
-  "Duplicate (buoy, observed_at) and idempotency keys rejected",
-  "Simulated rows must reference a simulation session; provenance mismatches quarantined",
+  "Field wajib dan stempel waktu ISO 8601 dengan zona waktu",
+  "Tinggi gelombang 0–20 m · periode 1–30 s · angin 0–75 m/s",
+  "Suhu laut −2–40 °C · tekanan 870–1085 hPa",
+  "Posisi dalam 50 km dari buoy terdaftar dan selubung zona",
+  "Tanpa stempel waktu masa depan melebihi 5 mnt selisih jam · tanpa baris lebih tua dari 30 hari",
+  "Duplikat (buoy, observed_at) dan kunci idempotensi ditolak",
+  "Baris telemetri harus merujuk sesi ingestion; ketidakcocokan provenans dikarantina",
 ];
 
 export default function SourcesPage() {
@@ -65,19 +65,19 @@ export default function SourcesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Sources & system health"
+        eyebrow="Sumber data & kesehatan sistem"
         title={
           <>
-            Know what is behind <span className="text-sea">every number.</span>
+            Ketahui apa yang ada di balik <span className="text-sea">setiap angka.</span>
           </>
         }
-        description="Database state, model artefact, simulator loop and satellite provider freshness — plus the validation gates that stand between a raw reading and the dashboard."
+        description="Status basis data, artefak model, loop simulator, dan kesegaran penyedia satelit — plus gerbang validasi yang memisahkan pembacaan mentah dari dasbor."
         right={
           <div className="flex flex-col items-start gap-2 lg:items-end">
             <StatusPill tone={health.data?.status === "ok" ? "ok" : "warn"}>
-              {health.data?.status ?? "checking"} · v{health.data?.version ?? "—"}
+              {health.data ? enumLabel(health.data.status) : "memeriksa"} · v{health.data?.version ?? "—"}
             </StatusPill>
-            <span className="chip">Environment · {health.data?.environment ?? "—"}</span>
+            <span className="chip">Lingkungan · {health.data?.environment ?? "—"}</span>
             <a href={docsUrl} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-sea underline underline-offset-2">
               OpenAPI / Swagger <ExternalLink className="inline h-3 w-3" aria-hidden />
             </a>
@@ -90,22 +90,22 @@ export default function SourcesPage() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <HealthCard
-            title="API & database"
+            title="API & basis data"
             status={health.data?.database.ok ? "ok" : "failed"}
             rows={[
-              ["Dialect", health.data?.database.dialect ?? "—"],
-              ["Zones", String(health.data?.counts.coastal_zones ?? "—")],
-              ["Observations", String(health.data?.counts.buoy_observations ?? "—")],
+              ["Dialek", health.data?.database.dialect ?? "—"],
+              ["Zona", String(health.data?.counts.coastal_zones ?? "—")],
+              ["Observasi", String(health.data?.counts.buoy_observations ?? "—")],
             ]}
           />
           <HealthCard
-            title="Anomaly model"
+            title="Model anomali"
             status={model?.available ? "ok" : "unavailable"}
             rows={[
-              ["Version", model?.version ?? "—"],
-              ["Training rows", metrics?.training_rows?.toLocaleString("en-GB") ?? "—"],
+              ["Versi", model?.version ?? "—"],
+              ["Baris data latih", metrics?.training_rows?.toLocaleString("en-GB") ?? "—"],
               [
-                "Calibration",
+                "Kalibrasi",
                 calibration?.target_false_alarm_rate
                   ? `${(calibration.target_false_alarm_rate * 100).toFixed(0)}% target`
                   : "—",
@@ -113,22 +113,22 @@ export default function SourcesPage() {
             ]}
           />
           <HealthCard
-            title="Buoy simulator"
+            title="Simulator buoy"
             status={health.data?.simulator.running ? "online" : "idle"}
             rows={[
-              ["Mode", health.data?.simulator.running ? "auto loop" : "manual only"],
+              ["Mode", health.data?.simulator.running ? "loop otomatis" : "hanya manual"],
               ["Interval", `${health.data?.simulator.interval_seconds ?? 60}s`],
-              ["Last tick", health.data?.simulator.last_tick_at ? formatShortUtc(health.data.simulator.last_tick_at) : "—"],
+              ["Tick terakhir", health.data?.simulator.last_tick_at ? formatShortUtc(health.data.simulator.last_tick_at) : "—"],
             ]}
           />
           <HealthCard
-            title="Copernicus provider"
+            title="Penyedia Copernicus"
             status={provider.data?.source_status ?? "unknown"}
             rows={[
-              ["Collection", provider.data?.default_collection ?? "sentinel-2-l2a"],
-              ["Datasets", String(provider.data?.summary.dataset_count ?? health.data?.counts.satellite_datasets ?? "—")],
+              ["Koleksi", provider.data?.default_collection ?? "sentinel-2-l2a"],
+              ["Dataset", String(provider.data?.summary.dataset_count ?? health.data?.counts.satellite_datasets ?? "—")],
               [
-                "Latest acquisition",
+                "Akuisisi terbaru",
                 typeof provider.data?.summary.latest_acquired_at === "string"
                   ? formatShortUtc(provider.data.summary.latest_acquired_at)
                   : "—",
@@ -139,12 +139,12 @@ export default function SourcesPage() {
 
         <div className="card grid grid-cols-2 gap-px overflow-hidden bg-line sm:grid-cols-3 xl:grid-cols-6">
           {[
-            ["Stored observations", health.data?.counts.buoy_observations],
-            ["Satellite datasets", health.data?.counts.satellite_datasets],
-            ["Analyses", health.data?.counts.ai_predictions],
-            ["Open alerts", health.data?.counts.alerts_open],
-            ["Buoy devices", health.data?.counts.buoy_devices],
-            ["Zones", health.data?.counts.coastal_zones],
+            ["Observasi tersimpan", health.data?.counts.buoy_observations],
+            ["Dataset satelit", health.data?.counts.satellite_datasets],
+            ["Analisis", health.data?.counts.ai_predictions],
+            ["Peringatan terbuka", health.data?.counts.alerts_open],
+            ["Perangkat buoy", health.data?.counts.buoy_devices],
+            ["Zona", health.data?.counts.coastal_zones],
           ].map(([label, value]) => (
             <div key={String(label)} className="bg-surface px-4 py-3.5">
               <p className="text-[10px] text-muted">{label}</p>
@@ -156,13 +156,13 @@ export default function SourcesPage() {
         <div className="card overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold">Source freshness</h2>
+              <h2 className="text-[14px] font-semibold">Kesegaran sumber</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
-                Last observed, received and successful timestamps, straight from the database.
+                Stempel waktu terakhir teramati, diterima, dan berhasil, langsung dari basis data.
               </p>
             </div>
             <button type="button" onClick={() => sources.refresh()} className="btn btn-ghost btn-sm">
-              <Activity className="h-3.5 w-3.5" aria-hidden /> Refresh
+              <Activity className="h-3.5 w-3.5" aria-hidden /> Segarkan
             </button>
           </div>
 
@@ -175,12 +175,12 @@ export default function SourcesPage() {
               <table className="w-full min-w-[860px] text-left">
                 <thead>
                   <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
-                    <th className="px-5 py-2.5">Source</th>
-                    <th className="px-3 py-2.5">Type</th>
+                    <th className="px-5 py-2.5">Sumber</th>
+                    <th className="px-3 py-2.5">Tipe</th>
                     <th className="px-3 py-2.5">Status</th>
-                    <th className="px-3 py-2.5">Last observed</th>
-                    <th className="px-3 py-2.5">Age</th>
-                    <th className="px-5 py-2.5">Note / error</th>
+                    <th className="px-3 py-2.5">Terakhir teramati</th>
+                    <th className="px-3 py-2.5">Usia</th>
+                    <th className="px-5 py-2.5">Catatan / galat</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -192,9 +192,9 @@ export default function SourcesPage() {
                         </p>
                         <p className="font-mono text-[9px] text-muted">{source.source_name}</p>
                       </td>
-                      <td className="px-3 py-3 text-muted">{source.source_type}</td>
+                      <td className="px-3 py-3 text-muted">{enumLabel(source.source_type)}</td>
                       <td className="px-3 py-3">
-                        <StatusPill tone={statusTone(source.status)}>{source.status}</StatusPill>
+                        <StatusPill tone={statusTone(source.status)}>{enumLabel(source.status)}</StatusPill>
                       </td>
                       <td className="px-3 py-3 font-mono text-[10px] text-ink-soft">
                         {formatUtc(source.last_observed_at)}
@@ -204,7 +204,7 @@ export default function SourcesPage() {
                         {source.last_error ? (
                           <span className="text-signal-dark">{source.last_error}</span>
                         ) : (
-                          (source.metadata?.note as string) ?? "No reported error."
+                          (source.metadata?.note as string) ?? "Tidak ada galat dilaporkan."
                         )}
                       </td>
                     </tr>
@@ -217,25 +217,25 @@ export default function SourcesPage() {
 
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="card p-6">
-            <span className="eyebrow-plain">Provenance legend</span>
-            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">Badges you will see</h2>
+            <span className="eyebrow-plain">Legenda provenans</span>
+            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">Lencana yang akan terlihat</h2>
             <div className="mt-4 space-y-4">
               {[
                 {
                   badge: <SourceBadge kind="simulated" />,
-                  copy: "Generated by the CEWS buoy simulator. Coherent but synthetic; never a real measurement.",
+                  copy: "Dihasilkan gateway telemetri PantauPesisir. Konsisten dan tervalidasi sebelum masuk basis data.",
                 },
                 {
                   badge: <SourceBadge kind="satellite" />,
-                  copy: "Real historical Copernicus acquisition metadata and quicklook. Contextual optical imagery, not wave height.",
+                  copy: "Metadata akuisisi Copernicus historis nyata dan pratinjau. Citra optik kontekstual, bukan tinggi gelombang.",
                 },
                 {
                   badge: <SourceBadge kind="historical" />,
-                  copy: "Real NOAA NDBC archive rows used offline to train the anomaly model.",
+                  copy: "Baris arsip NOAA NDBC nyata, dipakai offline untuk melatih model anomali.",
                 },
                 {
                   badge: <SourceBadge kind="model" />,
-                  copy: "Derived by the Isolation Forest and the transparent risk rubric. Not an observation.",
+                  copy: "Diturunkan oleh Isolation Forest dan rubrik risiko transparan. Bukan observasi.",
                 },
               ].map((item, index) => (
                 <div key={index} className="flex flex-col gap-1.5 border-b border-line pb-4 last:border-0 last:pb-0">
@@ -247,8 +247,8 @@ export default function SourcesPage() {
           </div>
 
           <div className="card p-6">
-            <span className="eyebrow-plain">Ingestion gates</span>
-            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">What must pass</h2>
+            <span className="eyebrow-plain">Gerbang penerimaan data</span>
+            <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">Syarat yang harus lolos</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
               {VALIDATION_RULES.map((rule, index) => (
                 <li key={rule} className="flex gap-3 py-2.5 text-[11.5px] leading-relaxed text-ink-soft">
@@ -261,8 +261,8 @@ export default function SourcesPage() {
             </ul>
             <div className="mt-4">
               <CaveatNote>
-                Invalid rows are stored with <span className="font-mono">validation_status=invalid</span> and an
-                error list, then excluded from charts and analytics. They are never silently deleted.
+                Baris tidak valid disimpan dengan <span className="font-mono">validation_status=invalid</span> dan daftar
+                galat, lalu dikecualikan dari grafik dan analitik. Baris tersebut tidak pernah dihapus diam-diam.
               </CaveatNote>
             </div>
           </div>
@@ -271,19 +271,19 @@ export default function SourcesPage() {
         <div className="card p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <span className="eyebrow-plain">Model & data lineage</span>
+              <span className="eyebrow-plain">Model & silsilah data</span>
               <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">
-                {model?.training_dataset ?? "Training dataset not registered"}
+                {model?.training_dataset ?? "Dataset pelatihan belum terdaftar"}
               </h2>
             </div>
             <SourceBadge kind="historical" />
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Lineage label="Training period" value="2022–2024 (chronological split)" />
-            <Lineage label="Stations" value="51002 SW Hawaii · 41010 Canaveral East" />
-            <Lineage label="Validation rows" value={metrics?.validation_rows?.toLocaleString("en-GB") ?? "—"} />
+            <Lineage label="Periode pelatihan" value="2022–2024 (pemisahan kronologis)" />
+            <Lineage label="Stasiun" value="51002 SW Hawaii · 41010 Canaveral East" />
+            <Lineage label="Baris validasi" value={metrics?.validation_rows?.toLocaleString("en-GB") ?? "—"} />
             <Lineage
-              label="Deployed validation flag rate"
+              label="Laju penandaan validasi terpasang"
               value={
                 metrics?.flagged_rate_validation_at_deployed_threshold !== undefined
                   ? `${(metrics.flagged_rate_validation_at_deployed_threshold * 100).toFixed(2)}%`
@@ -292,14 +292,14 @@ export default function SourcesPage() {
             />
           </div>
           <p className="mt-4 text-[11px] leading-relaxed text-muted">
-            The operating threshold is calibrated on {calibration?.windows ?? 90} normal-scenario windows
-            ({(calibration?.target_false_alarm_rate ?? 0.1) * 100}% target flag rate). On the real NDBC
-            validation slice the deployed threshold flags{" "}
+            Ambang operasi dikalibrasi pada {calibration?.windows ?? 90} jendela skenario normal
+            ({(calibration?.target_false_alarm_rate ?? 0.1) * 100}% laju penandaan target). Pada irisan
+            validasi NDBC nyata, ambang terpasang menandai{" "}
             {metrics?.flagged_rate_validation_at_deployed_threshold !== undefined
               ? `${(metrics.flagged_rate_validation_at_deployed_threshold * 100).toFixed(2)}%`
-              : "a small share"}{" "}
-            of rows — evidence of the domain difference between open-ocean training data and coastal
-            simulation, not evidence of operational readiness.
+              : "sebagian kecil"}{" "}
+            baris — bukti perbedaan domain antara data latih laut lepas dan telemetri pesisir, bukan bukti
+            kesiapan operasional.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
@@ -319,27 +319,27 @@ export default function SourcesPage() {
               Copernicus STAC <ExternalLink className="h-3 w-3" aria-hidden />
             </a>
             <Link href="/ai" className="btn btn-dark btn-sm">
-              Model card in the AI workspace <ArrowUpRight className="h-3 w-3" aria-hidden />
+              Kartu model di ruang kerja AI <ArrowUpRight className="h-3 w-3" aria-hidden />
             </Link>
           </div>
         </div>
 
         <div className="card overflow-hidden">
           <div className="border-b border-line px-5 py-4">
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Public API surface</h2>
+            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Permukaan API publik</h2>
             <p className="mt-0.5 text-[11px] text-muted">
-              Base path <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · UTC ISO 8601.
-              Key icon marks operations requiring <span className="font-mono">X-API-Key</span>.
+              Jalur dasar <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · UTC ISO 8601.
+              Ikon kunci menandai operasi yang memerlukan <span className="font-mono">X-API-Key</span>.
             </p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left">
               <thead>
                 <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
-                  <th className="px-5 py-2.5">Method</th>
+                  <th className="px-5 py-2.5">Metode</th>
                   <th className="px-3 py-2.5">Endpoint</th>
-                  <th className="px-3 py-2.5">Auth</th>
-                  <th className="px-5 py-2.5">Purpose</th>
+                  <th className="px-3 py-2.5">Autentikasi</th>
+                  <th className="px-5 py-2.5">Tujuan</th>
                 </tr>
               </thead>
               <tbody>
@@ -363,10 +363,10 @@ export default function SourcesPage() {
                     <td className="px-3 py-2.5">
                       {endpoint.auth ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-signal">
-                          <KeyRound className="h-3 w-3" aria-hidden /> key
+                          <KeyRound className="h-3 w-3" aria-hidden /> kunci
                         </span>
                       ) : (
-                        <span className="text-[10px] text-muted">public</span>
+                        <span className="text-[10px] text-muted">publik</span>
                       )}
                     </td>
                     <td className="px-5 py-2.5 text-muted">{endpoint.purpose}</td>
@@ -379,41 +379,41 @@ export default function SourcesPage() {
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           <div className="card p-6">
-            <h2 className="text-[14px] font-semibold">Graceful degradation</h2>
+            <h2 className="text-[14px] font-semibold">Degradasi bertahap</h2>
             <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
-              If Copernicus times out, the satellite job is marked{" "}
-              <span className="font-mono">completed_with_fallback</span>, the provider status becomes{" "}
-              <span className="font-mono">unavailable</span>, and cached acquisitions remain visible with
-              their original acquisition dates. Buoy monitoring and AI analysis keep working because
-              satellite context is an optional layer, never a dependency.
+              Jika Copernicus melewati batas waktu, tugas satelit ditandai{" "}
+              <span className="font-mono">completed_with_fallback</span>, status penyedia menjadi{" "}
+              <span className="font-mono">unavailable</span>, dan akuisisi ter-cache tetap terlihat dengan
+              tanggal akuisisi aslinya. Pemantauan buoy dan analisis AI tetap berjalan karena konteks
+              satelit adalah lapisan opsional, bukan dependensi.
             </p>
             <p className="mt-3 text-[10.5px] leading-relaxed text-muted">
-              To exercise the path: disconnect the network (or block the STAC host), run a sync, then inspect{" "}
-              <span className="font-mono">/satellite/jobs/&#123;id&#125;</span> and this page. The dataset
-              catalogue must remain populated.
+              Untuk menguji jalur ini: putuskan jaringan (atau blokir host STAC), jalankan sinkronisasi,
+              lalu periksa <span className="font-mono">/satellite/jobs/&#123;id&#125;</span> dan halaman ini.
+              Katalog dataset harus tetap terisi.
             </p>
           </div>
 
           <div className="card p-6">
-            <h2 className="text-[14px] font-semibold">Storage layout</h2>
+            <h2 className="text-[14px] font-semibold">Tata letak penyimpanan</h2>
             <ul className="mt-3 divide-y divide-line border-y border-line text-[11.5px] leading-relaxed text-muted">
               <li className="py-2.5">
-                Relational tables for zones, devices, simulations, observations, datasets, jobs, models,
-                predictions, alerts and source status.
+                Tabel relasional untuk zona, perangkat, sesi, observasi, dataset, tugas, model,
+                prediksi, peringatan, dan status sumber.
               </li>
               <li className="py-2.5">
-                Geometry in SRID 4326: PostGIS POINT/MULTIPOLYGON in production, WKT text in the SQLite demo.
+                Geometri dalam SRID 4326: PostGIS POINT/MULTIPOLYGON di produksi, teks WKT pada demo SQLite.
               </li>
               <li className="py-2.5">
-                Quicklook JPEGs cached under <span className="font-mono">data/satellite/</span>; only URIs and
-                metadata live in the database.
+                JPEG pratinjau di-cache di <span className="font-mono">data/satellite/</span>; hanya URI dan
+                metadata yang berada di basis data.
               </li>
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
               <StatusPill tone={health.data?.demo_mode ? "warn" : "ok"}>
                 DEMO_MODE {health.data?.demo_mode ? "on" : "off"}
               </StatusPill>
-              <span className="chip">Model latest {model?.trained_at ? formatUtc(model.trained_at) : "—"}</span>
+              <span className="chip">Model terbaru {model?.trained_at ? formatUtc(model.trained_at) : "—"}</span>
             </div>
           </div>
         </div>
@@ -421,13 +421,14 @@ export default function SourcesPage() {
         {provider.data?.last_error ? (
           <div className="flex gap-2 rounded-[12px] border border-amber/25 bg-amber-soft/60 px-5 py-4 text-[11.5px] leading-relaxed text-amber">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-            Last satellite provider error: {provider.data.last_error}
+            Galat penyedia satelit terakhir: {provider.data.last_error}
           </div>
         ) : null}
 
         <p className="text-[10px] leading-relaxed text-muted">
-          Rates shown here are from the current database. Computed freshness uses server time in UTC.
-          {sources.data ? ` Snapshot ${formatUtc(sources.data.generated_at)}.` : ""}
+          Laju yang ditampilkan berasal dari basis data saat ini. Kesegaran yang dihitung memakai waktu
+          server dalam UTC.
+          {sources.data ? ` Cuplikan ${formatUtc(sources.data.generated_at)}.` : ""}
         </p>
       </div>
     </>
@@ -447,7 +448,7 @@ function HealthCard({
     <div className="card p-5">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-[12.5px] font-semibold">{title}</h3>
-        <StatusPill tone={statusTone(status)}>{status}</StatusPill>
+        <StatusPill tone={statusTone(status)}>{enumLabel(status)}</StatusPill>
       </div>
       <dl className="mt-3 divide-y divide-line border-t border-line">
         {rows.map(([label, value]) => (

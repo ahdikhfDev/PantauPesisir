@@ -16,9 +16,9 @@ def test_analysis_produces_explainable_prototype_output(client, auth):
     assert prediction["risk_level"] in {"low", "moderate", "high"}
     assert prediction["risk_method"] == "prototype_rubric_v1"
     assert prediction["contributing_factors"], "explainability requires factors"
-    assert "not a probability" in " ".join(prediction["caveats"]).lower()
+    assert "bukan probabilitas" in " ".join(prediction["caveats"]).lower()
     assert prediction["is_simulated"] is True
-    assert "prototype" in prediction["recommendation"].lower()
+    assert "prototipe" in prediction["recommendation"].lower()
     assert prediction["data_quality_summary"]["risk_method"] == "prototype_rubric_v1"
     assert "satellite_alignment" in prediction["data_quality_summary"]
 
@@ -33,7 +33,7 @@ def test_extreme_scenario_escalates_risk_and_creates_alert(client, auth):
     alerts = client.get(f"{API}/alerts", params={"zone_code": "JKT-BAY"}).json()
     assert alerts["total"] >= 1
     assert all(alert["source"] == "analytics" for alert in alerts["items"])
-    assert "not an official warning" in alerts["items"][0]["description"].lower()
+    assert "bukan peringatan resmi" in alerts["items"][0]["description"].lower()
 
 
 def test_latest_detail_and_history_endpoints(client, auth):
@@ -62,5 +62,5 @@ def test_model_info_documents_limitations(client):
     assert body["algorithm"] == "IsolationForest"
     assert body["metrics"]["training_rows"] > 10_000
     assert body["metrics"]["proxy_evaluation"]["method"]
-    assert any("not" in limitation.lower() for limitation in body["limitations"])
+    assert any("bukan" in limitation.lower() for limitation in body["limitations"])
     assert "NDBC" in body["training_dataset"]
