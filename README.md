@@ -8,11 +8,12 @@
   <a href="https://pantaupesisir-api.vercel.app/docs"><strong>Dokumentasi API</strong></a>
 </p>
 
-# PantauPesisir — Konsol Pemantauan Pesisir
+name: "PantauPesisir — Cek Kondisi Laut",
 
-Konsol pemantauan pesisir yang dapat diterapkan, menggabungkan **pipeline telemetri buoy**, **metadata
-akuisisi Copernicus Sentinel-2 yang nyata**, **backend FastAPI + PostgreSQL/PostGIS**, dan **penyaringan
-anomali berbasis machine learning** dengan rubrik risiko transparan — disajikan dalam dasbor operasional Next.js.
+PantauPesisir membantu **warga pesisir dan pengunjung pantai** memutuskan apakah aman untuk ke laut:
+beranda memberi jawaban sederhana — aman, hati-hati, atau tunda — dari telemetri buoy, metadata
+satelit Copernicus, dan analitik risiko. Untuk pengguna lanjutan, konsol teknis menyediakan grafik,
+provenance, model anomaly detection, dan status sumber data.
 
 > **Provenans data.** Metadata satelit dan thumbnail adalah akuisisi historis Copernicus yang nyata.
 > Model dilatih pada observasi NOAA NDBC yang nyata. Telemetri buoy mengalir melalui jalur ingesti,
@@ -54,24 +55,27 @@ operasional selalu segar; service worker hanya aktif pada build produksi.
 Aset merek tersedia di `frontend/public/brand/` (`mark.svg`, `logo.svg`) dan ikon PWA di
 `frontend/public/icons/` (192, 512, dan maskable 512).
 
-## 2. Konsol
+## 2. Halaman warga dan konsol teknis
 
-PantauPesisir adalah aplikasi dasbor dengan kerangka ruang kerja persisten (sidebar + bilah status),
-bukan halaman pendaratan pemasaran. Setiap layar membaca data API langsung; aksi istimewa memakai
-kunci demo yang didokumentasikan.
+PantauPesisir punya dua lapisan. **Beranda `/`** ditujukan untuk warga pesisir dan pengunjung pantai:
+pilih lokasi dan aktivitas, lalu dapatkan jawaban sederhana — aman, hati-hati, atau tunda — beserta
+alasannya dalam bahasa sehari-hari. **Konsol `/konsol`** ditujukan untuk pengguna lanjutan dan
+penilaian teknis: KPI, grafik, satelit, analitik, dan status sumber.
 
-![Ringkasan operasional PantauPesisir](docs/screenshots/overview.png)
+![Cek kondisi sebelum ke laut](docs/screenshots/cek.png)
 
 | Rute | Ruang kerja |
 | --- | --- |
-| **`/` Ringkasan** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status simulator |
+| **`/` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), dan tautan ke detail teknis |
+| **`/konsol` Ringkasan teknis** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |
 | **`/ocean`** | Telemetri tujuh parameter, grafik gelombang/angin dan tekanan/periode, tabel pembacaan, panel provenans lengkap, kontrol simulator |
 | **`/satellite`** | Peta Leaflet (poligon zona, buoy, footprint Sentinel-2), formulir sinkronisasi STAC nyata, galeri akuisisi dengan quicklook, tutupan awan, CRS dan atribusi |
 | **`/ai`** | Kartu model, formulir eksekusi, indeks anomali pada skala ambang terkalibrasi, skor risiko, faktor penyumbang, rekomendasi, keterbatasan dan riwayat analisis |
 | **`/alerts`** | Alur kerja peringatan yang dapat difilter dengan pengakuan dan penyelesaian |
 | **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
-Tangkapan layar lainnya: [ocean](docs/screenshots/ocean.png) ·
+Tangkapan layar lainnya: [konsol](docs/screenshots/konsol.png) ·
+[ocean](docs/screenshots/ocean.png) ·
 [satellite](docs/screenshots/satellite.png) · [AI](docs/screenshots/ai.png) ·
 [alerts](docs/screenshots/alerts.png) · [sources](docs/screenshots/sources.png) ·
 [mobile](docs/screenshots/mobile.png).

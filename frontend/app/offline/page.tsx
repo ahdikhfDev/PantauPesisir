@@ -17,14 +17,14 @@ export default function OfflinePage() {
         </p>
         <ul className="mt-4 space-y-1.5 text-[11.5px] text-muted">
           <li>
-            · Ringkasan, Pemantauan laut, Satelit, Risiko AI, Peringatan, dan Sumber data tersedia
-            offline.
+            · Cek Kondisi, Peringatan warga, Ringkasan teknis, Satelit, Risiko AI, dan Sumber data
+            tersedia offline.
           </li>
           <li>· Analisis baru, sinkronisasi satelit, dan perubahan peringatan memerlukan jaringan.</li>
         </ul>
         <div className="mt-5 flex gap-2">
           <Link href="/" className="btn btn-primary btn-sm">
-            Kembali ke Ringkasan
+            Kembali ke Beranda
           </Link>
         </div>
       </div>

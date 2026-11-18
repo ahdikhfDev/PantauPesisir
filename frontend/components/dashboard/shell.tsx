@@ -5,6 +5,7 @@ import {
   BrainCircuit,
   Database,
   LayoutDashboard,
+  LifeBuoy,
   Menu,
   Satellite,
   Waves,
@@ -14,18 +15,35 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import type { LucideIcon } from "lucide-react";
+
 import { cn, formatShortUtc } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { SystemHealth } from "@/lib/types";
 
-const NAV = [
-  { href: "/", label: "Ringkasan", icon: LayoutDashboard },
-  { href: "/ocean", label: "Pemantauan laut", icon: Waves },
-  { href: "/satellite", label: "Satelit", icon: Satellite },
-  { href: "/ai", label: "Risiko AI", icon: BrainCircuit },
-  { href: "/alerts", label: "Peringatan", icon: BellRing },
-  { href: "/sources", label: "Sumber data", icon: Database },
+type NavItem = { href: string; label: string; icon: LucideIcon };
+
+const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
+  {
+    label: "Warga",
+    items: [
+      { href: "/", label: "Cek Kondisi", icon: LifeBuoy },
+      { href: "/alerts", label: "Peringatan warga", icon: BellRing },
+    ],
+  },
+  {
+    label: "Konsol",
+    items: [
+      { href: "/konsol", label: "Ringkasan teknis", icon: LayoutDashboard },
+      { href: "/ocean", label: "Pemantauan laut", icon: Waves },
+      { href: "/satellite", label: "Satelit", icon: Satellite },
+      { href: "/ai", label: "Risiko AI", icon: BrainCircuit },
+      { href: "/sources", label: "Sumber data", icon: Database },
+    ],
+  },
 ];
+
+const NAV: NavItem[] = NAV_GROUPS.flatMap((group) => group.items);
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -90,7 +108,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             />
             <span className="leading-none">
               <span className="font-display block text-[15.5px] font-semibold tracking-[-0.03em]">PantauPesisir</span>
-              <span className="mt-1 block text-[9px] text-white/40">Operasi pesisir</span>
+              <span className="mt-1 block text-[9px] text-white/40">Pesisir & pantai</span>
             </span>
           </Link>
           <button
@@ -104,45 +122,49 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="border-t border-white/[0.07] px-2 pt-5">
-          <p className="px-2 text-[10px] font-medium text-white/35">Pemantauan</p>
-          <nav className="mt-2 space-y-0.5">
-            {NAV.map((item) => {
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
-                    active
-                      ? "bg-white/[0.07] text-white"
-                      : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
-                  )}
-                >
-                  {active ? (
-                    <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
-                  ) : null}
-                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                  {item.href === "/alerts" ? (
-                    <span className="ml-auto font-mono text-[10px] text-white/35">
-                      {health.data?.counts.alerts_open ?? 0}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </nav>
+          {NAV_GROUPS.map((group, index) => (
+            <div key={group.label} className={index ? "mt-5" : undefined}>
+              <p className="px-2 text-[10px] font-medium text-white/35">{group.label}</p>
+              <nav className="mt-2 space-y-0.5">
+                {group.items.map((item) => {
+                  const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
+                        active
+                          ? "bg-white/[0.07] text-white"
+                          : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
+                      )}
+                    >
+                      {active ? (
+                        <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
+                      ) : null}
+                      <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
+                      <span className="truncate">{item.label}</span>
+                      {item.href === "/alerts" ? (
+                        <span className="ml-auto font-mono text-[10px] text-white/35">
+                          {health.data?.counts.alerts_open ?? 0}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
         </div>
 
         <div className="mt-6 px-4">
-          <p className="text-[10px] font-medium text-white/35">Mode data</p>
+          <p className="text-[10px] font-medium text-white/35">Sumber data</p>
           <p className="mt-2 flex items-center gap-1.5 text-[11px] text-white/70">
             <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-            Telemetri buoy
+            Data buoy langsung
           </p>
           <p className="mt-1.5 text-[10px] leading-relaxed text-white/35">
-            Pembacaan buoy dari jaringan telemetri tervalidasi. Rekaman satelit adalah akuisisi historis nyata.
+            Pembacaan buoy yang sudah diperiksa. Rekaman satelit adalah data historis nyata.
           </p>
         </div>
 

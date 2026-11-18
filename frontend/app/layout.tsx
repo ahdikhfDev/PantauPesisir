@@ -29,11 +29,11 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "PantauPesisir — Konsol Pemantauan Pesisir",
+    default: "PantauPesisir — Cek Kondisi Laut Sebelum Berangkat",
     template: "%s · PantauPesisir",
   },
   description:
-    "Konsol pemantauan pesisir dan intelijen risiko PantauPesisir: telemetri buoy tervalidasi, metadata Copernicus Sentinel-2 terverifikasi, dan penyaringan anomali berbasis pembelajaran mesin.",
+    "PantauPesisir membantu warga pesisir dan pengunjung pantai memeriksa ombak, angin, dan peringatan sebelum ke laut, dengan konsol teknis untuk pengguna lanjutan.",
   applicationName: "PantauPesisir",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

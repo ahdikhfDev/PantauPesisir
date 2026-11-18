@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PantauPesisir — Konsol Pemantauan Pesisir",
+    name: "PantauPesisir — Cek Kondisi Laut",
     short_name: "PantauPesisir",
     description:
-      "Konsol pemantauan pesisir: telemetri buoy, metadata satelit Copernicus, dan penyaringan anomali yang dapat ditelusuri.",
+      "Cek kondisi laut sebelum ke pantai atau melaut: ombak, angin, dan peringatan dalam bahasa sederhana.",
     lang: "id",
     id: "/",
     start_url: "/",
@@ -37,10 +37,10 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     shortcuts: [
-      { name: "Ringkasan", short_name: "Ringkasan", url: "/" },
-      { name: "Pemantauan laut", short_name: "Pemantauan", url: "/ocean" },
-      { name: "Risiko AI", short_name: "Risiko AI", url: "/ai" },
-      { name: "Peringatan", short_name: "Peringatan", url: "/alerts" },
+      { name: "Cek Kondisi", short_name: "Cek", url: "/" },
+      { name: "Peringatan warga", short_name: "Peringatan", url: "/alerts" },
+      { name: "Ringkasan teknis", short_name: "Konsol", url: "/konsol" },
+      { name: "Pemantauan laut", short_name: "Laut", url: "/ocean" },
     ],
   };
 }
