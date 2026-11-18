@@ -201,5 +201,5 @@ di-cache di `data/satellite/`.
 | Jendela observasi kosong | `/analytics/run` mengembalikan 422 dengan instruksi untuk menghasilkan data |
 | Ingesti duplikat | 200 dengan `duplicate: true`, tanpa baris kedua |
 | Pengukuran tidak valid | 201 dengan `validation_status: invalid`, disimpan untuk audit |
-| Pelanggaran transisi peringatan | 409 dengan siklus hidup yang diizinkan |
+| Pemberitahuan kedaluwarsa | Tidak lagi muncul di `status=open` setelah `ALERT_TTL_HOURS` (default 6 jam) |
 | Basis data tidak dapat dijangkau | Health `degraded`; UI menampilkan status error dengan retry |

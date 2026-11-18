@@ -2,28 +2,18 @@
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime, timezone
-
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.security import require_api_key
 from app.db.session import get_db
 from app.models.alert import Alert
 from app.models.zone import CoastalZone
-from app.schemas.alerts import AlertListResponse, AlertOut, AlertPatchIn
+from app.schemas.alerts import AlertListResponse
+from app.services.alert_lifecycle import expire_stale_alerts
 from app.services.serializers import alert_out
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
-
-ALLOWED_TRANSITIONS = {
-    ("open", "acknowledged"),
-    ("open", "resolved"),
-    ("acknowledged", "resolved"),
-    ("acknowledged", "open"),
-}
 
 
 @router.get("", response_model=AlertListResponse, summary="List alerts")
@@ -35,6 +25,7 @@ def list_alerts(
     offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ) -> AlertListResponse:
+    expire_stale_alerts(db)
     stmt = select(Alert, CoastalZone).join(CoastalZone, Alert.zone_id == CoastalZone.id)
     count_stmt = select(func.count(Alert.id)).join(CoastalZone, Alert.zone_id == CoastalZone.id)
     if status_filter:
@@ -64,45 +55,3 @@ def list_alerts(
         counts_by_status=by_status,
         counts_by_severity=by_severity,
     )
-
-
-@router.patch(
-    "/{alert_id}",
-    response_model=AlertOut,
-    dependencies=[Depends(require_api_key)],
-    summary="Acknowledge or resolve an alert",
-)
-def update_alert(alert_id: uuid.UUID, payload: AlertPatchIn, db: Session = Depends(get_db)) -> AlertOut:
-    alert = db.get(Alert, alert_id)
-    if alert is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alert not found")
-    if payload.status == alert.status:
-        zone = db.get(CoastalZone, alert.zone_id)
-        return alert_out(alert, zone)
-    if (alert.status, payload.status) not in ALLOWED_TRANSITIONS:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Cannot move alert from '{alert.status}' to '{payload.status}'. "
-            "Resolved alerts cannot be reopened.",
-        )
-
-    now = datetime.now(timezone.utc)
-    actor = (payload.actor or "operator").strip()[:80]
-    if payload.status == "acknowledged":
-        alert.acknowledged_at = now
-        alert.acknowledged_by = actor
-    elif payload.status == "resolved":
-        alert.resolved_at = now
-        if alert.acknowledged_at is None:
-            alert.acknowledged_at = now
-            alert.acknowledged_by = actor
-    elif payload.status == "open":
-        alert.acknowledged_at = None
-        alert.acknowledged_by = None
-    if payload.note:
-        alert.description = f"{alert.description}\n\nOperator note ({actor}): {payload.note.strip()[:500]}"
-    alert.status = payload.status
-    db.commit()
-    db.refresh(alert)
-    zone = db.get(CoastalZone, alert.zone_id)
-    return alert_out(alert, zone)

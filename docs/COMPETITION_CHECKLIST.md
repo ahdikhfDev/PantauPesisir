@@ -35,7 +35,7 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 | 9 | Kegagalan penyedia tidak mengganggu pemantauan buoy | ✅ | Uji fallback + baris status |
 | 10 | Situs web publik dan repositori publik tersedia | ⛔ | Penerapan + publikasi repo masih tertunda |
 | 11 | README, katalog data, model card, penyiapan lengkap | ✅ | README + `docs/*` |
-| 12 | Tidak ada klaim peringatan operasional yang keliru | ✅ | Teks, kaveat, model card, disclaimer footer |
+| 12 | Tidak ada klaim peringatan operasional yang keliru | ✅ | Teks, kaveat, dan model card |
 
 ## 3. Dokumentasi
 

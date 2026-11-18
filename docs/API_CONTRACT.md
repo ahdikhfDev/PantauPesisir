@@ -35,8 +35,7 @@
 | GET | `/analytics/history` | publik | Analisis terkini |
 | GET | `/analytics/model-info` | publik | Metrik model card |
 | GET | `/analytics/{analysis_id}` | publik | Detail analisis |
-| GET | `/alerts` | publik | Daftar peringatan dengan filter dan jumlah |
-| PATCH | `/alerts/{alert_id}` | kunci | Akui / selesaikan / buka kembali |
+| GET | `/alerts` | publik | Daftar pemberitahuan dengan filter dan jumlah |
 | GET | `/system/health` | publik | Kesehatan DB, model, simulator, penyedia |
 | GET | `/system/data-sources` | publik | Tabel kesegaran sumber |
 | GET | `/system/overview` | publik | Payload dasbor teragregasi |
@@ -287,29 +286,23 @@ Error: `404` zona tidak dikenal · `422` kurang dari 3 observasi valid · `503` 
       "severity": "high",
       "title": "High-risk coastal conditions — Jakarta Bay",
       "description": "Tingkat rubrik risiko 'high' (skor 94.9/100), skor anomali 0.93. …",
-      "status": "acknowledged",
+      "status": "open",
       "source": "analytics",
       "created_at": "2026-11-18T03:12:04Z",
-      "acknowledged_at": "2026-11-18T03:12:31Z",
-      "acknowledged_by": "operator-pesisir",
+      "acknowledged_at": null,
+      "acknowledged_by": null,
       "resolved_at": null
     }
   ],
   "total": 1,
-  "counts_by_status": { "acknowledged": 1 },
+  "counts_by_status": { "open": 1 },
   "counts_by_severity": { "high": 1 }
 }
 ```
 
-`PATCH /alerts/{id}`
-
-```json
-{ "status": "acknowledged", "actor": "demo-operator", "note": "Reviewed on the console." }
-```
-
-Transisi yang diizinkan: `open → acknowledged`, `open → resolved`, `acknowledged → resolved`,
-`acknowledged → open`. `resolved → open` mengembalikan `409`. Catatan ditambahkan ke deskripsi peringatan
-dengan label aktor.
+Pemberitahuan bersifat **read-only**: tidak ada endpoint untuk mengakui atau menyelesaikan, karena
+aplikasi tidak memiliki akun petugas. Setiap pemberitahuan berakhir otomatis setelah
+`ALERT_TTL_HOURS` (default 6 jam) dan tidak lagi muncul pada filter `status=open`.
 
 ## 8. Sistem
 

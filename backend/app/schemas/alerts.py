@@ -1,11 +1,11 @@
-"""Alert lifecycle schemas."""
+"""Alert response schemas."""
 
 from __future__ import annotations
 
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.schemas.common import AlertSeverity, AlertStatus
 
@@ -32,9 +32,3 @@ class AlertListResponse(BaseModel):
     total: int
     counts_by_status: dict[str, int]
     counts_by_severity: dict[str, int]
-
-
-class AlertPatchIn(BaseModel):
-    status: AlertStatus
-    note: str | None = Field(default=None, max_length=500)
-    actor: str | None = Field(default=None, max_length=80)

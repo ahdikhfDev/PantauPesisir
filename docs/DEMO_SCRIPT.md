@@ -83,15 +83,15 @@ Tunjuk chip header (**Umpan langsung**, **Ringkasan**) dan kartu metrik.
    telemetri pesisir Indonesia; pergeseran domain diperhitungkan dalam evaluasi."
 5. Buka rekomendasi: "Rekomendasi operasional per tingkat risiko, lengkap dengan faktor penyumbang."
 
-## 2:55–3:30 — Alur kerja peringatan
+## 2:55–3:30 — Pemberitahuan warga
 
 **Layar:** `/alerts`.
 
-1. Tunjukkan peringatan yang dibuat oleh analisis (severity, zona, timestamp, status).
-2. Klik **Read full note**, lalu **Akui**; tunjukkan aktor dan timestamp UTC.
-3. Klik **Selesaikan**; tunjukkan timestamp penyelesaian. Sebutkan bahwa API menolak pembukaan ulang
-   (409) untuk menjaga jejak audit.
-4. Sebutkan jendela dedupe: eksekusi berulang dalam 30 menit tidak membanjiri dengan peringatan
+1. Tunjukkan pemberitahuan yang dibuat oleh analisis (tingkat, pantai, timestamp).
+2. Klik **Baca catatan lengkap** untuk melihat penjelasan penuh dari analisis.
+3. Sebutkan halaman ini **read-only**: tidak ada akun, tidak ada tombol akui/selesai; pemberitahuan
+   berakhir otomatis setelah 6 jam.
+4. Sebutkan jendela dedupe: eksekusi berulang dalam 30 menit tidak membanjiri dengan pemberitahuan
    duplikat.
 
 ## 3:30–4:00 — Dampak dan penutup

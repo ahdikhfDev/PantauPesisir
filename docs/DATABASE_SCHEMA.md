@@ -190,9 +190,13 @@ erDiagram
 | `satellite_jobs` | FK `zone_id`; index pada zone | Pelacakan job |
 | `ml_models` | unique `model_version` | Registry |
 | `ai_predictions` | FK `zone_id`, `model_id`; index | Kueri terbaru/riwayat |
-| `alerts` | FK `prediction_id`, `zone_id`; index `status` | Filter siklus hidup |
+| `alerts` | FK `prediction_id`, `zone_id`; index `status` | Filter pemberitahuan aktif |
 | `data_source_status` | unique `source_name` | Tabel kesegaran |
 | Kolom geometri PostGIS | Index GiST dibuat oleh migrasi | Kueri spasial (produksi) |
+
+Pemberitahuan tidak memakai alur akui/selesai. Kolom `acknowledged_*` dipertahankan untuk data lama,
+namun pemberitahuan baru berakhir otomatis setelah `ALERT_TTL_HOURS` (default 6 jam) dan UI publik
+hanya menampilkan pemberitahuan yang masih aktif.
 
 ## 3. Penanganan geometri
 

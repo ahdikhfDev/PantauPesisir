@@ -37,9 +37,9 @@ provenance, model anomaly detection, dan status sumber data.
 | Deteksi anomali | Isolation Forest scikit-learn yang dilatih pada 41,104 observasi NOAA NDBC nyata | ✅ artefak reprodusibel |
 | Penilaian risiko | `rubrik_risiko_v1` transparan atas gelombang/angin/tekanan/periode absolut | ✅ pengujian |
 | Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data; ringkasan bahasa warga di `/ringkasan` | ✅ live |
-| Peringatan | Siklus hidup tersimpan open → acknowledged → resolved, deduplikasi, dilindungi API key | ✅ pengujian + live |
+| Peringatan | Pemberitahuan aktif tanpa login, deduplikasi, dan berakhir otomatis setelah 6 jam | ✅ pengujian + live |
 | Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
-| Dasbor | 6 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
+| Dasbor | 8 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
 | PWA | Manifest + ikon 192/512/maskable, service worker (app-shell + cache runtime), halaman offline, pintasan aplikasi | ✅ build + endpoint |
 
 Semua yang terlihat di UI terhubung ke backend. Tidak ada metrik placeholder, tidak ada grafik
@@ -72,7 +72,7 @@ penilaian teknis: KPI, grafik, satelit, analitik, dan status sumber.
 | **`/ocean`** | Telemetri tujuh parameter, grafik gelombang/angin dan tekanan/periode, tabel pembacaan, panel provenans lengkap, kontrol simulator |
 | **`/satellite`** | Peta Leaflet (poligon zona, buoy, footprint Sentinel-2), formulir sinkronisasi STAC nyata, galeri akuisisi dengan quicklook, tutupan awan, CRS dan atribusi |
 | **`/ai`** | Kartu model, formulir eksekusi, indeks anomali pada skala ambang terkalibrasi, skor risiko, faktor penyumbang, rekomendasi, keterbatasan dan riwayat analisis |
-| **`/alerts`** | Alur kerja peringatan yang dapat difilter dengan pengakuan dan penyelesaian |
+| **`/alerts`** | Daftar pemberitahuan aktif (read-only) dengan filter keparahan dan pantai; berakhir otomatis setelah 6 jam |
 | **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
 Tangkapan layar lainnya: [ringkasan AI](docs/screenshots/ringkasan.png) ·
@@ -84,10 +84,11 @@ Tangkapan layar lainnya: [ringkasan AI](docs/screenshots/ringkasan.png) ·
 
 ### Model akses
 
-Tidak ada **login**. Layar hanya-baca bersifat publik. Tiga jalur tulis — ingesti buoy, skenario
-simulator, sinkronisasi satelit, eksekusi analisis dan transisi peringatan — memerlukan header
-`X-API-Key` yang didokumentasikan (`pantaupesisir-demo-2026`) agar setiap kontrol dapat diuji
-dari antarmuka. Kunci disimpan di `sessionStorage`, tidak pernah di cookie atau akun.
+Tidak ada **login**. Layar hanya-baca bersifat publik. Jalur tulis — ingesti buoy, skenario
+simulator, sinkronisasi satelit, dan eksekusi analisis — memerlukan header `X-API-Key` yang
+didokumentasikan (`pantaupesisir-demo-2026`) agar setiap kontrol dapat diuji dari antarmuka.
+Pemberitahuan warga tidak memiliki aksi akui/selesai: tanpa akun, pemberitahuan berakhir sendiri
+setelah 6 jam. Kunci disimpan di `sessionStorage`, tidak pernah di cookie atau akun.
 
 ### Bahasa visual
 

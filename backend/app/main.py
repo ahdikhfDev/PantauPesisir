@@ -37,8 +37,13 @@ async def lifespan(_app: FastAPI):
         logger.exception("Seeding failed; API will start with the existing database state")
     if settings.refresh_on_start:
         try:
-            refreshed = await asyncio.to_thread(ensure_recent_telemetry)
+            refreshed = await asyncio.wait_for(
+                asyncio.to_thread(ensure_recent_telemetry),
+                timeout=settings.refresh_timeout_seconds,
+            )
             logger.info("Startup freshness: %s", refreshed)
+        except asyncio.TimeoutError:
+            logger.warning("Startup telemetry refresh exceeded its time budget; continuing")
         except Exception:  # noqa: BLE001 - freshness is best-effort
             logger.exception("Startup telemetry refresh failed")
     if settings.simulator_autostart:

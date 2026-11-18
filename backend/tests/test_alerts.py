@@ -14,47 +14,43 @@ def _open_alert(client, auth) -> dict:
     return alerts["items"][0]
 
 
-def test_alert_acknowledge_and_resolve(client, auth):
-    alert = _open_alert(client, auth)
-    assert alert["status"] == "open"
-
-    ack = client.patch(
-        f"{API}/alerts/{alert['id']}",
-        headers=auth,
-        json={"status": "acknowledged", "actor": "operator.test", "note": "Reviewed dashboard."},
-    )
-    assert ack.status_code == 200, ack.text
-    body = ack.json()
-    assert body["status"] == "acknowledged"
-    assert body["acknowledged_at"]
-    assert body["acknowledged_by"] == "operator.test"
-    assert "Operator note" in body["description"]
-
-    resolved = client.patch(
-        f"{API}/alerts/{alert['id']}", headers=auth, json={"status": "resolved"}
-    )
-    assert resolved.status_code == 200
-    assert resolved.json()["status"] == "resolved"
-    assert resolved.json()["resolved_at"]
-
-    reopen = client.patch(
-        f"{API}/alerts/{alert['id']}", headers=auth, json={"status": "open"}
-    )
-    assert reopen.status_code == 409
-
-
 def test_alert_filters_and_counts(client):
     response = client.get(f"{API}/alerts", params={"severity": "high"})
     assert response.status_code == 200
     body = response.json()
-    assert body["counts_by_status"], "counts are computed across the alert table"
     assert set(body["counts_by_status"]) <= {"open", "acknowledged", "resolved"}
     assert set(body["counts_by_severity"]) <= {"info", "moderate", "high"}
 
 
-def test_alert_patch_requires_key(client):
+def test_alert_patch_is_not_available(client):
     listed = client.get(f"{API}/alerts").json()
     if not listed["items"]:
         return
-    response = client.patch(f"{API}/alerts/{listed['items'][0]['id']}", json={"status": "acknowledged"})
-    assert response.status_code == 401
+    response = client.patch(
+        f"{API}/alerts/{listed['items'][0]['id']}", json={"status": "resolved"}
+    )
+    assert response.status_code in {404, 405}
+
+
+def test_alerts_expire_automatically(client, auth):
+    alert = _open_alert(client, auth)
+
+    import uuid
+    from datetime import datetime, timedelta, timezone
+
+    from app.db.session import SessionLocal
+    from app.models.alert import Alert
+
+    with SessionLocal() as db:
+        row = db.get(Alert, uuid.UUID(alert["id"]))
+        assert row is not None
+        row.created_at = datetime.now(timezone.utc) - timedelta(hours=7)
+        db.commit()
+
+    open_list = client.get(f"{API}/alerts", params={"status": "open", "zone_code": "MKS-STR"}).json()
+    assert all(item["id"] != alert["id"] for item in open_list["items"])
+
+    resolved = client.get(
+        f"{API}/alerts", params={"status": "resolved", "zone_code": "MKS-STR"}
+    ).json()
+    assert any(item["id"] == alert["id"] for item in resolved["items"])

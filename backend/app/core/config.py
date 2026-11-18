@@ -64,6 +64,7 @@ class Settings(BaseSettings):
     analytics_window_minutes: int = 60
     analytics_max_observations: int = 720
     alert_dedupe_minutes: int = 30
+    alert_ttl_hours: int = 6
 
     # --- freshness ---
     # Deployment cadence for telemetry delivery; the UI marks data as stale after this window.
@@ -71,7 +72,8 @@ class Settings(BaseSettings):
     # Serverless deployments refresh a recent window on cold start.
     refresh_on_start: bool = False
     refresh_after_seconds: int = 900
-    refresh_window_minutes: int = 60
+    refresh_window_minutes: int = 15
+    refresh_timeout_seconds: int = 25
 
     # --- demo seed ---
     seed_demo_observations: bool = True

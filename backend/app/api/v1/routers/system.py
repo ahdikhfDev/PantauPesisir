@@ -24,6 +24,7 @@ from app.schemas.system import (
     SystemHealthOut,
     ZoneOut,
 )
+from app.services.alert_lifecycle import expire_stale_alerts
 from app.services.satellite.service import provider_description, satellite_summary
 from app.services.serializers import (
     alert_out,
@@ -57,6 +58,7 @@ def health(db: Session = Depends(get_db)) -> SystemHealthOut:
 
     model = model_availability()
     model.pop("path", None)
+    expire_stale_alerts(db)
     counts = {
         "coastal_zones": int(db.scalar(select(func.count(CoastalZone.id))) or 0),
         "buoy_devices": int(db.scalar(select(func.count(BuoyDevice.id))) or 0),
@@ -145,9 +147,11 @@ def overview(db: Session = Depends(get_db)) -> DashboardOverview:
             prediction, zone, alert_id=str(alert.id) if alert else None
         ).model_dump(mode="json")
 
+    expire_stale_alerts(db)
     alert_rows = db.execute(
         select(Alert, CoastalZone)
         .join(CoastalZone, Alert.zone_id == CoastalZone.id)
+        .where(Alert.status == "open")
         .order_by(Alert.created_at.desc())
         .limit(5)
     ).all()

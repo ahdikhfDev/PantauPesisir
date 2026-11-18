@@ -78,9 +78,8 @@ tanggal perolehannya.
 
 | Elemen | Sumber | Catatan |
 | --- | --- | --- |
-| Severity/judul/deskripsi peringatan | Baris `alerts` yang tertaut ke prediksi | Deskripsi memuat "not an official warning" |
-| Waktu dibuat/diakui/diselesaikan | Timestamp database | UTC |
-| Aktor | `acknowledged_by` | `demo-operator` pada demo |
+| Severity/judul/deskripsi pemberitahuan | Baris `alerts` yang tertaut ke prediksi | Deskripsi berasal dari analisis yang menghasilkannya |
+| Waktu dibuat dan berakhir | Timestamp database | UTC; berakhir otomatis setelah 6 jam |
 | Jumlah | Agregat SQL | Tidak diturunkan dari subset halaman yang terlihat |
 
 ### Halaman sumber

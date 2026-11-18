@@ -40,9 +40,9 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | 21 | Endpoint terbaru/detail/riwayat | `test_analytics.py` | ID konsisten, 1–5 item riwayat | LULUS |
 | 22 | Analisis memerlukan kunci | `test_analytics.py` | 401 | LULUS |
 | 23 | Info model mendokumentasikan keterbatasan | `test_analytics.py` | IsolationForest, >10k baris, metode proksi, NDBC | LULUS |
-| 24 | Acknowledge + resolve peringatan | `test_alerts.py` | timestamp/aktor terisi, catatan ditambahkan, 409 saat dibuka ulang | LULUS |
-| 25 | Filter dan jumlah peringatan | `test_alerts.py` | agregat status/severity tersedia | LULUS |
-| 26 | Patch peringatan memerlukan kunci | `test_alerts.py` | 401 | LULUS |
+| 24 | Pemberitahuan kedaluwarsa otomatis | `test_alerts.py` | alert 7 jam tidak muncul di `status=open`, muncul di `resolved` | LULUS |
+| 25 | Filter dan jumlah pemberitahuan | `test_alerts.py` | agregat status/severity tersedia | LULUS |
+| 26 | Tidak ada endpoint akui/selesai | `test_alerts.py` | PATCH mengembalikan 404/405 (read-only) | LULUS |
 | 27 | Sinkronisasi satelit menyimpan metadata + quicklook | `test_satellite.py` | completed, 2 tersimpan, thumbnail JPEG | LULUS |
 | 28 | Kegagalan penyedia turun ke cache | `test_satellite.py` | completed_with_fallback, used_cache, baris cache dipertahankan | LULUS |
 | 29 | Adapter STAC mengurai + memfilter awan | `test_satellite.py` | 2 dari 3 produk, CRS, catatan konsep, byte thumbnail | LULUS |
@@ -65,7 +65,7 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | Dataset pelatihan | `fetch_training_data.py` | 41,104 baris, 2022-01-01 → 2024-12-31 |
 | Pelatihan model | `train_model.py` | artefak + metrik tertulis |
 | Bootstrap demo dengan sinkronisasi langsung | `bootstrap_demo.py` | 7 dataset di 3 zona, 1–3 per zona |
-| Alur peringatan end-to-end | API: skenario ekstrem → analisis → PATCH | risiko tinggi 94.9, anomali 0.99, peringatan dibuat + di-acknowledge |
+| Alur pemberitahuan end-to-end | API: skenario ekstrem → analisis → daftar pemberitahuan | risiko tinggi 94.9, anomali 0.99, pemberitahuan dibuat dan berakhir otomatis |
 | Rendering grafik | Screenshot Chrome headless | grafik, peta, tabel, kartu peringatan tampil |
 | Database baru Alembic | `alembic upgrade head` pada SQLite | 11 tabel + `alembic_version` |
 | Build produksi frontend | `npm run build` | terkompilasi, 9/9 halaman statis, tipe valid |
@@ -94,7 +94,7 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 - Tombol berhak istimewa memunculkan petunjuk kunci demo pada 401.
 - Grafik menampilkan satuan dan label UTC; badge tersimulasi terlihat.
 - Peta menampilkan poligon zona, penanda buoy, dan footprint Sentinel-2 dengan atribusi OSM.
-- Aksi kartu peringatan memperbarui status dan timestamp setelah refresh.
+- Kartu pemberitahuan bersifat read-only; tidak ada aksi yang mengubah status.
 - Angka menggunakan monospace tabular; ID produk yang panjang terbungkus dengan aman.
 
 ## 5. Mereproduksi
