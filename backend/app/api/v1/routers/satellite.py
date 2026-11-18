@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -36,6 +36,18 @@ ACCEPTANCE_NOTE = (
     "Satellite acquisition queued. Only catalogue metadata and a quicklook thumbnail are stored; "
     "full Sentinel-2 raster download requires a Copernicus account. Optical imagery is contextual "
     "and is not a wave-height measurement."
+)
+
+PLACEHOLDER_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">'
+    '<rect width="800" height="450" fill="#e3ecea"/>'
+    '<g fill="none" stroke="#6fb3b8" stroke-width="10" stroke-linecap="round">'
+    '<path d="M240 230 q40 -36 80 0 t80 0 t80 0"/>'
+    '<path d="M240 272 q40 -36 80 0 t80 0 t80 0" opacity="0.55"/>'
+    "</g>"
+    '<text x="400" y="345" text-anchor="middle" font-family="Arial, sans-serif" '
+    'font-size="24" fill="#123f46">Pratinjau belum tersedia</text>'
+    "</svg>"
 )
 
 
@@ -108,18 +120,28 @@ def dataset_detail(dataset_id: uuid.UUID, db: Session = Depends(get_db)) -> Sate
 
 
 @router.get("/datasets/{dataset_id}/thumbnail", summary="Cached provider quicklook image")
-def dataset_thumbnail(dataset_id: uuid.UUID, db: Session = Depends(get_db)) -> FileResponse:
+def dataset_thumbnail(dataset_id: uuid.UUID, db: Session = Depends(get_db)) -> Response:
     dataset = db.get(SatelliteDataset, dataset_id)
     if dataset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dataset not found")
-    path = thumbnail_path_for(dataset)
-    if path is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No cached quicklook for this dataset. Run a satellite sync while the provider is reachable.",
+
+    if dataset.thumbnail_bytes:
+        return Response(
+            content=dataset.thumbnail_bytes,
+            media_type=dataset.thumbnail_media_type or "image/jpeg",
+            headers={"Cache-Control": "public, max-age=86400"},
         )
-    media_type = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
-    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "public, max-age=86400"})
+
+    path = thumbnail_path_for(dataset)
+    if path is not None:
+        media_type = "image/png" if path.suffix.lower() == ".png" else "image/jpeg"
+        return FileResponse(path, media_type=media_type, headers={"Cache-Control": "public, max-age=86400"})
+
+    return Response(
+        content=PLACEHOLDER_SVG,
+        media_type="image/svg+xml",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @router.get("/provider", summary="Configured satellite provider and local cache summary")

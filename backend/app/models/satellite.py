@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint
+from sqlalchemy import Float, ForeignKey, Integer, JSON, LargeBinary, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -32,6 +32,9 @@ class SatelliteDataset(UUIDPrimaryKey, Base):
     footprint: Mapped[Any] = mapped_column(Geometry("POLYGON", 4326), nullable=False)
     asset_uri: Mapped[str | None] = mapped_column(Text)
     thumbnail_uri: Mapped[str | None] = mapped_column(Text)
+    # Serverless hosts lose /tmp between instances, so the quicklook itself is stored here.
+    thumbnail_bytes: Mapped[bytes | None] = mapped_column(LargeBinary)
+    thumbnail_media_type: Mapped[str | None] = mapped_column(String(32))
     cloud_cover_percent: Mapped[float | None] = mapped_column(Float)
     resolution_m: Mapped[float | None] = mapped_column(Float)
     crs: Mapped[str | None] = mapped_column(String(64))

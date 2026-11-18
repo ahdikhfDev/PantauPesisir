@@ -192,10 +192,13 @@ def upsert_product(
     if thumbnail:
         thumbnail_path = _cache_dir() / f"{_safe_name(product.product_id)}.jpg"
         thumbnail_path.write_bytes(thumbnail)
+    media_type = _thumbnail_media_type(thumbnail)
 
     if existing is not None:
         if thumbnail_path is not None:
             existing.thumbnail_uri = str(thumbnail_path)
+            existing.thumbnail_bytes = thumbnail
+            existing.thumbnail_media_type = media_type
             existing.processing_status = "thumbnail_cached"
             existing.downloaded_at = datetime.now(timezone.utc)
         if existing.zone_id is None:
@@ -212,6 +215,8 @@ def upsert_product(
         footprint=product.footprint,
         asset_uri=product.asset_uri,
         thumbnail_uri=str(thumbnail_path) if thumbnail_path else None,
+        thumbnail_bytes=thumbnail,
+        thumbnail_media_type=media_type,
         cloud_cover_percent=product.cloud_cover_percent,
         resolution_m=product.resolution_m,
         crs=product.crs,
@@ -223,6 +228,12 @@ def upsert_product(
     db.add(dataset)
     db.flush()
     return True
+
+
+def _thumbnail_media_type(thumbnail: bytes | None) -> str | None:
+    if not thumbnail:
+        return None
+    return "image/png" if thumbnail.startswith(b"\x89PNG") else "image/jpeg"
 
 
 def thumbnail_path_for(dataset: SatelliteDataset) -> Path | None:

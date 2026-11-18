@@ -295,8 +295,9 @@ Catatan operasional:
 - Ringkasan AI di-cache 10 menit per kombinasi zona/aktivitas/data dan otomatis kembali ke template
   jika penyedia AI tidak menjawab. Jangan pernah memakai awalan `NEXT_PUBLIC_` untuk `AI_API_KEY`.
 - Serverless melakukan cold start (beberapa detik); lakukan satu pemanasan sebelum penjurian.
-- Cache pratinjau satelit disimpan di `/tmp/satellite` dan hilang saat instance didaur ulang
-  (metadata tetap tersimpan di basis data).
+- Pratinjau satelit disimpan sebagai bytes di basis data (`satellite_datasets.thumbnail_bytes`), sehingga
+  tetap tampil meski instance serverless didaur ulang. Folder `/tmp/satellite` hanya dipakai untuk
+  pengembangan lokal.
 - Jaga deployment tetap aktif hingga pengumuman pemenang 30 November 2026.
 
 ## 10. Posisi tema (IT RUSH 2026 — subtema 3)
