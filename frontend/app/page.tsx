@@ -17,42 +17,22 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { cn, fixed, formatAge } from "@/lib/format";
+import {
+  ACTIVITIES,
+  assessConditions,
+  LEVEL_LABEL,
+  waveWords,
+  windWords,
+  type ActivityKey,
+  type Level,
+} from "@/lib/coastal";
 import { useApi } from "@/lib/hooks";
 import type { AlertList, LatestResponse, Prediction, Zone } from "@/lib/types";
 
-type ActivityKey = "boat" | "beach" | "port";
-type Level = "tenang" | "hati" | "tunda";
-
-const ACTIVITIES: Array<{
-  key: ActivityKey;
-  label: string;
-  note: string;
-  icon: typeof Anchor;
-}> = [
-  {
-    key: "boat",
-    label: "Perahu kecil / nelayan",
-    note: "Melaut, mencari ikan, atau menyeberang jarak dekat.",
-    icon: Anchor,
-  },
-  {
-    key: "beach",
-    label: "Wisata pantai",
-    note: "Berenang, bermain air, atau duduk di tepi pantai.",
-    icon: Sun,
-  },
-  {
-    key: "port",
-    label: "Kapal & pelabuhan",
-    note: "Bongkar muat, sandar, dan manuver kapal.",
-    icon: Ship,
-  },
-];
-
-const LIMITS: Record<ActivityKey, { waveWarn: number; waveBad: number; windWarn: number; windBad: number }> = {
-  boat: { waveWarn: 1.25, waveBad: 2.0, windWarn: 8, windBad: 12 },
-  beach: { waveWarn: 1.5, waveBad: 2.5, windWarn: 10, windBad: 15 },
-  port: { waveWarn: 2.0, waveBad: 3.0, windWarn: 12, windBad: 18 },
+const ACTIVITY_ICONS: Record<ActivityKey, typeof Anchor> = {
+  boat: Anchor,
+  beach: Sun,
+  port: Ship,
 };
 
 const LEVEL_META: Record<
@@ -66,68 +46,27 @@ const LEVEL_META: Record<
   }
 > = {
   tenang: {
-    label: "Aman untuk aktivitas ringan",
+    label: LEVEL_LABEL.tenang,
     badge: "text-ok",
     panel: "border-ok/30 bg-ok-soft/60",
     icon: CheckCircle2,
     scale: "bg-ok",
   },
   hati: {
-    label: "Hati-hati, pantau terus",
+    label: LEVEL_LABEL.hati,
     badge: "text-amber",
     panel: "border-amber/35 bg-amber-soft/70",
     icon: TriangleAlert,
     scale: "bg-amber",
   },
   tunda: {
-    label: "Sebaiknya tunda dulu",
+    label: LEVEL_LABEL.tunda,
     badge: "text-signal-dark",
     panel: "border-signal/30 bg-signal-soft/70",
     icon: XCircle,
     scale: "bg-signal",
   },
 };
-
-const ADVICE: Record<ActivityKey, Record<Level, string>> = {
-  boat: {
-    tenang: "Kondisi laut relatif tenang. Perahu kecil masih nyaman untuk beraktivitas.",
-    hati: "Boleh berangkat, tapi pantau ombak dan angin. Bawa pelampung dan beri tahu keluarga.",
-    tunda: "Ombak atau angin terlalu tinggi untuk perahu kecil. Tunda keberangkatan.",
-  },
-  beach: {
-    tenang: "Nyaman untuk bermain air di pantai. Tetap awasi anak-anak di dekat ombak.",
-    hati: "Hati-hati di air. Ombak bisa lebih kuat dari kelihatannya; jangan berenang jauh.",
-    tunda: "Sebaiknya tidak berenang. Ombak tinggi dan angin kencang berbahaya di pantai.",
-  },
-  port: {
-    tenang: "Kondisi mendukung kegiatan pelabuhan dan manuver kapal.",
-    hati: "Perhatikan gelombang dan angin saat sandar. Gunakan alat keselamatan kerja.",
-    tunda: "Tunda operasi kapal kecil. Gelombang dan angin di atas batas aman pelabuhan.",
-  },
-};
-
-function waveWords(metres: number | null): string {
-  if (metres === null) return "belum ada data";
-  if (metres < 1) return "tenang";
-  if (metres < 2) return "setinggi pinggang";
-  if (metres < 3) return "setinggi dada";
-  return "sangat tinggi";
-}
-
-function windWords(speed: number | null): string {
-  if (speed === null) return "belum ada data";
-  if (speed < 6) return "sepoi-sepoi";
-  if (speed < 10) return "cukup kencang";
-  if (speed < 15) return "kencang";
-  return "sangat kencang";
-}
-
-function isRecent(iso: string | null | undefined, hours: number): boolean {
-  if (!iso) return false;
-  const value = new Date(iso).getTime();
-  if (Number.isNaN(value)) return false;
-  return Date.now() - value <= hours * 3600 * 1000;
-}
 
 const FALLBACK_ZONES = [
   { zone_code: "JKT-BAY", zone_name: "Teluk Jakarta" },
@@ -163,36 +102,23 @@ export default function CekPage() {
   const wave = reading?.parameters.wave_height_m ?? null;
   const wind = reading?.parameters.wind_speed_mps ?? null;
   const age = reading?.data_age_seconds ?? null;
-  const limit = LIMITS[activity];
 
-  const waveBad = wave !== null && wave >= limit.waveBad;
-  const windBad = wind !== null && wind >= limit.windBad;
-  const waveWarn = wave !== null && wave >= limit.waveWarn;
-  const windWarn = wind !== null && wind >= limit.windWarn;
-  const risk = isRecent(prediction?.analysis_ended_at, 2) ? prediction?.risk_level ?? null : null;
-  const recentHighAlert = zoneAlerts.some((item) => item.severity === "high" && isRecent(item.created_at, 2));
-
-  let level: Level = "tenang";
-  if (waveBad || windBad || recentHighAlert) level = "tunda";
-  else if (waveWarn || windWarn || risk === "moderate" || zoneAlerts.length > 0) level = "hati";
-  if (age !== null && age > 1800 && level === "tenang") level = "hati";
-
-  const advice =
-    level === "tunda"
-      ? recentHighAlert && !waveBad && !windBad
-        ? "Ada peringatan risiko tinggi yang masih aktif. Tunda aktivitas sampai kondisi diperbarui."
-        : waveBad && windBad
-          ? "Ombak dan angin sama-sama di atas batas aman. Tunda dulu."
-          : waveBad
-            ? "Ombak terlalu tinggi untuk aktivitas ini. Tunda dulu."
-            : "Angin terlalu kencang untuk aktivitas ini. Tunda dulu."
-      : ADVICE[activity][level];
-
-  const reasons = [
-    `Ombak ${fixed(wave, 1)} m (${waveWords(wave)})`,
-    `Angin ${fixed(wind, 0)} m/s (${windWords(wind)})`,
-    zoneAlerts.length ? `${zoneAlerts.length} peringatan aktif` : "tidak ada peringatan aktif",
-  ];
+  // One assessment implementation for every citizen surface. The home page used to
+  // recompute the levels inline, which let its thresholds drift away from
+  // lib/coastal.ts and from the /api/ringkasan text.
+  const assessment = assessConditions({
+    activity,
+    wave,
+    wind,
+    ageSeconds: age,
+    alerts: zoneAlerts,
+    riskLevel: prediction?.risk_level ?? null,
+    riskAt: prediction?.analysis_ended_at ?? null,
+    observedAt: reading?.observed_at ?? null,
+  });
+  const level = assessment.level;
+  const advice = assessment.advice;
+  const reasons = assessment.reasons;
 
   const meta = LEVEL_META[level];
   const LevelIcon = meta.icon;
@@ -270,7 +196,7 @@ export default function CekPage() {
 
         <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
           {ACTIVITIES.map((item) => {
-            const Icon = item.icon;
+            const Icon = ACTIVITY_ICONS[item.key];
             const active = activity === item.key;
             return (
               <button

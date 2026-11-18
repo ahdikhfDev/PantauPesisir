@@ -6,7 +6,7 @@ scikit-learn 1.9.1 · pandas 3.1.1 · Node 26.13.0 · Next.js 15.5.29
 ```bash
 cd backend
 python -m pytest -q
-# 37 passed, 1 warning (Starlette TestClient deprecation)
+# 43 passed, 1 warning (Starlette TestClient deprecation)
 ```
 
 Suite dijalankan terhadap database SQLite sementara yang terisolasi dengan zona ter-seed dan
@@ -54,6 +54,8 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | 35 | Artefak mengekspos metrik/provenans | `test_ml.py` | >10k baris, metode proksi, NDBC, lisensi | LULUS |
 | 36 | Matriks fitur memerlukan kolom | `test_ml.py` | `KeyError` | LULUS |
 | 37 | Rubrik monoton + transparan | `test_ml.py` | rendah < sedang < tinggi, komponen berjumlah | LULUS |
+| 38 | Batch "Normal" tetap di bawah batas warga | `test_simulator.py` | gelombang < 1.5 m dan angin < 8 m/s (batas perahu kecil) | LULUS |
+| 39 | Batch manual menyematkan skenario zona | `test_simulator.py` | `zone_scenarios[zona]` = skenario batch, umpan otomatis tidak menimpa | LULUS |
 
 ## 2. Verifikasi manual / langsung
 
@@ -65,7 +67,9 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | Dataset pelatihan | `fetch_training_data.py` | 41,104 baris, 2022-01-01 → 2024-12-31 |
 | Pelatihan model | `train_model.py` | artefak + metrik tertulis |
 | Bootstrap demo dengan sinkronisasi langsung | `bootstrap_demo.py` | 7 dataset di 3 zona, 1–3 per zona |
-| Alur pemberitahuan end-to-end | API: skenario ekstrem → analisis → daftar pemberitahuan | risiko tinggi 94.9, anomali 0.99, pemberitahuan dibuat dan berakhir otomatis |
+| Alur pemberitahuan end-to-end | API: skenario ekstrem → analisis → daftar pemberitahuan | risiko tinggi 87.5, anomali 0.98, pemberitahuan dibuat dan berakhir otomatis |
+| Kontrak status warga per skenario | Batch manual 12×300 s + `/api/ringkasan` | Normal → Aman (0.9 m); Waspada → Tunda/Hati-hati/Hati-hati (2.35 m, rubrik 33.3); Ekstrem → semua Tunda (7.7 m) |
+| Umpan otomatis tidak menimpa batch | Playwright/CDP: mulai umpan, kirim batch, tunggu satu tick | batch Waspada tetap 2.6 m setelah tick; zona lain tetap normal |
 | Rendering grafik | Screenshot Chrome headless | grafik, peta, tabel, kartu peringatan tampil |
 | Database baru Alembic | `alembic upgrade head` pada SQLite | 11 tabel + `alembic_version` |
 | Build produksi frontend | `npm run build` | terkompilasi, 9/9 halaman statis, tipe valid |

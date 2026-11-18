@@ -43,15 +43,21 @@ class ScenarioProfile:
 
 
 # Per-zone baseline for "normal" conditions (climatology reference).
+#
+# These must stay below the public activity limits in `frontend/lib/coastal.ts`
+# (small boat: 1.5 m warn / 2.0 m stop). A "normal" profile is a calm day, so a
+# citizen reading it must land on "Aman"; a `warning` profile is what pushes the
+# same zone past those limits. Changing these numbers changes that story, the
+# calibration windows of the anomaly model, and the demo script together.
 ZONE_BASELINE: dict[str, tuple[float, float, float, float, float]] = {
-    "JKT-BAY": (1.0, 5.0, 4.2, 29.2, 1009.5),
-    "SMR-UTC": (1.5, 6.1, 5.6, 28.6, 1009.0),
-    "MKS-STR": (1.9, 6.9, 6.5, 28.9, 1008.5),
+    "JKT-BAY": (0.75, 4.4, 3.6, 29.2, 1009.5),
+    "SMR-UTC": (0.85, 5.0, 4.2, 28.6, 1009.0),
+    "MKS-STR": (0.95, 5.4, 4.6, 28.9, 1008.5),
 }
 
 
 def scenario_profile(scenario: str, zone_code: str) -> ScenarioProfile:
-    wave, period, wind, sst, pressure = ZONE_BASELINE.get(zone_code, (1.4, 6.0, 5.5, 28.8, 1009.0))
+    wave, period, wind, sst, pressure = ZONE_BASELINE.get(zone_code, (0.9, 6.0, 4.5, 28.8, 1009.0))
     normal = ScenarioProfile(
         wave_height_m=wave,
         wave_period_s=period,
@@ -60,15 +66,15 @@ def scenario_profile(scenario: str, zone_code: str) -> ScenarioProfile:
         air_pressure_hpa=pressure,
         wave_direction_deg=185.0,
         wind_direction_deg=205.0,
-        anomaly_probability=0.004,
+        anomaly_probability=0.001,
     )
     if scenario == "warning":
         return ScenarioProfile(
-            wave_height_m=wave * 2.6,
+            wave_height_m=wave * 3.0,
             wave_period_s=period * 1.45,
-            wind_speed_mps=wind * 2.4,
+            wind_speed_mps=wind * 3.0,
             sea_temperature_c=sst - 0.6,
-            air_pressure_hpa=pressure - 6.0,
+            air_pressure_hpa=pressure - 10.0,
             wave_direction_deg=195.0,
             wind_direction_deg=220.0,
             anomaly_probability=0.05,
@@ -100,6 +106,11 @@ class BuoyState:
         self.sea_temperature_c = initial_profile.sea_temperature_c
         self.air_pressure_hpa = initial_profile.air_pressure_hpa
         self.steps = 0
+        # Multipliers/offsets for an injected anomaly. They decay back to calm so a
+        # pulse is a transient event, not a permanent shift of the sea state.
+        self.wave_excursion = 1.0
+        self.wind_excursion = 1.0
+        self.pressure_excursion = 0.0
 
     def step(
         self,
@@ -116,6 +127,13 @@ class BuoyState:
         theta_sst = 1 - exp(-minutes / tau_sst)
         noise_scale = sqrt(max(minutes, 0.1))
 
+        # An injected anomaly relaxes back to the baseline within roughly one
+        # observation or two, so a rare spike cannot hold a calm day above the
+        # public activity limits for half an hour.
+        self.wave_excursion = 1.0 + (self.wave_excursion - 1.0) * exp(-minutes / 6.0)
+        self.wind_excursion = 1.0 + (self.wind_excursion - 1.0) * exp(-minutes / 8.0)
+        self.pressure_excursion *= exp(-minutes / 20.0)
+
         self.wave_height_m += theta_wave * (profile.wave_height_m - self.wave_height_m)
         self.wave_height_m += rng.normal(0, 0.045 * noise_scale)
         self.wind_speed_mps += theta_wind * (profile.wind_speed_mps - self.wind_speed_mps)
@@ -131,26 +149,28 @@ class BuoyState:
         self.wave_direction_deg += rng.normal(0, 1.8 * noise_scale) + 0.08 * (profile.wave_direction_deg - self.wave_direction_deg)
         self.wind_direction_deg += rng.normal(0, 3.0 * noise_scale) + 0.05 * (profile.wind_direction_deg - self.wind_direction_deg)
 
-        # Wave period is physically coupled to wave height (fetch-limited waves).
-        target_period = 0.55 * profile.wave_period_s + 1.15 * sqrt(max(self.wave_height_m, 0.05))
+        # Wave period is physically coupled to the *effective* wave height, so a
+        # passing swell pulse lengthens the period with it.
+        effective_wave = max(self.wave_height_m * self.wave_excursion, 0.05)
+        target_period = 0.55 * profile.wave_period_s + 1.15 * sqrt(effective_wave)
         self.wave_period_s += 0.35 * (target_period - self.wave_period_s) + rng.normal(0, 0.08 * noise_scale)
 
         anomaly = force_anomaly or (rng.random() < profile.anomaly_probability)
         if anomaly:
-            self.wave_height_m *= float(rng.uniform(1.45, 2.1))
+            self.wave_excursion = min(self.wave_excursion * float(rng.uniform(1.45, 2.1)), 2.4)
+            self.wind_excursion = min(self.wind_excursion * float(rng.uniform(1.2, 1.7)), 2.0)
+            self.pressure_excursion = max(self.pressure_excursion - float(rng.uniform(4.0, 9.0)), -14.0)
             self.wave_period_s += float(rng.uniform(0.8, 2.6))
-            self.wind_speed_mps *= float(rng.uniform(1.2, 1.7))
-            self.air_pressure_hpa -= float(rng.uniform(4.0, 9.0))
             self.wave_direction_deg += float(rng.uniform(-18, 18))
 
         self.steps += 1
         return self._snapshot(at, anomaly)
 
     def _snapshot(self, at: datetime, anomaly: bool) -> dict:
-        wave = float(np.clip(self.wave_height_m, 0.05, 19.5))
+        wave = float(np.clip(self.wave_height_m * self.wave_excursion, 0.05, 19.5))
         period = float(np.clip(self.wave_period_s, 1.2, 28.0))
-        wind = float(np.clip(self.wind_speed_mps, 0.0, 70.0))
-        pressure = float(np.clip(self.air_pressure_hpa, 880.0, 1080.0))
+        wind = float(np.clip(self.wind_speed_mps * self.wind_excursion, 0.0, 70.0))
+        pressure = float(np.clip(self.air_pressure_hpa + self.pressure_excursion, 880.0, 1080.0))
         sst = float(np.clip(self.sea_temperature_c, -1.0, 38.0))
         return {
             "observed_at": at,
@@ -182,6 +202,12 @@ def generate_series(
     profile = scenario_profile(scenario, zone_code)
     initial = scenario_profile("normal", zone_code)
     state = BuoyState(seed=seed, initial_profile=initial)
+    # Warm up to the scenario target first, so a batch reads like the profile the
+    # operator picked even when ``interval_seconds`` is short. Without this, a
+    # 12-sample burst at 1 s intervals would barely move off the calm baseline.
+    if scenario != "normal":
+        for _ in range(12):
+            state.step(profile, 5.0, end_at)
     minutes = max(interval_seconds / 60.0, 0.1)
     series: list[dict] = []
     start = end_at - timedelta(seconds=interval_seconds * (count - 1))
@@ -212,6 +238,8 @@ class AutoSimulator:
         self._task: asyncio.Task | None = None
         self._states: dict[str, BuoyState] = {}
         self._seeds: dict[str, int] = {}
+        # Per-zone override set by an operator replay (see ``set_zone_scenario``).
+        self._zone_scenario: dict[str, str] = {}
         self.scenario = "normal"
         self.interval_seconds = settings.simulator_default_interval_seconds
         self.zone_code = settings.simulator_zone_code
@@ -238,6 +266,7 @@ class AutoSimulator:
             "last_error": self.last_error,
             "generator_version": GENERATOR_VERSION,
             "source_type": "simulated",
+            "zone_scenarios": dict(self._zone_scenario),
         }
 
     async def start(
@@ -285,6 +314,28 @@ class AutoSimulator:
 
     def set_scenario(self, scenario: str) -> None:
         self.scenario = scenario
+
+    def set_zone_scenario(self, zone_code: str, scenario: str) -> None:
+        """Pin one zone to the profile an operator just replayed.
+
+        The periodic feed keeps a continuous state per buoy and relaxes toward its
+        target with a ~25 minute time constant. Without this, a manual batch is
+        replaced by the previous profile on the very next tick (about a minute),
+        so the citizen status silently reverts. Only the replayed zone changes;
+        the other zones keep their own profile. States of that zone are warmed to
+        the new profile immediately so the next tick already reads like it.
+        """
+        code = zone_code.upper()
+        self._zone_scenario[code] = scenario
+        now = datetime.now(timezone.utc)
+        for key, state in self._states.items():
+            if key.split(":", 1)[0] != code:
+                continue
+            profile = scenario_profile(scenario, code)
+            # 24 × 5 min bring the AR(1) state within ~1% of the new target, so the
+            # next tick already reports the new profile instead of its 9% ramp.
+            for _ in range(24):
+                state.step(profile, 5.0, now)
 
     async def tick_now(self) -> dict:
         """Generate one observation for every simulated buoy in the active zone."""
@@ -346,7 +397,7 @@ class AutoSimulator:
                     seeds[key] = buoy_seed
                     states[key] = interpolation_start(
                         zone_code=zone.zone_code,
-                        scenario=self.scenario,
+                        scenario=self._zone_scenario.get(zone.zone_code, self.scenario),
                         seed=buoy_seed,
                         at=now,
                         minutes=60,
@@ -372,7 +423,8 @@ class AutoSimulator:
             zones = self._resolve_zones(db)
             simulation = db.get(Simulation, self.simulation_id) if self.simulation_id else None
             for zone in zones:
-                profile = scenario_profile(self.scenario, zone.zone_code)
+                active_scenario = self._zone_scenario.get(zone.zone_code, self.scenario)
+                profile = scenario_profile(active_scenario, zone.zone_code)
                 buoys = list(db.scalars(select(BuoyDevice).where(BuoyDevice.zone_id == zone.id)))
                 for buoy in buoys:
                     key = f"{zone.zone_code}:{buoy.buoy_code}"
@@ -381,7 +433,7 @@ class AutoSimulator:
                         seed = self._seeds.get(key, 1)
                         state = interpolation_start(
                             zone_code=zone.zone_code,
-                            scenario=self.scenario,
+                            scenario=active_scenario,
                             seed=seed,
                             at=now,
                             minutes=60,
@@ -407,7 +459,7 @@ class AutoSimulator:
                             )
                         },
                         source_type="simulated",
-                        scenario=self.scenario,
+                        scenario=active_scenario,
                         generator_version=GENERATOR_VERSION,
                     )
                     outcome = ingest_observation(db, payload)

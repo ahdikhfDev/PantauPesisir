@@ -97,7 +97,7 @@ nyata akan memerlukan kalibrasi ulang dengan data nyata.
 
 | Metrik | Nilai |
 | --- | --- |
-| Baris ter-flag pada threshold terpasang (terkalibrasi skenario) | **0.16%** |
+| Baris ter-flag pada threshold terpasang (terkalibrasi skenario) | **0.12%** |
 | Proxy recall: perubahan tekanan cepat top-5% pada threshold referensi 1% | **6.47%** |
 | Proxy recall: perubahan tinggi gelombang satu langkah yang cepat top-5% pada referensi yang sama | **2.19%** |
 | Baseline pemilihan acak pada threshold referensi tersebut | **1.01%** |
@@ -110,19 +110,21 @@ pemilihan acak, dan baris ter-flag jauh lebih kasar daripada baris tipikal. Daya
 **moderat**, tidak kuat. Tidak tersedia hazard label, sehingga recall/precision terhadap "kondisi
 berbahaya" tidak dapat dihitung dan tidak diklaim.
 
-Pemeriksaan perilaku pada jendela simulator deterministik (20 seed per skenario, 3 zona):
+Pemeriksaan perilaku pada jendela simulator deterministik (seed `20261118`, 18 sampel, 3 zona):
 
-| Skenario | Jendela ter-flag (severity ≥ 0.5) | Severity median |
-| --- | --- | --- |
-| normal | ~10% | 0.13 |
-| warning | ~40% | 0.28 |
-| extreme | 100% | 0.95 |
+| Skenario | Severity anomali | Ter-flag | Level rubrik |
+| --- | --- | --- | --- |
+| normal | 0.06–0.11 | tidak | rendah (14–17) |
+| warning | ~0.00 | tidak (memang) | sedang (35.6–43.5) |
+| extreme | 0.97 | ya | sedang–tinggi (54–67) |
 
-Skenario warning sengaja tidak selalu ditandai oleh model *perilaku*; rubrik risiko absolut tetap
-menaikkan jendela tingkat warning ke moderat/tinggi. Pemisahan ini merupakan fitur, bukan bug: keadaan
-laut yang luar biasa mantap namun parah bukanlah anomali perilaku.
+Skenario warning sengaja **tidak** ditandai oleh model *perilaku*: laut 2.4–3.2 m yang mantap
+adalah keadaan normal bagi samudra terbuka tempat model dilatih, jadi tidak ada yang "aneh" secara
+perilaku. Rubrik risiko absolut yang menaikkan jendela warning ke tingkat sedang. Pemisahan ini
+merupakan fitur, bukan bug: anomali perilaku ≠ bahaya, dan bahaya ≠ anomali perilaku.
 
-Reproduksi dengan `python backend/scripts/check_model_behavior.py`.
+Reproduksi dengan `python backend/scripts/check_model_behavior.py` (keluar kode 0 = kontrak
+terpenuhi: normal tidak ter-flag dan rendah, warning naik ke sedang, ekstrem ter-flag dan naik).
 
 ## 9. Output
 

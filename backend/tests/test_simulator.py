@@ -118,6 +118,54 @@ def test_unknown_zone_is_rejected(client, auth):
     assert response.status_code == 404
 
 
+def test_normal_batch_stays_below_the_citizen_boat_limits(client, auth):
+    """A calm profile must read as "Aman" for a small boat on the citizen page.
+
+    The limits mirror ``LIMITS.boat`` in ``frontend/lib/coastal.ts`` (wave 1.5 m
+    warn, wind 8 m/s warn). If the simulator baseline drifts above them, a
+    "Normal" batch starts telling families to stay cautious on a calm day.
+    """
+    response = client.post(
+        f"{API}/simulator/scenarios",
+        headers=auth,
+        json={
+            "zone_code": "JKT-BAY",
+            "scenario": "normal",
+            "mode": "manual",
+            "interval_seconds": 300,
+            "observations": 12,
+            "random_seed": 1234,
+        },
+    )
+    assert response.status_code == 202, response.text
+    final = wait_for_simulation(client, auth, response.json()["job"]["id"])
+    assert final["status"] == "completed", final
+
+    latest = client.get(f"{API}/buoy/latest", params={"zone_code": "JKT-BAY"}).json()
+    reading = latest["items"][0]["parameters"]
+    assert reading["wave_height_m"] < 1.5, reading
+    assert reading["wind_speed_mps"] < 8, reading
+
+
+def test_manual_batch_pins_the_zone_for_the_automatic_feed(client, auth):
+    """An operator replay must not be replaced by the periodic feed's old profile."""
+    response = client.post(
+        f"{API}/simulator/scenarios",
+        headers=auth,
+        json={
+            "zone_code": "SMR-UTC",
+            "scenario": "warning",
+            "mode": "manual",
+            "interval_seconds": 300,
+            "observations": 4,
+            "random_seed": 77,
+        },
+    )
+    assert response.status_code == 202, response.text
+    status = client.get(f"{API}/simulator/status").json()
+    assert status["zone_scenarios"].get("SMR-UTC") == "warning"
+
+
 def test_backfill_refreshes_all_zones_synchronously(client, auth):
     response = client.post(
         f"{API}/simulator/backfill",

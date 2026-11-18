@@ -176,12 +176,14 @@ export async function GET(request: Request) {
       alerts: alerts.items ?? [],
       riskLevel: prediction?.risk_level ?? null,
       riskAt: prediction?.analysis_ended_at ?? null,
+      observedAt: reading?.observed_at ?? null,
     });
 
     const cacheKey = [
       zone,
       activity,
       reading?.observed_at ?? "none",
+      assessment.level,
       alerts.items?.length ?? 0,
       prediction?.analysis_ended_at ?? "none",
     ].join("|");

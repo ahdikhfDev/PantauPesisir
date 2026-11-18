@@ -47,12 +47,17 @@ export function SimulatorPanel({
     if (job.data.status === "completed" || job.data.status === "failed") {
       if (completedRef.current !== job.data.id) {
         completedRef.current = job.data.id;
-        setNotice(
-          job.data.status === "completed"
-            ? `${job.data.observations_count} observasi tersimpan untuk ${job.data.zone_code}.`
-            : `Batch gagal: ${job.data.notes ?? "lihat log server"}.`,
-        );
-        if (job.data.status === "completed") {
+        const autoSession = job.data.mode === "auto";
+        // An automatic session is closed when the operator stops it, so its count is
+        // not a delivered batch and must not be announced as one.
+        if (!autoSession) {
+          setNotice(
+            job.data.status === "completed"
+              ? `${job.data.observations_count} observasi tersimpan untuk ${job.data.zone_code}.`
+              : `Batch gagal: ${job.data.notes ?? "lihat log server"}.`,
+          );
+        }
+        if (job.data.status === "completed" && !autoSession) {
           onCompleted();
           // Panaskan ringkasan warga untuk zona ini supaya Kabar Laut langsung siap
           // dibuka setelah operator mengirim batch.
@@ -90,6 +95,11 @@ export function SimulatorPanel({
       setAcceptance(response.acceptance_note);
       setJobId(response.job.id);
       completedRef.current = null;
+      if (mode === "auto") {
+        setNotice(
+          `Umpan otomatis berjalan. Pembacaan baru masuk setiap ${interval} detik untuk ${zoneCode}.`,
+        );
+      }
       void status.refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Permintaan gagal");

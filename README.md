@@ -228,7 +228,7 @@ citra optik memberi konteks kondisi pesisir dan tidak menggantikan pembacaan buo
 - Ambang operasi: dikalibrasi pada 90 **jendela kondisi normal** terdokumentasi hingga laju flag 10%.
   Ini menjadikannya *detektor terkalibrasi* yang dapat direproduksi.
 - Tingkat risiko: rubrik terpisah yang mudah dibaca (`rubrik_risiko_v1`) dan dapat ditelusuri.
-- Evaluasi (irisan validasi nyata): 0.16% ditandai pada ambang yang diterapkan; pada ambang referensi
+- Evaluasi (irisan validasi nyata): 0.12% ditandai pada ambang yang diterapkan; pada ambang referensi
   1%, recall 6.5% dari 5% perubahan tekanan cepat teratas dan 2.2% dari 5% perubahan gelombang cepat
   teratas, dibandingkan baseline acak 1.0%. Baris yang ditandai memiliki median tinggi gelombang
   6.29 m versus 2.12 m pada baris yang tidak ditandai. Tidak ada label bahaya, sehingga ini hanya

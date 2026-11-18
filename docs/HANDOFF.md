@@ -88,6 +88,29 @@ Simulator: baseline klimatologi per zona, lalu bergerak ke target skenario denga
 pegas AR(1) + noise; periode gelombang terikat tinggi ombak; anomali disuntik
 sesuai peluang skenario. Detail di `backend/app/services/simulator.py`.
 
+### 5.1 Kontrak angka (jangan diubah tanpa menyelaraskan semuanya)
+
+| Hal | Nilai | Ikut berubah bila diubah |
+| --- | --- | --- |
+| Baseline normal per zona | 0.75 / 0.85 / 0.95 m | Status warga, kalibrasi model |
+| Batas aktivitas warga | perahu 1.5 m · 8 m/s, pantai 1.5 · 10, pelabuhan 2.0 · 12 | `frontend/lib/coastal.ts` |
+| Skala `warning` | gelombang ×3.0, angin ×3.0, tekanan −10 hPa | Rubrik harus tetap ≥ 30 |
+| Skala `extreme` | gelombang ×5.2, angin ×3.5, tekanan −12 hPa, anomali dipaksa di sampel terakhir | — |
+| Band rubrik | rendah < 25, sedang 25–65, tinggi ≥ 65 | Model card tabel perilaku |
+
+Aturan: baseline `normal` **harus** di bawah batas perahu kecil, supaya batch
+"Normal" benar-benar menjawab *Aman*. Batch `warning` harus melewati batas itu
+tapi tetap < 2.5 m, supaya cerita "satu kondisi, tiga keputusan" tetap berlaku di
+Teluk Jakarta (perahu Tunda, pantai & pelabuhan Hati-hati).
+
+Anomali yang disuntik bersifat **pulsa**: faktor lonjakannya meluruh kembali
+dalam ±6 menit, jadi satu kejadian langka tidak menahan hari yang tenang di atas
+batas aman selama setengah jam.
+
+Batch manual menyematkan skenario untuk zonanya (`simulator.set_zone_scenario`).
+Tanpa itu, umpan otomatis tetap memposting profil lamanya tiap interval dan
+menimpa pembacaan operator dalam satu menit. Zona lain tidak ikut berubah.
+
 ---
 
 ## 6. Menjalankan lokal
@@ -161,6 +184,9 @@ Tanpa `npx` di PATH, pakai `node <path>/node_modules/npm/bin/npx-cli.js`.
 | Halaman kosong, data usang | `POST /api/v1/simulator/backfill` (`zone_code=ALL`, `observations=8`, `interval_seconds=120`) |
 | Batch Waspada hilang sendiri | Cron GitHub Actions menyegarkan semua zona ke `normal` tiap 15 menit |
 | Status "Tunda" padahal ombak kecil | Ada pemberitahuan `high` aktif < 2 jam. Batch dari konsol menutupnya; cron tidak |
+| Batch operator hilang dalam 1 menit | Umpan otomatis memakai profil lamanya. Sudah ditangani `set_zone_scenario`; pastikan zona batch = zona yang dipantau |
+| Kabar Laut telat berubah | Cache `/api/ringkasan` 10 menit. Kunci cache memuat level, jadi perubahan status langsung lolos; `?refresh=1` untuk paksa |
+| "Normal" tapi warga disuruh hati-hati | Baseline zona naik melewati batas perahu (1.25 m) atau ada anomali lama. Cek `ZONE_BASELINE` dan jalankan batch normal baru |
 | `next build` gagal `EINVAL readlink` | `.next` sisa `next dev` — hapus `.next` lalu build ulang |
 | `npm`/`npx` tidak ditemukan | Pakai Node portabel + `npx-cli.js` |
 | Word mengunci `.docx` | `taskkill //F //IM WINWORD.EXE` |

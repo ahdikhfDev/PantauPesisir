@@ -10,8 +10,8 @@
     "2024-12-31T23:40:00+00:00"
   ],
   "contamination": 0.01,
-  "flagged_rate_validation_at_deployed_threshold": 0.0015813161415886145,
-  "threshold_raw_score": -0.6163817272164764,
+  "flagged_rate_validation_at_deployed_threshold": 0.001216397031991242,
+  "threshold_raw_score": -0.6275463594426507,
   "score_p1": -0.6215435793785059,
   "score_p50": -0.3976033095102363,
   "threshold_calibration": {
@@ -27,11 +27,11 @@
     "interval_seconds": 300,
     "target_false_alarm_rate": 0.1,
     "observed_false_alarm_rate": 0.1,
-    "threshold_raw": -0.6163817272164764,
-    "median_raw": -0.5316869627827101,
-    "scale": 0.03854624843876682,
-    "minimum_raw": -0.6782293213763139,
-    "maximum_raw": -0.47507079635060995,
+    "threshold_raw": -0.6275463594426507,
+    "median_raw": -0.5829507261236742,
+    "scale": 0.02029634739159961,
+    "minimum_raw": -0.6619448688908921,
+    "maximum_raw": -0.5016552988794353,
     "note": "Ambang dan skala skor dikalibrasi pada jendela kondisi normal terstandar. Laju penandaan pada telemetri nyata perlu dikalibrasi ulang dengan data buoy pesisir nyata."
   },
   "proxy_evaluation": {
@@ -42,7 +42,7 @@
     "recall_top5pct_wave_height_change": 0.021897810218978103,
     "random_selection_baseline": 0.010096095365527307,
     "wave_height_p95_m": 3.68,
-    "median_wave_height_flagged_m": 6.29,
+    "median_wave_height_flagged_m": 6.245,
     "median_wave_height_unflagged_m": 2.12
   },
   "feature_names": [

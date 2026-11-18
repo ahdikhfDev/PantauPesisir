@@ -5,14 +5,18 @@ This is an engineering sanity check, not a scientific validation:
     python backend/scripts/check_model_behavior.py
 
 It scores deterministic simulator windows for the normal / warning / extreme
-scenarios and prints anomaly severity and the transparent risk rubric so a
-reviewer can confirm the pipeline escalates monotonically.
+scenarios and asserts the product contract around them:
+
+* a calm window is not an anomaly and lands on "low" risk;
+* a warning window escalates through the absolute rubric (a steady, severe sea
+  is not a *behavioural* anomaly, so the detector is allowed to stay quiet);
+* an extreme window is flagged and escalated.
 """
 
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -28,7 +32,6 @@ def main() -> int:
     failures = 0
     for zone_code in ("JKT-BAY", "SMR-UTC", "MKS-STR"):
         print(f"\n{zone_code}")
-        normal_severity = None
         for scenario in ("normal", "warning", "extreme"):
             series = generate_series(
                 zone_code=zone_code,
@@ -57,13 +60,25 @@ def main() -> int:
                 f"W={score.latest['wind_speed_mps']:.1f}m/s "
                 f"P={score.latest['air_pressure_hpa']:.1f}hPa"
             )
+
             if scenario == "normal":
-                normal_severity = score.anomaly_score
-            elif normal_severity is not None and scenario == "warning":
-                if score.anomaly_score <= normal_severity:
+                if score.anomaly_detected:
                     failures += 1
-                    print("    [warn] warning severity did not exceed normal")
-        print(f"  worst normal-window severity: {normal_severity:.3f} (0.5 = anomaly flag line)")
+                    print("    [fail] calm window was flagged as an anomaly")
+                if risk.level != "low":
+                    failures += 1
+                    print(f"    [fail] calm window should stay low, got {risk.level}")
+            elif scenario == "warning":
+                if risk.level == "low":
+                    failures += 1
+                    print("    [fail] warning window did not escalate to moderate")
+            else:
+                if not score.anomaly_detected:
+                    failures += 1
+                    print("    [fail] extreme window was not flagged")
+                if risk.level == "low":
+                    failures += 1
+                    print("    [fail] extreme window did not escalate")
     print("\nNote: this check verifies pipeline behaviour, not scientific accuracy.")
     return 1 if failures else 0
 

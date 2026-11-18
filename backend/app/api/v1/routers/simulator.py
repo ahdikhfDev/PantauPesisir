@@ -82,6 +82,12 @@ async def start_scenario(
     db.commit()
     db.refresh(simulation)
 
+    # Keep the running automatic feed on the same story as the replay. Otherwise the
+    # loop keeps posting its old scenario every interval and silently overwrites the
+    # readings an operator just created (visible locally as "the batch did nothing").
+    # Only this zone is pinned; the other zones keep their own profile.
+    simulator.set_zone_scenario(payload.zone_code.upper(), payload.scenario)
+
     background.add_task(
         run_manual_scenario,
         simulation.id,

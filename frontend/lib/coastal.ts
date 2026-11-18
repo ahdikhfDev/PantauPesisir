@@ -11,7 +11,10 @@ export const LIMITS: Record<
   ActivityKey,
   { waveWarn: number; waveBad: number; windWarn: number; windBad: number }
 > = {
-  boat: { waveWarn: 1.25, waveBad: 2.0, windWarn: 8, windBad: 12 },
+  // Values are prototype guidance for a calm-to-moderate Indonesian coast, not an
+  // official BMKG scale. The calm simulator baseline sits at 0.75-0.95 m, so 1.5 m
+  // leaves roughly a 3-sigma margin before a calm day reads as "hati-hati".
+  boat: { waveWarn: 1.5, waveBad: 2.0, windWarn: 8, windBad: 12 },
   beach: { waveWarn: 1.5, waveBad: 2.5, windWarn: 10, windBad: 15 },
   port: { waveWarn: 2.0, waveBad: 3.0, windWarn: 12, windBad: 18 },
 };
@@ -63,6 +66,18 @@ export function isRecent(iso: string | null | undefined, hours: number, now = Da
   return now - value <= hours * 3600 * 1000;
 }
 
+/** True when `value` is strictly newer than `reference` (1 s tolerance). */
+export function isAfter(
+  value: string | null | undefined,
+  reference: string | null | undefined,
+): boolean {
+  if (!value || !reference) return false;
+  const later = new Date(value).getTime();
+  const earlier = new Date(reference).getTime();
+  if (Number.isNaN(later) || Number.isNaN(earlier)) return false;
+  return later > earlier + 1000;
+}
+
 export interface AlertLike {
   severity: string;
   created_at: string;
@@ -91,9 +106,10 @@ export function assessConditions(input: {
   alerts: AlertLike[];
   riskLevel: string | null;
   riskAt: string | null | undefined;
+  observedAt?: string | null;
   now?: number;
 }): Assessment {
-  const { activity, wave, wind, ageSeconds, alerts, riskLevel, riskAt } = input;
+  const { activity, wave, wind, ageSeconds, alerts, riskLevel, riskAt, observedAt } = input;
   const now = input.now ?? Date.now();
   const limit = LIMITS[activity];
 
@@ -101,7 +117,11 @@ export function assessConditions(input: {
   const windBad = wind !== null && wind >= limit.windBad;
   const waveWarn = wave !== null && wave >= limit.waveWarn;
   const windWarn = wind !== null && wind >= limit.windWarn;
-  const risk = isRecent(riskAt, 2, now) ? riskLevel : null;
+  // A rubric level describes one analysis window. Once a newer reading has landed,
+  // that level no longer describes the present, so it must not hold the status up
+  // (e.g. a calm batch sent after a warning analysis must read as calm again).
+  const riskApplies = !isAfter(observedAt, riskAt);
+  const risk = isRecent(riskAt, 2, now) && riskApplies ? riskLevel : null;
   const recentHighAlert = alerts.some(
     (item) => item.severity === "high" && isRecent(item.created_at, 2, now),
   );

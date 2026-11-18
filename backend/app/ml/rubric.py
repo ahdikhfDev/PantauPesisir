@@ -18,8 +18,12 @@ PERIOD_THRESHOLD_S = 8.0
 PERIOD_FULL_SCALE_S = 6.0
 ANOMALY_BONUS_MAX = 5.0
 
-LOW_MAX = 35.0
+LOW_MAX = 25.0
 MODERATE_MAX = 65.0
+# Band separation is measured against the buoy simulator: normal windows score
+# about 11-17, warning windows 30-44 and extreme windows 54-67. 25 keeps a calm
+# day clearly "low" and a warning window clearly "moderate" even when a single
+# batch lands a little below its target.
 
 
 @dataclass(frozen=True)
