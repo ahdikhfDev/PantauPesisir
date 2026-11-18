@@ -1,0 +1,250 @@
+{
+  "format": "pantaupesisir-iforest-runtime/1",
+  "feature_names": [
+    "wave_height_m",
+    "air_pressure_hpa",
+    "wave_height_rel_dev",
+    "wave_steepness_rel_dev",
+    "wind_speed_rel_dev",
+    "wave_period_rel_dev",
+    "pressure_residual_hpa",
+    "pressure_rate_hpa_per_hour",
+    "wave_height_change_ratio",
+    "sst_residual_c",
+    "wave_direction_change_deg"
+  ],
+  "threshold_raw": -0.6163817272164764,
+  "cal_median": -0.5316869627827101,
+  "cal_scale": 0.03854624843876682,
+  "calibration": {
+    "method": "scenario_normal_windows_v1",
+    "windows": 90,
+    "zones": [
+      "JKT-BAY",
+      "SMR-UTC",
+      "MKS-STR"
+    ],
+    "seeds": 30,
+    "samples_per_window": 18,
+    "interval_seconds": 300,
+    "target_false_alarm_rate": 0.1,
+    "observed_false_alarm_rate": 0.1,
+    "threshold_raw": -0.6163817272164764,
+    "median_raw": -0.5316869627827101,
+    "scale": 0.03854624843876682,
+    "minimum_raw": -0.6782293213763139,
+    "maximum_raw": -0.47507079635060995,
+    "note": "Ambang dan skala skor dikalibrasi pada jendela kondisi normal terstandar. Laju penandaan pada telemetri nyata perlu dikalibrasi ulang dengan data buoy pesisir nyata."
+  },
+  "baseline": {
+    "wave_height_m": {
+      "mean": 1.8050664477085423,
+      "std": 0.828147315305713,
+      "p05": 0.76,
+      "p95": 3.26
+    },
+    "air_pressure_hpa": {
+      "mean": 1016.3846698902169,
+      "std": 3.6229212741764365,
+      "p05": 1011.3,
+      "p95": 1023.2
+    },
+    "wave_height_rel_dev": {
+      "mean": 0.0005907944560645876,
+      "std": 0.0605166750991382,
+      "p05": -0.08873720136518772,
+      "p95": 0.09830508474576272
+    },
+    "wave_steepness_rel_dev": {
+      "mean": 8.069729529722102e-06,
+      "std": 0.03984873565541448,
+      "p05": -0.053256682519492636,
+      "p95": 0.060788772721327884
+    },
+    "wind_speed_rel_dev": {
+      "mean": 0.005064355858180989,
+      "std": 0.19317908267440614,
+      "p05": -0.25882352941176473,
+      "p95": 0.2794117647058826
+    },
+    "wave_period_rel_dev": {
+      "mean": 0.000608689985951154,
+      "std": 0.12226745356723151,
+      "p05": -0.18595624558927312,
+      "p95": 0.16091954022988503
+    },
+    "pressure_residual_hpa": {
+      "mean": -0.0002540474235373962,
+      "std": 0.7231019846270961,
+      "p05": -1.183333333333394,
+      "p95": 1.1333333333334394
+    },
+    "pressure_rate_hpa_per_hour": {
+      "mean": -0.00016247192262695994,
+      "std": 0.5202977889029184,
+      "p05": -0.8000000000000682,
+      "p95": 0.7999999999999545
+    },
+    "wave_height_change_ratio": {
+      "mean": 0.002113422455854651,
+      "std": 0.06489151237987079,
+      "p05": -0.0982142857142858,
+      "p95": 0.11111111111111108
+    },
+    "sst_residual_c": {
+      "mean": 0.00038994150623968465,
+      "std": 0.08839016007720302,
+      "p05": -0.11666666666666714,
+      "p95": 0.13333333333333286
+    },
+    "wave_direction_change_deg": {
+      "mean": 15.87132386484596,
+      "std": 26.256524601131172,
+      "p05": 1.0,
+      "p95": 73.0
+    }
+  },
+  "metadata": {
+    "model_name": "pantaupesisir-anomaly-isolation-forest",
+    "model_version": "cews-iforest-v1",
+    "algorithm": "sklearn.ensemble.IsolationForest",
+    "trained_at": "2026-11-17T18:06:44+00:00",
+    "training_dataset": "NOAA NDBC stdmet historis (observasi nyata, 2022-2024)",
+    "dataset_provenance": {
+      "dataset_title": "NOAA NDBC Historical Standard Meteorological Data (stdmet)",
+      "provider": "NOAA National Data Buoy Center (NDBC), USA",
+      "landing_page": "https://www.ndbc.noaa.gov/",
+      "data_access": "https://www.ndbc.noaa.gov/data/historical/stdmet/",
+      "license": "Public domain (work of the U.S. federal government); attribution appreciated.",
+      "attribution": "NOAA National Data Buoy Center (NDBC). Retrieved via NDBC historical stdmet archive.",
+      "retrieved_on": "2026-11-18",
+      "retrieval_method": "Direct HTTP GET of documented historical stdmet .txt.gz files",
+      "stations": {
+        "51002": {
+          "name": "SOUTHWEST HAWAII - 215NM SSW of Hilo, HI",
+          "latitude": 17.07,
+          "longitude": -157.755,
+          "water_depth_m": 4979,
+          "station_page": "https://www.ndbc.noaa.gov/station_page.php?station=51002"
+        },
+        "41010": {
+          "name": "CANAVERAL EAST - 120NM East of Cape Canaveral",
+          "latitude": 28.86,
+          "longitude": -78.478,
+          "water_depth_m": 903.1,
+          "station_page": "https://www.ndbc.noaa.gov/station_page.php?station=41010"
+        }
+      },
+      "years": [
+        2022,
+        2023,
+        2024
+      ],
+      "columns": [
+        "buoy_code",
+        "ndbc_station",
+        "station_name",
+        "observed_at",
+        "wave_height_m",
+        "wave_period_s",
+        "wave_direction_deg",
+        "wind_speed_mps",
+        "wind_direction_deg",
+        "sea_temperature_c",
+        "air_pressure_hpa",
+        "air_temperature_c",
+        "source"
+      ],
+      "units": {
+        "wave_height_m": "m (significant wave height, WVHT)",
+        "wave_period_s": "s (dominant period, DPD)",
+        "wave_direction_deg": "degrees true (MWD)",
+        "wind_speed_mps": "m/s (WSPD)",
+        "wind_direction_deg": "degrees true (WDIR)",
+        "sea_temperature_c": "degC (WTMP, ~1 m depth)",
+        "air_pressure_hpa": "hPa (PRES, sea level)"
+      },
+      "missing_value_handling": "NDBC sentinel values (99, 999, 9999) removed; rows lacking a core wave/weather variable dropped.",
+      "row_count": 41104,
+      "temporal_coverage": {
+        "start": "2022-01-01T00:40:00Z",
+        "end": "2024-12-31T23:40:00Z"
+      },
+      "limitations": [
+        "Stations are in the Pacific (Hawaii) and Atlantic (Florida) offshore zones, not Indonesian waters.",
+        "Observing cadence is typically 10 minutes with sensor outages; gaps are preserved.",
+        "No hazard labels are included. Wave-height percentiles are used only as an evaluation proxy.",
+        "Training data are real measurements; CEWS inference inputs in this prototype are simulated."
+      ]
+    },
+    "purpose": "Penyaringan anomali prototipe untuk telemetri buoy pesisir; bukan detektor tsunami.",
+    "intended_use": "Dukungan keputusan demonstrasi untuk operator pemantauan pesisir.",
+    "random_seed": 42
+  },
+  "metrics": {
+    "training_rows": 32883,
+    "validation_rows": 8221,
+    "train_period": [
+      "2022-01-01T00:40:00+00:00",
+      "2024-09-16T05:10:00+00:00"
+    ],
+    "validation_period": [
+      "2024-09-16T05:40:00+00:00",
+      "2024-12-31T23:40:00+00:00"
+    ],
+    "contamination": 0.01,
+    "flagged_rate_validation_at_deployed_threshold": 0.0015813161415886145,
+    "threshold_raw_score": -0.6163817272164764,
+    "score_p1": -0.6215435793785059,
+    "score_p50": -0.3976033095102363,
+    "threshold_calibration": {
+      "method": "scenario_normal_windows_v1",
+      "windows": 90,
+      "zones": [
+        "JKT-BAY",
+        "SMR-UTC",
+        "MKS-STR"
+      ],
+      "seeds": 30,
+      "samples_per_window": 18,
+      "interval_seconds": 300,
+      "target_false_alarm_rate": 0.1,
+      "observed_false_alarm_rate": 0.1,
+      "threshold_raw": -0.6163817272164764,
+      "median_raw": -0.5316869627827101,
+      "scale": 0.03854624843876682,
+      "minimum_raw": -0.6782293213763139,
+      "maximum_raw": -0.47507079635060995,
+      "note": "Ambang dan skala skor dikalibrasi pada jendela kondisi normal terstandar. Laju penandaan pada telemetri nyata perlu dikalibrasi ulang dengan data buoy pesisir nyata."
+    },
+    "proxy_evaluation": {
+      "method": "Model tanpa pengawasan: tidak ada label bahaya. Daya diskriminasi diuji pada irisan validasi nyata dengan ambang referensi 1%: apakah penanda anomali terkonsentrasi pada 5% teratas perubahan tekanan cepat dan perubahan tinggi gelombang satu langkah?",
+      "reference_threshold_raw": -0.5560777427129634,
+      "reference_threshold_note": "Bukan ambang yang dipakai; ambang terpasang dikalibrasi skenario di bawah ini.",
+      "recall_top5pct_pressure_change": 0.06470588235294118,
+      "recall_top5pct_wave_height_change": 0.021897810218978103,
+      "random_selection_baseline": 0.010096095365527307,
+      "wave_height_p95_m": 3.68,
+      "median_wave_height_flagged_m": 6.29,
+      "median_wave_height_unflagged_m": 2.12
+    },
+    "feature_names": [
+      "wave_height_m",
+      "air_pressure_hpa",
+      "wave_height_rel_dev",
+      "wave_steepness_rel_dev",
+      "wind_speed_rel_dev",
+      "wave_period_rel_dev",
+      "pressure_residual_hpa",
+      "pressure_rate_hpa_per_hour",
+      "wave_height_change_ratio",
+      "sst_residual_c",
+      "wave_direction_change_deg"
+    ],
+    "random_state": 42,
+    "n_estimators": 250,
+    "sklearn_version": "1.9.1",
+    "pandas_version": "3.1.1",
+    "numpy_version": "2.5.4"
+  }
+}

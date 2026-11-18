@@ -18,6 +18,7 @@ import numpy as np
 from app.core.config import settings
 from app.ml.calibration import compute_calibration
 from app.ml.features import FEATURE_LABELS, build_feature_frame, model_matrix
+from app.ml.forest import load_runtime_model
 
 logger = logging.getLogger(__name__)
 
@@ -90,17 +91,56 @@ def artifact_path(version: str | None = None) -> Path:
     return settings.model_artifact_path
 
 
+def runtime_artifact_paths(version: str | None = None) -> tuple[Path, Path]:
+    base = artifact_path(version).with_suffix("")
+    return (
+        base.parent / f"{base.name}.runtime.npz",
+        base.parent / f"{base.name}.runtime.meta.json",
+    )
+
+
 def load_model(version: str | None = None) -> ModelBundle:
+    """Load the lightweight runtime artifact, falling back to the sklearn joblib."""
+    npz_path, meta_path = runtime_artifact_paths(version)
+    if npz_path.exists() and meta_path.exists():
+        mtime = npz_path.stat().st_mtime
+        cached = _cache.get(str(npz_path))
+        if cached and cached[0] == mtime:
+            return cached[1]
+        try:
+            model, payload = load_runtime_model(npz_path, meta_path)
+        except Exception as exc:  # noqa: BLE001 - corrupted artifact must degrade gracefully
+            raise ModelUnavailableError(f"Runtime model could not be loaded: {exc}") from exc
+        calibration = payload.get("calibration", {})
+        bundle = ModelBundle(
+            pipeline=model,
+            feature_names=payload["feature_names"],
+            threshold_raw=float(payload["threshold_raw"]),
+            cal_median=float(payload.get("cal_median", calibration.get("median_raw", 0.0))),
+            cal_scale=float(payload.get("cal_scale", calibration.get("scale", 0.05))),
+            baseline=payload.get("baseline", {}),
+            metadata=payload.get("metadata", {}),
+            metrics=payload.get("metrics", {}),
+            calibration=calibration,
+            path=npz_path,
+        )
+        _cache[str(npz_path)] = (mtime, bundle)
+        logger.info("Loaded runtime anomaly model %s from %s", bundle.metadata.get("model_version"), npz_path)
+        return bundle
+
     path = artifact_path(version)
     if not path.exists():
         raise ModelUnavailableError(
-            f"Model artifact not found at {path}. Run: python backend/scripts/train_model.py"
+            f"Model artifact not found at {npz_path} or {path}. "
+            "Run: python backend/scripts/export_runtime_model.py"
         )
     mtime = path.stat().st_mtime
     cached = _cache.get(str(path))
     if cached and cached[0] == mtime:
         return cached[1]
     try:
+        import joblib  # local development fallback only
+
         payload = joblib.load(path)
     except Exception as exc:  # noqa: BLE001 - corrupted artifact must degrade gracefully
         raise ModelUnavailableError(f"Model artifact could not be loaded: {exc}") from exc
@@ -124,7 +164,8 @@ def load_model(version: str | None = None) -> ModelBundle:
 
 
 def model_availability(version: str | None = None) -> dict:
-    path = artifact_path(version)
+    npz_path, meta_path = runtime_artifact_paths(version)
+    path = npz_path if npz_path.exists() and meta_path.exists() else artifact_path(version)
     if not path.exists():
         return {"available": False, "path": str(path), "reason": "artifact_missing"}
     try:

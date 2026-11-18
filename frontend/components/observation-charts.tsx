@@ -52,7 +52,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
     return (
       <EmptyState
         title="Pembacaan valid belum cukup untuk seri"
-        description="Jalankan simulator atau perpanjang rentang waktu. Catatan tidak valid atau dikarantina dikecualikan dari grafik."
+        description="Kirim batch telemetri atau perpanjang rentang waktu. Catatan tidak valid atau dikarantina dikecualikan dari grafik."
       />
     );
   }

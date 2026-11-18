@@ -9,6 +9,7 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -62,6 +63,10 @@ class Settings(BaseSettings):
     analytics_max_observations: int = 720
     alert_dedupe_minutes: int = 30
 
+    # --- freshness ---
+    # Deployment cadence for telemetry delivery; the UI marks data as stale after this window.
+    freshness_window_seconds: int = 300
+
     # --- demo seed ---
     seed_demo_observations: bool = True
     seed_backfill_hours: int = 8
@@ -72,7 +77,7 @@ class Settings(BaseSettings):
 
     @property
     def model_artifact_path(self) -> Path:
-        return REPO_ROOT / "backend" / "ml" / "artifacts" / f"{self.ml_model_version}.joblib"
+        return BACKEND_ROOT / "ml" / "artifacts" / f"{self.ml_model_version}.joblib"
 
     @field_validator("database_url")
     @classmethod

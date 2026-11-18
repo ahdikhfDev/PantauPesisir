@@ -516,7 +516,7 @@ export default function AiPage() {
         ) : (
           <EmptyState
             title="Belum ada analisis tersimpan"
-            description="Jalankan simulator di konsol laut, lalu saring jendela di sini. API akan menolak jendela kosong daripada mengarang hasil."
+            description="Kirim batch telemetri di konsol laut, lalu saring jendela di sini. API akan menolak jendela kosong daripada mengarang hasil."
             action={
               <Link href="/ocean#simulator" className="btn btn-primary btn-sm">
                 <Database className="h-3.5 w-3.5" aria-hidden /> Hasilkan telemetri dahulu

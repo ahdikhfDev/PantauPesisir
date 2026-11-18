@@ -1,8 +1,9 @@
-# CEWS backend - pinned to compatible minor ranges.
-# Python 3.12. PostgreSQL + PostGIS is the production database;
-# SQLite is supported for the local demo (see docs/DATABASE_SCHEMA.md).
+# PantauPesisir API — runtime dependencies.
+# Python 3.12. PostgreSQL + PostGIS in production; SQLite is supported for local work.
+# The anomaly detector is served from the exported runtime artifact, so
+# scikit-learn/scipy are intentionally NOT required here (see requirements-dev.txt).
 fastapi>=0.115,<1.0
-uvicorn[standard]>=0.30,<1.0
+uvicorn>=0.30,<1.0
 pydantic>=2.7,<3.0
 pydantic-settings>=2.3,<3.0
 SQLAlchemy>=2.0.30,<2.1  # 2.1 breaks GeoAlchemy2 0.15 when hooks inspect custom types
@@ -12,9 +13,5 @@ GeoAlchemy2>=0.15,<0.16
 shapely>=2.0,<3.0
 numpy>=1.26,<3.0
 pandas>=2.2,<4.0
-scikit-learn>=1.5,<2.0
 joblib>=1.4,<2.0
 httpx>=0.27,<1.0
-pytest>=8.0,<10.0
-
-# Dev / optional download of NDBC training data uses only httpx + pandas.

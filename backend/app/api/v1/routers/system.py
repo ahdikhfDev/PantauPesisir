@@ -43,7 +43,7 @@ PROVENANCE_NOTICE = (
     "pesisir; keluaran AI berasal dari model analitik terverifikasi."
 )
 
-STALE_AFTER_SECONDS = 300
+STALE_AFTER_SECONDS = settings.freshness_window_seconds
 
 
 @router.get("/health", response_model=SystemHealthOut, summary="Backend, database and model health")

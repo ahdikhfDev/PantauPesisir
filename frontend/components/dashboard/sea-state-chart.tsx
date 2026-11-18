@@ -41,7 +41,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
     return (
       <EmptyState
         title="Menunggu pembacaan"
-        description="Jalankan simulator atau perpanjang jendela waktu. Hanya baris valid yang digambar."
+        description="Kirim batch telemetri atau perpanjang jendela waktu. Hanya baris valid yang digambar."
       />
     );
   }

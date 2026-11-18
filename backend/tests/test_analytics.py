@@ -1,7 +1,27 @@
 from __future__ import annotations
 
+import numpy as np
+
+from app.ml.forest import IsolationForestRuntime
+from app.ml.inference import load_model
+
 from tests.conftest import API
 from tests.helpers import run_analysis, start_scenario
+
+
+def test_runtime_model_is_used_and_matches_reference_scores():
+    bundle = load_model()
+    assert isinstance(bundle.pipeline, IsolationForestRuntime)
+
+    matrix = np.array(
+        [
+            [1.2, 1008.5, 0.1, 0.05, 0.2, 0.0, -0.3, 0.2, 0.01, 0.1, 2.0],
+            [4.8, 995.0, 1.4, 0.9, 1.1, 0.6, -2.4, -3.1, 0.42, -1.2, 14.0],
+            [2.0, 1010.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    expected = np.array([-0.445722891066, -0.769029668144, -0.367285072341])
+    assert np.allclose(bundle.pipeline.score_samples(matrix), expected, atol=1e-9)
 
 
 def test_analysis_produces_explainable_output(client, auth):

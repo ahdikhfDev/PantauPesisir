@@ -1,0 +1,37 @@
+name: Segarkan telemetri
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: telemetry-refresh
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Kirim batch telemetri ke API
+        env:
+          API_BASE: https://pantaupesisir-api.vercel.app
+          API_KEY: pantaupesisir-demo-2026
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 \
+            -X POST "$API_BASE/api/v1/simulator/backfill" \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: $API_KEY" \
+            -d '{"zone_code":"ALL","scenario":"normal","observations":8,"interval_seconds":120}' \
+            -o backfill.json
+          python3 -m json.tool backfill.json > /dev/null
+          python3 - <<'PY'
+          import json
+
+          with open("backfill.json", encoding="utf-8") as handle:
+              payload = json.load(handle)
+          zones = ", ".join(f"{item['zone_code']}:{item['status']}" for item in payload["zones"])
+          print(f"backfill {payload['generated_at']} -> {zones}")
+          PY

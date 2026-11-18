@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy import select
@@ -89,6 +90,66 @@ async def start_scenario(
         interval_seconds=payload.interval_seconds,
     )
     return SimulationJobCreated(job=simulation_out(simulation, zone), acceptance_note=ACCEPTANCE_NOTE)
+
+
+@router.post(
+    "/backfill",
+    dependencies=[Depends(require_api_key)],
+    summary="Generate recent telemetry for one zone or all zones (scheduled refresh)",
+)
+def backfill(payload: ScenarioStartIn, db: Session = Depends(get_db)) -> dict:
+    """Synchronous backfill used by scheduled refreshes on serverless deployments.
+
+    Unlike ``/scenarios`` this writes the observations before returning, so it is
+    safe to call from an external scheduler without relying on background tasks.
+    """
+    zone_code = payload.zone_code.upper()
+    if zone_code == "ALL":
+        zones = list(db.scalars(select(CoastalZone).order_by(CoastalZone.zone_code)))
+    else:
+        zone = db.scalar(select(CoastalZone).where(CoastalZone.zone_code == zone_code))
+        if zone is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Coastal zone not found")
+        zones = [zone]
+
+    results = []
+    for index, zone in enumerate(zones):
+        seed = payload.random_seed + index * 101 if payload.random_seed is not None else random.randint(0, 2**31 - 1)
+        simulation = Simulation(
+            scenario=payload.scenario,
+            mode="manual",
+            status="queued",
+            random_seed=seed,
+            generator_version=GENERATOR_VERSION,
+            zone_id=zone.id,
+            interval_seconds=payload.interval_seconds,
+            notes=payload.notes or "Penyegaran telemetri terjadwal",
+        )
+        db.add(simulation)
+        db.commit()
+        db.refresh(simulation)
+        run_manual_scenario(
+            simulation.id,
+            buoy_code=payload.buoy_code,
+            count=payload.observations,
+            interval_seconds=payload.interval_seconds,
+        )
+        db.refresh(simulation)
+        results.append(
+            {
+                "zone_code": zone.zone_code,
+                "job_id": str(simulation.id),
+                "status": simulation.status,
+                "observations": payload.observations,
+            }
+        )
+
+    return {
+        "zones": results,
+        "scenario": payload.scenario,
+        "interval_seconds": payload.interval_seconds,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 @router.get("/jobs/{job_id}", response_model=SimulationJobOut, summary="Simulation job status")

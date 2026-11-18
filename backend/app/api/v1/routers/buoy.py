@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.db.session import get_db
 from app.models.observation import BuoyObservation
 from app.models.zone import BuoyDevice, CoastalZone
@@ -16,7 +17,7 @@ from app.services.serializers import observation_out
 
 router = APIRouter(prefix="/buoy", tags=["buoy"])
 
-STALE_AFTER_SECONDS = 300
+STALE_AFTER_SECONDS = settings.freshness_window_seconds
 
 
 @router.get("/latest", response_model=BuoyLatestResponse, summary="Latest valid observation per buoy")

@@ -218,7 +218,12 @@ def main() -> int:
     joblib.dump(artifact, artifact_path)
     metrics_path.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
 
+    from export_runtime_model import export as export_runtime
+
+    runtime_npz, runtime_meta = export_runtime(args.version)
+
     print(f"[ok] artifact: {artifact_path}")
+    print(f"[ok] runtime : {runtime_npz} (+ {runtime_meta.name})")
     print(f"[ok] metrics : {metrics_path}")
     print(
         f"     rows train/val: {len(train_frame):,}/{len(test_frame):,} | "

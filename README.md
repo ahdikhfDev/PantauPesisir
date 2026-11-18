@@ -250,29 +250,31 @@ Status per 18 November 2026:
 | Komponen | Status |
 | --- | --- |
 | Frontend | **Live** di <https://pantaupesisir.vercel.app> (Vercel, root `frontend/`) |
-| Basis data | **Live** di Supabase PostgreSQL 17 + PostGIS 3.3.7; migrasi `alembic upgrade head` sudah dijalankan (11 tabel + `alembic_version`) |
-| Backend | **Belum diterapkan** — `render.yaml` disediakan untuk deploy satu klik |
+| API | **Live** di <https://pantaupesisir-api.vercel.app> (Vercel Python, root `backend/`, entri `api/index.py`) |
+| Basis data | **Live** di Supabase PostgreSQL 17 + PostGIS 3.3.7 (11 tabel + `alembic_version`) |
 
-Backend tidak dapat dijalankan di Vercel: dependensi Python (numpy + scipy + pandas + scikit-learn)
-berukuran ±340 MB, melebihi batas 250 MB per fungsi. Gunakan Render, Railway, atau Fly.
+API berjalan sebagai Vercel Function. Agar muat pada batas 250 MB per fungsi, Isolation Forest
+diekspor menjadi artefak runtime ringan (`backend/ml/artifacts/*.runtime.npz`) dan diskor dengan
+numpy; `scikit-learn`/`scipy` hanya dibutuhkan saat pelatihan (`requirements-dev.txt`).
 
-Langkah backend (Render):
+Telemetri terjadwal: workflow `.github/workflows/telemetry.yml` memanggil
+`POST /api/v1/simulator/backfill` tiap 15 menit sehingga jendela data tetap segar pada deployment
+serverless (tanpa proses latar permanen).
 
-1. Buat Blueprint dari repositori ini; Render membaca `render.yaml` (root `backend/`, region
-   Singapore, plan free).
-2. Isi variabel `DATABASE_URL` (connection string **Session pooler** Supabase, dengan
-   `postgresql+psycopg://` dan `?sslmode=require`). Variabel lain sudah terisi di blueprint.
-3. Start command menjalankan `alembic upgrade head` lalu `uvicorn app.main:app --port $PORT` pada
-   satu instans (jangan multi-replica karena simulator menulis telemetri berkala).
-4. Setelah backend hidup, tambahkan `NEXT_PUBLIC_API_BASE_URL=https://<backend>/api/v1` pada project
-   Vercel, lalu redeploy frontend.
-5. Verifikasi `/api/v1/system/health` → `dialect: postgresql`, `status: ok`.
+Langkah penerapan:
+
+1. Deploy API dari `backend/`: `vercel deploy --prod`. Variabel wajib: `DATABASE_URL` (Session
+   pooler Supabase dengan `postgresql+psycopg://` dan `?sslmode=require`), `DEMO_API_KEY`,
+   `API_SECRET_KEY`, `CORS_ORIGINS`, `FRESHNESS_WINDOW_SECONDS`.
+2. Set `NEXT_PUBLIC_API_BASE_URL=https://pantaupesisir-api.vercel.app/api/v1` pada project
+   frontend, lalu redeploy.
+3. Verifikasi `/api/v1/system/health` → `dialect: postgresql`, `status: ok`.
 
 Catatan operasional:
 
-- Pada plan gratis Render, disk bersifat sementara; cache pratinjau satelit disimpan di
-  `/tmp/satellite` dan akan hilang saat redeploy (metadata tetap ada).
-- Free tier Render tidur setelah tidak ada trafik; lakukan pemanasan sebelum penjurian.
+- Serverless melakukan cold start (beberapa detik); lakukan satu pemanasan sebelum penjurian.
+- Cache pratinjau satelit disimpan di `/tmp/satellite` dan hilang saat instance didaur ulang
+  (metadata tetap tersimpan di basis data).
 - Jaga deployment tetap aktif hingga pengumuman pemenang 30 November 2026.
 
 ## 10. Posisi tema (IT RUSH 2026 — subtema 3)

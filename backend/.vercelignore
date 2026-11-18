@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+*.log
+tests
+scripts
+data
+ml/data
+alembic
+.env

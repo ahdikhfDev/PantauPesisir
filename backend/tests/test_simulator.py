@@ -74,6 +74,31 @@ def test_unknown_zone_is_rejected(client, auth):
     assert response.status_code == 404
 
 
+def test_backfill_refreshes_all_zones_synchronously(client, auth):
+    response = client.post(
+        f"{API}/simulator/backfill",
+        headers=auth,
+        json={
+            "zone_code": "ALL",
+            "scenario": "normal",
+            "observations": 6,
+            "interval_seconds": 120,
+            "random_seed": 2026,
+        },
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert {item["zone_code"] for item in body["zones"]} == {"JKT-BAY", "SMR-UTC", "MKS-STR"}
+    assert all(item["status"] == "completed" for item in body["zones"])
+
+    latest = client.get(f"{API}/buoy/latest").json()
+    assert len(latest["items"]) == 3
+    assert latest["stale"] is False
+
+    unauthenticated = client.post(f"{API}/simulator/backfill", json={"zone_code": "ALL"})
+    assert unauthenticated.status_code == 401
+
+
 def test_auto_mode_starts_and_stops(client, auth):
     started = client.post(
         f"{API}/simulator/scenarios",

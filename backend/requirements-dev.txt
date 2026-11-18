@@ -1,0 +1,6 @@
+# Development, testing and model-training dependencies.
+# scikit-learn/scipy are only needed to train the Isolation Forest and to
+# regenerate the exported runtime artifact (scripts/train_model.py).
+-r requirements.txt
+scikit-learn>=1.5,<2.0
+pytest>=8.0,<10.0
