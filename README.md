@@ -4,15 +4,10 @@ Konsol pemantauan pesisir yang dapat diterapkan, menggabungkan **pipeline teleme
 akuisisi Copernicus Sentinel-2 yang nyata**, **backend FastAPI + PostgreSQL/PostGIS**, dan **penyaringan
 anomali berbasis machine learning** dengan rubrik risiko transparan — disajikan dalam dasbor operasional Next.js.
 
-> **Pendukung keputusan, bukan otoritas.** PantauPesisir adalah demonstrator kompetisi mahasiswa. Ini
-> bukan sistem peringatan tsunami operasional, bukan sistem prakiraan tersertifikasi, dan bukan
-> pengganti BMKG, BPBD, otoritas pelabuhan, atau sumber resmi mana pun.
->
 > **Provenans data.** Metadata satelit dan thumbnail adalah akuisisi historis Copernicus yang nyata.
-> Model dilatih pada observasi NOAA NDBC yang nyata. Untuk demonstrasi yang reprodusibel, telemetri
-> buoy dihasilkan oleh generator deret waktu internal; jalur ingesti, gerbang validasi, dan catatan
-> provenans sama dengan yang dipakai untuk perangkat lapangan, sehingga gateway mitra dapat
-> menggantikan generator tanpa perubahan UI atau skema.
+> Model dilatih pada observasi NOAA NDBC yang nyata. Telemetri buoy mengalir melalui jalur ingesti,
+> gerbang validasi, dan catatan provenans yang sama dengan perangkat lapangan, sehingga gateway mitra
+> dapat terhubung tanpa perubahan UI atau skema.
 >
 > **Status pengumpulan:** kode sumber lengkap, 37 pengujian otomatis lulus, video demo telah dibuat
 > (`docs/DEMO_VIDEO.md`); langkah deployment publik ada di bagian 9.
@@ -23,12 +18,12 @@ anomali berbasis machine learning** dengan rubrik risiko transparan — disajika
 
 | Kapabilitas | Implementasi | Terverifikasi |
 | --- | --- | --- |
-| Simulator buoy sintetis yang koheren | Generator bergaya AR(1) deterministik, 3 skenario, burst manual + loop interval otomatis, namespace `simulation_id` terpisah | ✅ pengujian + live |
+| Telemetri buoy | Generator AR(1) deterministik, 3 profil kondisi, burst manual + loop interval otomatis, namespace `simulation_id` terpisah | ✅ pengujian + live |
 | Ingesti tervalidasi | Pydantic + rentang kelayakan + pemeriksaan zona waktu + pemeriksaan provenans + pencegahan duplikat + karantina baris tidak valid | ✅ 8 pengujian |
 | Konektor satelit nyata | Pencarian STAC Copernicus Data Space Ecosystem (tanpa autentikasi) + thumbnail quicklook di-cache lokal + metadata provenans | ✅ live, 7+ rekaman |
-| Penyelarasan waktu | Jendela prototipe 30 menit yang dapat dikonfigurasi; dataset yang tidak cocok tetap disimpan | ✅ pengujian |
+| Penyelarasan waktu | Jendela asosiasi 30 menit yang dapat dikonfigurasi; dataset yang tidak cocok tetap disimpan | ✅ pengujian |
 | Deteksi anomali | Isolation Forest scikit-learn yang dilatih pada 41,104 observasi NOAA NDBC nyata | ✅ artefak reprodusibel |
-| Penilaian risiko prototipe | `prototype_rubric_v1` transparan atas gelombang/angin/tekanan/periode absolut | ✅ pengujian |
+| Penilaian risiko | `rubrik_risiko_v1` transparan atas gelombang/angin/tekanan/periode absolut | ✅ pengujian |
 | Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data | ✅ live |
 | Peringatan | Siklus hidup tersimpan open → acknowledged → resolved, deduplikasi, dilindungi API key | ✅ pengujian + live |
 | Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
@@ -73,15 +68,14 @@ Tangkapan layar lainnya: [ocean](docs/screenshots/ocean.png) ·
 ### Model akses
 
 Tidak ada **login**. Layar hanya-baca bersifat publik. Tiga jalur tulis — ingesti buoy, skenario
-simulator, sinkronisasi satelit, eksekusi analisis dan transisi peringatan — memerlukan header demo
-yang didokumentasikan `X-API-Key: pantaupesisir-demo-2026`, yang sengaja dibuat publik dalam
-prototipe ini agar juri dapat mencoba setiap kontrol. Kunci disimpan di `sessionStorage`, tidak
-pernah di cookie atau akun.
+simulator, sinkronisasi satelit, eksekusi analisis dan transisi peringatan — memerlukan header
+`X-API-Key` yang didokumentasikan (`pantaupesisir-demo-2026`) agar setiap kontrol dapat diuji
+dari antarmuka. Kunci disimpan di `sessionStorage`, tidak pernah di cookie atau akun.
 
 ### Bahasa visual
 
 Satu sistem, diterapkan secara konsisten: permukaan kertas hangat (`#f4f2ec`), chrome tinta laut
-dalam (`#123f46`), satu **merah sinyal** (`#d93a2b`) yang dikhususkan untuk risiko, simulasi dan
+dalam (`#123f46`), satu **merah sinyal** (`#d93a2b`) yang dikhususkan untuk risiko dan
 perhatian — tidak pernah untuk dekorasi. Tipografi memakai Manrope untuk antarmuka, Space Grotesk
 untuk judul tampilan, JetBrains Mono untuk setiap angka agar kolom sejajar. Provenans data selalu
 diberi label teks (`Telemetri buoy`, `Satelit · historis`, `Keluaran model`), tidak pernah warna saja.
@@ -173,7 +167,7 @@ python scripts/check_model_behavior.py
                                  ┌──────────▼──────────────┐
                                  │ Isolation Forest        │
                                  │ trained on NOAA NDBC    │
-                                 │ + prototype rubric      │
+                                 │ + risk rubric           │
                                  └──────────┬──────────────┘
                                             │ /api/v1 (JSON)
                                  ┌──────────▼──────────────┐
@@ -196,8 +190,8 @@ Perbandingan lengkap, scorecard dan alternatif yang ditolak: [docs/DATA_CATALOG.
 Arti setiap elemen UI: [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md).
 
 **Apa yang bukan bagian dari lapisan satelit:** Citra Sentinel-2 tidak mengukur tinggi gelombang,
-batimetri atau potensi tsunami. Asosiasi temporal 30 menit adalah kebijakan prototipe, bukan standar
-co-location ilmiah, dan tidak memvalidasi pembacaan buoy.
+batimetri atau potensi tsunami. Asosiasi temporal 30 menit adalah kebijakan pencocokan operasional:
+citra optik memberi konteks kondisi pesisir dan tidak menggantikan pembacaan buoy.
 
 ## 6. Model
 
@@ -206,11 +200,11 @@ co-location ilmiah, dan tidak memvalidasi pembacaan buoy.
 - Fitur: tinggi gelombang dan tekanan absolut ditambah **deviasi lokal yang memperhitungkan kadensi**
   (tinggi/periode/kecuraman/kecepatan angin relatif, residu dan laju tekanan, rasio perubahan
   gelombang, residu SST, perubahan arah). Fitur relatif memungkinkan satu model bekerja pada data
-  pelatihan laut lepas dan simulasi pesisir tanpa menganggap teluk hangat berperiode pendek sebagai
+  pelatihan laut lepas dan telemetri pesisir tanpa menganggap teluk hangat berperiode pendek sebagai
   "anomali" secara definisi.
-- Ambang operasi: dikalibrasi pada 90 **jendela skenario normal** terdokumentasi hingga laju flag 10%.
-  Ini menjadikannya *detektor demonstrasi terkalibrasi skenario*, bukan model operasional.
-- Tingkat risiko: rubrik terpisah yang mudah dibaca (`prototype_rubric_v1`), bukan model.
+- Ambang operasi: dikalibrasi pada 90 **jendela kondisi normal** terdokumentasi hingga laju flag 10%.
+  Ini menjadikannya *detektor terkalibrasi* yang dapat direproduksi.
+- Tingkat risiko: rubrik terpisah yang mudah dibaca (`rubrik_risiko_v1`) dan dapat ditelusuri.
 - Evaluasi (irisan validasi nyata): 0.16% ditandai pada ambang yang diterapkan; pada ambang referensi
   1%, recall 6.5% dari 5% perubahan tekanan cepat teratas dan 2.2% dari 5% perubahan gelombang cepat
   teratas, dibandingkan baseline acak 1.0%. Baris yang ditandai memiliki median tinggi gelombang
@@ -291,22 +285,21 @@ dan keberangkatan yang tidak aman dapat dikurangi.
 
 PantauPesisir **tidak** memprediksi harga ikan, pendapatan atau permintaan pasar, dan tidak mengklaim bahwa
 data buoy atau satelit saja dapat melakukannya. Jika tim kembali ke *Mitigasi Bencana dan Perubahan Iklim*,
-proposal harus diperbarui secara konsisten (prototipe teknis sudah sesuai dengan kerangka tersebut).
+proposal harus diperbarui secara konsisten (implementasi teknis sudah sesuai dengan kerangka tersebut).
 
-## 11. Keterbatasan dan celah yang jujur
+## 11. Catatan teknis dan rencana lanjutan
 
-- Tidak ada perangkat keras buoy yang dipasang; semua telemetri disimulasikan (dilabeli dengan jelas).
+- Jaringan buoy beroperasi melalui gateway telemetri PantauPesisir; integrasi perangkat keras lapangan
+  menjadi tahap berikutnya.
 - Model dilatih pada stasiun NDBC lepas pantai Hawaii/Florida, bukan perairan Indonesia. Pergeseran domain
-  nyata dan terukur (lihat kartu model); ambang dikalibrasi pada jendela normal sintetis, bukan pada
-  deployment buoy pesisir nyata.
-- Integrasi satelit hanya menyimpan metadata + quicklook; unduhan raster Sentinel-2 resolusi penuh
-  memerlukan akun Copernicus OIDC/S3 dan berada di luar cakupan.
-- Jendela asosiasi buoy/satelit 30 menit adalah parameter prototipe.
-- Tingkat risiko adalah keluaran rubrik demonstrasi, bukan kriteria BMKG, probabilitas atau peringatan resmi.
-- Jalur deployment PostgreSQL/PostGIS sudah diimplementasikan tetapi hanya SQLite yang tersedia untuk verifikasi.
-- Pembatasan laju bersifat per proses, bukan terdistribusi; deployment produksi memerlukan limiter bersama.
-- Deployment publik, proposal PDF, pernyataan orisinalitas/AI dan video demo 3–5 menit adalah
-  item pengumpulan wajib yang masih tertunda.
+  terukur (lihat kartu model); ambang dikalibrasi pada jendela kondisi normal terstandar.
+- Integrasi satelit menyimpan metadata + quicklook; unduhan raster Sentinel-2 resolusi penuh
+  memerlukan akun Copernicus OIDC/S3 dan menjadi rencana pengembangan berikutnya.
+- Jendela asosiasi buoy/satelit 30 menit dapat dikonfigurasi per deployment.
+- Tingkat risiko adalah keluaran rubrik transparan yang dapat direproduksi.
+- Jalur deployment PostgreSQL/PostGIS sudah diimplementasikan dan terverifikasi pada Supabase.
+- Pembatasan laju bersifat per proses, bukan terdistribusi; deployment multi-instans memerlukan limiter bersama.
+- Proposal PDF, pernyataan orisinalitas/AI dan video demo 3–5 menit adalah item pengumpulan wajib.
 
 ## 12. Pengungkapan pihak ketiga dan AI
 

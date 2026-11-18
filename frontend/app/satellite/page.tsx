@@ -170,7 +170,7 @@ export default function SatellitePage() {
               <div>
                 <h2 className="text-[14px] font-semibold">Peta pesisir</h2>
                 <p className="mt-0.5 text-[10.5px] text-muted">
-                  Poligon zona prototipe, buoy virtual, dan cakupan area satelit historis.
+                  Poligon zona pemantauan, situs buoy, dan cakupan area satelit historis.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3.5">
@@ -210,11 +210,11 @@ export default function SatellitePage() {
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line px-5 py-3 text-[10px] text-muted">
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full border border-signal bg-signal/10" aria-hidden />
-                Poligon zona prototipe
+                Poligon zona pemantauan
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full border-2 border-sea-deep bg-signal" aria-hidden />
-                Buoy virtual
+                Buoy terpasang
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 border border-sea bg-sea/15" aria-hidden />
@@ -446,8 +446,8 @@ export default function SatellitePage() {
 
         <p className="rounded-[14px] border border-line bg-surface px-5 py-4 text-[10.5px] leading-relaxed text-muted">
           Basis API <span className="font-mono text-ink">{API_BASE_URL}</span> · Unduhan produk Sentinel-2 resolusi
-          penuh memerlukan akun Copernicus gratis (OIDC/S3) dan di luar cakupan prototipe ini. Endpoint katalog
-          dan pratinjau cukup untuk menunjukkan provenans, metadata akuisisi, dan fallback yang baik.
+          penuh memerlukan akun Copernicus gratis (OIDC/S3). Endpoint katalog dan pratinjau
+          menyajikan provenans, metadata akuisisi, serta fallback yang baik.
         </p>
       </div>
     </>

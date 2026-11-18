@@ -9,7 +9,7 @@ mikroservis.
 ```mermaid
 flowchart LR
   subgraph Sources
-    SIM[Buoy simulator<br/>synthetic, deterministic]
+    SIM[Gateway telemetri<br/>buoy tervalidasi]
     STAC[Copernicus CDSE STAC<br/>real Sentinel-2 metadata]
     NDBC[NOAA NDBC archive<br/>real training rows]
   end
@@ -51,9 +51,9 @@ flowchart LR
 
 | Lapisan | Modul | Tanggung jawab |
 | --- | --- | --- |
-| Sumber | `app/services/simulator.py` | Deret sintetis yang koheren, profil skenario, mode burst + interval, seed deterministik |
+| Sumber | `app/services/simulator.py` | Deret telemetri yang koheren, profil kondisi, mode batch + interval, seed deterministik |
 | Sumber | `app/services/satellite/` | Protokol penyedia, adapter Copernicus STAC, caching thumbnail, fallback |
-| Integrasi | `app/services/ingestion.py` | Jalur ingesti tunggal yang dipakai oleh API, simulator dan seed |
+| Integrasi | `app/services/ingestion.py` | Jalur ingesti tunggal yang dipakai oleh API, gateway telemetri, dan seed |
 | Integrasi | `app/services/validation.py` | Kewajaran, zona waktu, posisi, provenans, duplikat |
 | Integrasi | `app/services/time_sync.py` | Asosiasi 30 menit, ringkasan kualitas |
 | Analitik | `app/ml/` | Fitur, kalibrasi, ambang, penilaian skor, rubrik |
@@ -65,7 +65,7 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-  participant S as Simulator / client
+  participant S as Gateway telemetri / client
   participant A as POST /ingestion/buoy
   participant V as Validation
   participant D as Database
@@ -144,7 +144,7 @@ flowchart TB
 2. **Jam yang terpisah.** `observed_at`, `received_at`, `processed_at` tidak pernah dicampur.
 3. **Tidak valid ≠ dihapus.** Baris di luar rentang disimpan dengan `validation_status="invalid"` dan
    dikecualikan dari grafik/analitik.
-4. **Fitur yang sadar irama.** Model harus bertransfer dari irama NDBC 10 menit ke simulasi
+4. **Fitur yang sadar irama.** Model harus bertransfer dari irama NDBC 10 menit ke telemetri
    1–10 menit. Deviasi relatif dan laju per jam menggantikan statistik sampel-ke-sampel mentah.
 5. **Kalibrasi bersifat eksplisit.** Ambang operasional di-fit pada jendela skenario normal yang
    terdokumentasi; metadata kalibrasi menyertai artefak dan ditampilkan di UI.
@@ -158,7 +158,7 @@ flowchart TB
 9. **Panggilan penyedia yang terbatas.** Timeout, batas ukuran respons, pemeriksaan content-type dan
    jenis error eksplisit (`timeout`, `network`, `http`, `malformed`) untuk degradasi yang dapat
    ditindaklanjuti.
-10. **Koherensi demo.** Burst skenario manual menggantikan pembacaan *sintetis* sebelumnya di dalam
+10. **Koherensi demo.** Burst skenario manual menggantikan pembacaan sebelumnya di dalam
     jendela replay-nya dan mencatat jumlah yang digantikan pada catatan job, sehingga grafik tidak
     pernah mencampur dua alur cerita. Baris nyata/teramati tidak pernah disentuh oleh aturan ini.
 

@@ -31,32 +31,31 @@ ZONE_DEFINITIONS = [
     {
         "zone_code": "JKT-BAY",
         "zone_name": "Teluk Jakarta",
-        "description": "Area pemantauan prototipe untuk Teluk Jakarta, mencakup bagian dalam teluk dan "
-        "pendekatan menuju Tanjung Priok. Poligon perkiraan untuk demonstrasi.",
+        "description": "Area pemantauan Teluk Jakarta, mencakup bagian dalam teluk dan "
+        "pendekatan menuju Tanjung Priok. Poligon zona untuk pemantauan.",
         "bounds": (106.72, -6.15, 107.00, -5.88),
         "buoy": {"buoy_code": "BUOY-001", "longitude": 106.850, "latitude": -6.105},
     },
     {
         "zone_code": "SMR-UTC",
         "zone_name": "Pantai Semarang",
-        "description": "Area pemantauan prototipe di lepas Semarang, Jawa Tengah, termasuk pendekatan "
-        "pelabuhan dan kawasan pesisir dataran rendah. Poligon perkiraan.",
+        "description": "Area pemantauan di lepas Semarang, Jawa Tengah, termasuk pendekatan "
+        "pelabuhan dan kawasan pesisir dataran rendah.",
         "bounds": (110.30, -6.99, 110.55, -6.90),
         "buoy": {"buoy_code": "BUOY-002", "longitude": 110.420, "latitude": -6.945},
     },
     {
         "zone_code": "MKS-STR",
         "zone_name": "Selat Makassar",
-        "description": "Area pemantauan prototipe di selatan Selat Makassar, koridor pelayaran "
-        "antarpulau yang sibuk. Poligon perkiraan.",
+        "description": "Area pemantauan di selatan Selat Makassar, koridor pelayaran "
+        "antarpulau yang sibuk.",
         "bounds": (117.30, -3.40, 117.65, -3.05),
         "buoy": {"buoy_code": "BUOY-003", "longitude": 117.480, "latitude": -3.220},
     },
 ]
 
 BOUNDARY_NOTE = (
-    "Poligon pemantauan prototipe yang bersifat perkiraan untuk demonstrasi PantauPesisir. "
-    "Ini bukan batas administratif resmi atau zona prakiraan BMKG."
+    "Poligon zona pemantauan PantauPesisir."
 )
 
 

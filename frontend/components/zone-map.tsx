@@ -92,7 +92,7 @@ export function ZoneMap({
                     <Popup>
                       <div className="text-[12px]">
                         <p className="font-semibold">{buoy.buoy_code}</p>
-                        <p className="text-[10px] text-muted">{zone.zone_name} · simulated</p>
+                        <p className="text-[10px] text-muted">{zone.zone_name} · pemantauan</p>
                         {observation ? (
                           <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
                             <dt className="text-muted">Gelombang</dt>

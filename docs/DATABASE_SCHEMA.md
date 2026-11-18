@@ -203,9 +203,8 @@ erDiagram
 - Pada **SQLite** ia merender `TEXT` dan menyimpan WKT, mengembalikan objek Shapely ke aplikasi.
 - Respons API selalu mengonversi geometri ke GeoJSON.
 
-Batas zona adalah poligon prototipe yang bersifat perkiraan. UI menampilkan `boundary_note` pada
-setiap zona untuk menegaskan hal tersebut. Batas-batas itu **bukan** batas administratif resmi
-maupun batas prakiraan resmi.
+Batas zona adalah poligon pemantauan yang bersifat perkiraan. UI menampilkan `boundary_note` pada
+setiap zona sebagai catatan area pemantauan.
 
 ## 4. Migrasi
 

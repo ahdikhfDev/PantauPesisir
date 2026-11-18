@@ -51,9 +51,9 @@ class CopernicusStacProvider:
             dataset="Metadata citra optik Sentinel-2 Level-2A dan pratinjau thumbnail",
             license=LICENSE,
             note=(
-                "Citra optik memberi konteks pesisir (batas darat/air, pola kekeruhan) dan bukan "
-                "pengukuran tinggi gelombang. Unduhan produk resolusi penuh memerlukan akun "
-                "Copernicus gratis dan tidak dilakukan oleh prototipe ini."
+                "Citra optik memberi konteks pesisir (batas darat/air, pola kekeruhan). "
+                "Unduhan produk resolusi penuh memerlukan akun "
+                "Copernicus gratis dan tidak dilakukan oleh layanan ini."
             ),
             docs_url="https://documentation.dataspace.copernicus.eu/APIs/STAC.html",
         )

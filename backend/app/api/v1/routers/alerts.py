@@ -1,4 +1,4 @@
-"""Prototype alert lifecycle endpoints."""
+"""Alert lifecycle endpoints."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ ALLOWED_TRANSITIONS = {
 }
 
 
-@router.get("", response_model=AlertListResponse, summary="List prototype alerts")
+@router.get("", response_model=AlertListResponse, summary="List alerts")
 def list_alerts(
     status_filter: str | None = Query(default=None, alias="status", pattern="^(open|acknowledged|resolved)$"),
     severity: str | None = Query(default=None, pattern="^(info|moderate|high)$"),
@@ -70,7 +70,7 @@ def list_alerts(
     "/{alert_id}",
     response_model=AlertOut,
     dependencies=[Depends(require_api_key)],
-    summary="Acknowledge or resolve a prototype alert",
+    summary="Acknowledge or resolve an alert",
 )
 def update_alert(alert_id: uuid.UUID, payload: AlertPatchIn, db: Session = Depends(get_db)) -> AlertOut:
     alert = db.get(Alert, alert_id)

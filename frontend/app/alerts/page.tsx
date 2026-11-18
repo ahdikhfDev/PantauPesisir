@@ -59,8 +59,8 @@ export default function AlertsPage() {
         "PATCH",
         {
           status,
-          actor: "demo-operator",
-          note: status === "resolved" ? "Ditutup setelah peninjauan operator di konsol prototipe." : undefined,
+          actor: "operator-pesisir",
+          note: status === "resolved" ? "Ditutup setelah peninjauan operator di konsol pemantauan." : undefined,
         },
         apiKey,
       );
@@ -90,7 +90,7 @@ export default function AlertsPage() {
             Peringatan dengan <span className="text-signal">jejak audit.</span>
           </>
         }
-        description="Setiap peringatan prototipe tertaut ke analisis yang menghasilkannya, membawa tingkat keparahan dan stempel waktu, serta melewati siklus hidup yang eksplisit. Peringatan tidak pernah mengklaim sebagai peringatan resmi."
+        description="Setiap peringatan tertaut ke analisis yang menghasilkannya, membawa tingkat keparahan dan stempel waktu, serta melewati siklus hidup yang eksplisit dan tercatat."
         right={
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill tone="bad">{counts.open ?? 0} terbuka</StatusPill>
@@ -154,7 +154,7 @@ export default function AlertsPage() {
             </div>
             <p className="mt-4 text-[11px] leading-relaxed text-muted">
               {alerts.data?.total ?? 0} peringatan cocok dengan filter saat ini. Tingkat keparahan
-              menggambarkan level rubrik prototipe saat analisis; bukan probabilitas.
+              menggambarkan level rubrik risiko saat analisis dijalankan.
             </p>
             <div className="mt-4 border-t border-line pt-4">
               <p className="text-[9.5px] font-semibold text-muted">
@@ -162,7 +162,7 @@ export default function AlertsPage() {
               </p>
               <ol className="mt-2 divide-y divide-line border-t border-line">
                 {[
-                  "Analisis mencapai Sedang atau Tinggi pada rubrik prototipe.",
+                  "Analisis mencapai Sedang atau Tinggi pada rubrik risiko.",
                   "API menulis peringatan yang tertaut ke prediksi dan zona.",
                   "Operator mengakui, lalu menyelesaikannya dengan stempel waktu UTC.",
                 ].map((step, index) => (

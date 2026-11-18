@@ -167,7 +167,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             Kesehatan sistem →
           </Link>
           <p className="mt-3 text-[9px] leading-relaxed text-white/25">
-            Prototipe IT RUSH 2026. Hanya untuk dukungan keputusan. Bukan layanan peringatan resmi.
+            PantauPesisir · konsol pemantauan pesisir Indonesia.
           </p>
         </div>
       </aside>
@@ -207,9 +207,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         <footer className="mx-auto w-full max-w-[1500px] px-4 pb-8 text-[10px] leading-relaxed text-muted sm:px-6 lg:px-8">
           <p>
-            Konsol dukungan keputusan. Setiap nilai dilengkapi status sumber;
-            rekaman Copernicus adalah akuisisi historis; keluaran AI berasal dari model. Konsultasikan
-            BMKG, BPBD, dan otoritas pelabuhan untuk keputusan operasional.
+            Setiap nilai dilengkapi status sumber; rekaman Copernicus adalah akuisisi historis;
+            keluaran AI berasal dari model analitik.
           </p>
           {health.data ? (
             <p className="mt-1 font-mono text-[9.5px] text-muted/80">

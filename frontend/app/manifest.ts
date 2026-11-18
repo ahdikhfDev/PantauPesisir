@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "PantauPesisir — Konsol Pemantauan Pesisir",
     short_name: "PantauPesisir",
     description:
-      "Konsol pemantauan pesisir: telemetri buoy, metadata satelit Copernicus, dan penyaringan anomali yang dapat ditelusuri. Bukan layanan peringatan resmi.",
+      "Konsol pemantauan pesisir: telemetri buoy, metadata satelit Copernicus, dan penyaringan anomali yang dapat ditelusuri.",
     lang: "id",
     id: "/",
     start_url: "/",

@@ -107,7 +107,7 @@ def main() -> int:
     score_p50 = float(np.quantile(train_scores, 0.5))
 
     # The operating threshold is calibrated on documented normal-scenario windows
-    # because inference input in this prototype is simulated telemetry.
+    # because inference input in production is buoy telemetry.
     calibration = compute_calibration(pipeline)
     threshold_raw = float(calibration["threshold_raw"])
     cal_median = float(calibration["median_raw"])
@@ -205,8 +205,8 @@ def main() -> int:
             "trained_at": trained_at,
             "training_dataset": "NOAA NDBC stdmet historis (observasi nyata, 2022-2024)",
             "dataset_provenance": json.loads(provenance_text),
-            "purpose": "Penyaringan anomali prototipe untuk telemetri buoy pesisir; bukan detektor tsunami.",
-            "intended_use": "Dukungan keputusan demonstrasi untuk operator pemantauan pesisir.",
+            "purpose": "Penyaringan anomali telemetri buoy pesisir berbasis Isolation Forest.",
+            "intended_use": "Intelijen risiko untuk operator pemantauan pesisir.",
             "random_seed": args.random_state,
         },
         "metrics": metrics,

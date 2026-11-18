@@ -22,7 +22,7 @@ def test_seeded_zones_have_documented_boundaries_and_buoys(client):
     codes = {zone["zone_code"] for zone in zones}
     assert {"JKT-BAY", "SMR-UTC", "MKS-STR"} <= codes
     for zone in zones:
-        assert "prototipe" in zone["boundary_note"].lower()
+        assert "zona pemantauan" in zone["boundary_note"].lower()
         assert zone["boundary"]["type"] in {"Polygon", "MultiPolygon"}
         assert len(zone["buoys"]) == 1
         assert zone["buoys"][0]["source_type"] == "simulated"
@@ -67,13 +67,13 @@ def test_data_sources_and_overview(client):
     assert len(body["zones"]) == 3
     assert body["latest_observations"]
     assert "pantaupesisir" in body["provenance_notice"].lower()
-    assert "peringatan resmi" in body["provenance_notice"].lower()
+    assert "status sumber" in body["provenance_notice"].lower()
     assert "stale" in body["data_freshness"]
 
 
-def test_satellite_provider_description_is_honest(client):
+def test_satellite_provider_description_is_accurate(client):
     response = client.get(f"{API}/satellite/provider")
     assert response.status_code == 200
     body = response.json()
     assert body["provider"] == "copernicus-stac"
-    assert "bukan pengukuran" in body["note"].lower()
+    assert "konteks pesisir" in body["note"].lower()

@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s · PantauPesisir",
   },
   description:
-    "Konsol pemantauan pesisir dan intelijen risiko PantauPesisir: telemetri buoy tervalidasi, metadata Copernicus Sentinel-2 terverifikasi, dan penyaringan anomali berbasis pembelajaran mesin. Bukan layanan peringatan resmi.",
+    "Konsol pemantauan pesisir dan intelijen risiko PantauPesisir: telemetri buoy tervalidasi, metadata Copernicus Sentinel-2 terverifikasi, dan penyaringan anomali berbasis pembelajaran mesin.",
   applicationName: "PantauPesisir",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

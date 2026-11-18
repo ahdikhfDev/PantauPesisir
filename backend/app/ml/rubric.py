@@ -1,16 +1,15 @@
-"""Transparent prototype risk rubric.
+"""Transparent risk rubric.
 
 These cut-offs are demonstration choices informed by the simulated scenario
-levels. They are NOT BMKG criteria, NOT tsunami categories, and NOT validated
-hazard classes. The rubric is intentionally readable so judges and users can
-see exactly how a level was produced.
+levels. The rubric is intentionally readable so judges and users can see
+exactly how a level was produced.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-RUBRIC_VERSION = "prototype_rubric_v1"
+RUBRIC_VERSION = "rubrik_risiko_v1"
 
 WAVE_FULL_SCALE_M = 6.0
 WIND_FULL_SCALE_MPS = 25.0

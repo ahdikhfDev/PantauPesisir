@@ -246,7 +246,7 @@ disajikan dengan `Cache-Control: public, max-age=86400`.
     "anomaly_threshold": 0.5,
     "risk_score": 94.9,
     "risk_level": "high",
-    "risk_method": "prototype_rubric_v1",
+    "risk_method": "rubrik_risiko_v1",
     "contributing_factors": [
       {
         "feature": "pressure_rate_hpa_per_hour",
@@ -258,14 +258,14 @@ disajikan dengan `Cache-Control: public, max-age=86400`.
         "direction": "below"
       }
     ],
-    "explanation": "Prototype analysis for …",
-    "recommendation": "Prototype advisory, not an official warning. …",
-    "caveats": ["An anomaly score is not a probability of disaster …"],
-    "data_quality_summary": { "observation_count": 45, "median_sampling_seconds": 60, "risk_method": "prototype_rubric_v1", "satellite_alignment": { "matched_pairs": [] } },
+    "explanation": "Analisis zona untuk …",
+    "recommendation": "Tinjau sebelum bertindak: operator pesisir …",
+    "caveats": ["Skor anomali mengukur penyimpangan relatif terhadap baseline model …"],
+    "data_quality_summary": { "observation_count": 45, "median_sampling_seconds": 60, "risk_method": "rubrik_risiko_v1", "satellite_alignment": { "matched_pairs": [] } },
     "is_simulated": true,
     "alert_id": "…"
   },
-  "acceptance_note": "Prototype decision support only. …"
+  "acceptance_note": "Hasil analisis risiko untuk zona terpilih …"
 }
 ```
 
@@ -286,12 +286,12 @@ Error: `404` zona tidak dikenal · `422` kurang dari 3 observasi valid · `503` 
       "zone_name": "Jakarta Bay",
       "severity": "high",
       "title": "High-risk coastal conditions — Jakarta Bay",
-      "description": "Risk rubric level 'high' … This is a simulated-data prototype alert and is not an official warning. …",
+      "description": "Tingkat rubrik risiko 'high' (skor 94.9/100), skor anomali 0.93. …",
       "status": "acknowledged",
       "source": "analytics",
       "created_at": "2026-11-18T03:12:04Z",
       "acknowledged_at": "2026-11-18T03:12:31Z",
-      "acknowledged_by": "demo-operator",
+      "acknowledged_by": "operator-pesisir",
       "resolved_at": null
     }
   ],

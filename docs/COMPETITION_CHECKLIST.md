@@ -30,7 +30,7 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 | 4 | Metadata satelit dan waktu akuisisi dipertahankan | ✅ | `satellite_datasets`, laman `/satellite` |
 | 5 | Asosiasi buoy/satelit tanpa pemaksaan kecocokan | ✅ | Jendela 30 menit, ID yang tidak cocok dipertahankan |
 | 6 | Model ML dimuat dan menghasilkan luaran yang dapat direproduksi | ✅ | `cews-iforest-v1`, artefak dengan seed, uji |
-| 7 | Analisis risiko jelas sebagai pendukung keputusan prototipe | ✅ | Kaveat, versi rubrik, kata-kata rekomendasi |
+| 7 | Analisis risiko jelas dan dapat ditelusuri | ✅ | Kaveat, versi rubrik, kata-kata rekomendasi |
 | 8 | Frontend menampilkan data backend, bukan nilai hard-coded | ✅ | Semua laman mengambil `/api/v1` |
 | 9 | Kegagalan penyedia tidak mengganggu pemantauan buoy | ✅ | Uji fallback + baris status |
 | 10 | Situs web publik dan repositori publik tersedia | ⛔ | Penerapan + publikasi repo masih tertunda |
@@ -75,4 +75,4 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 5. **Pemeriksaan lintas peramban/mobile** (hanya Chromium headless yang tersedia selama pengembangan).
 6. **Rotasi secret** untuk produksi dan setel `DEMO_MODE=false` jika akun operator nyata ditambahkan.
 7. **Konfirmasi subtema** dengan tim. Jika subtema 1 (mitigasi bencana) dipilih, tulis ulang posisi
-   proposal secara konsisten; prototipe mendukung kedua kerangka tersebut.
+   proposal secara konsisten; implementasi mendukung kedua kerangka tersebut.

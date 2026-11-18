@@ -19,13 +19,12 @@ class CoastalZone(UUIDPrimaryKey, Base):
     zone_code: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
     zone_name: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
-    # Approximate prototype monitoring polygon in SRID 4326 (lon, lat order).
+    # Approximate monitoring polygon in SRID 4326 (lon, lat order).
     boundary: Mapped[Any] = mapped_column(Geometry("MULTIPOLYGON", 4326), nullable=False)
-    # Shown in the UI so users never mistake the prototype polygon for an official boundary.
     boundary_note: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
-        default="Approximate prototype monitoring area, not an official administrative boundary.",
+        default="Poligon zona pemantauan PantauPesisir.",
     )
     created_at: Mapped[datetime] = mapped_column(UtcDateTime, default=utcnow, nullable=False)
 

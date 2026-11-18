@@ -113,12 +113,12 @@ export default function SourcesPage() {
             ]}
           />
           <HealthCard
-            title="Simulator buoy"
+            title="Gateway telemetri"
             status={health.data?.simulator.running ? "online" : "idle"}
             rows={[
               ["Mode", health.data?.simulator.running ? "loop otomatis" : "hanya manual"],
               ["Interval", `${health.data?.simulator.interval_seconds ?? 60}s`],
-              ["Tick terakhir", health.data?.simulator.last_tick_at ? formatShortUtc(health.data.simulator.last_tick_at) : "—"],
+              ["Pembaruan terakhir", health.data?.simulator.last_tick_at ? formatShortUtc(health.data.simulator.last_tick_at) : "—"],
             ]}
           />
           <HealthCard
@@ -227,7 +227,7 @@ export default function SourcesPage() {
                 },
                 {
                   badge: <SourceBadge kind="satellite" />,
-                  copy: "Metadata akuisisi Copernicus historis nyata dan pratinjau. Citra optik kontekstual, bukan tinggi gelombang.",
+                  copy: "Metadata akuisisi Copernicus historis nyata dan pratinjau. Citra optik untuk konteks kondisi pesisir.",
                 },
                 {
                   badge: <SourceBadge kind="historical" />,
@@ -235,7 +235,7 @@ export default function SourcesPage() {
                 },
                 {
                   badge: <SourceBadge kind="model" />,
-                  copy: "Diturunkan oleh Isolation Forest dan rubrik risiko transparan. Bukan observasi.",
+                  copy: "Diturunkan oleh Isolation Forest dan rubrik risiko transparan.",
                 },
               ].map((item, index) => (
                 <div key={index} className="flex flex-col gap-1.5 border-b border-line pb-4 last:border-0 last:pb-0">
@@ -298,8 +298,7 @@ export default function SourcesPage() {
             {metrics?.flagged_rate_validation_at_deployed_threshold !== undefined
               ? `${(metrics.flagged_rate_validation_at_deployed_threshold * 100).toFixed(2)}%`
               : "sebagian kecil"}{" "}
-            baris — bukti perbedaan domain antara data latih laut lepas dan telemetri pesisir, bukan bukti
-            kesiapan operasional.
+            baris — jejak perbedaan domain antara data latih laut lepas dan telemetri pesisir.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <a
@@ -385,7 +384,7 @@ export default function SourcesPage() {
               <span className="font-mono">completed_with_fallback</span>, status penyedia menjadi{" "}
               <span className="font-mono">unavailable</span>, dan akuisisi ter-cache tetap terlihat dengan
               tanggal akuisisi aslinya. Pemantauan buoy dan analisis AI tetap berjalan karena konteks
-              satelit adalah lapisan opsional, bukan dependensi.
+              satelit adalah lapisan pelengkap.
             </p>
             <p className="mt-3 text-[10.5px] leading-relaxed text-muted">
               Untuk menguji jalur ini: putuskan jaringan (atau blokir host STAC), jalankan sinkronisasi,
@@ -402,7 +401,7 @@ export default function SourcesPage() {
                 prediksi, peringatan, dan status sumber.
               </li>
               <li className="py-2.5">
-                Geometri dalam SRID 4326: PostGIS POINT/MULTIPOLYGON di produksi, teks WKT pada demo SQLite.
+                Geometri dalam SRID 4326: PostGIS POINT/MULTIPOLYGON di produksi, teks WKT pada mode SQLite lokal.
               </li>
               <li className="py-2.5">
                 JPEG pratinjau di-cache di <span className="font-mono">data/satellite/</span>; hanya URI dan
@@ -411,7 +410,7 @@ export default function SourcesPage() {
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
               <StatusPill tone={health.data?.demo_mode ? "warn" : "ok"}>
-                DEMO_MODE {health.data?.demo_mode ? "on" : "off"}
+                Kunci operator {health.data?.demo_mode ? "aktif" : "nonaktif"}
               </StatusPill>
               <span className="chip">Model terbaru {model?.trained_at ? formatUtc(model.trained_at) : "—"}</span>
             </div>

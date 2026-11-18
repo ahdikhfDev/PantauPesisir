@@ -168,7 +168,7 @@ export default function OceanPage() {
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="chip border-line-strong">Skenario · {enumLabel(observation?.scenario ?? "—")}</span>
+            <span className="chip border-line-strong">Kondisi · {enumLabel(observation?.scenario ?? "—")}</span>
             <span className="chip border-line-strong">v{observation?.generator_version ?? "—"}</span>
             {observation && observation.data_age_seconds > (latest.data?.stale_after_seconds ?? 300) ? (
               <StatusPill tone="warn">Usang &gt; {Math.round((latest.data?.stale_after_seconds ?? 300) / 60)} min</StatusPill>
@@ -289,7 +289,7 @@ export default function OceanPage() {
                   {history.data && history.data.items.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-5 py-10 text-center text-[12px] text-muted">
-                        Belum ada pembacaan di jendela ini. Buat skenario di bawah.
+                        Belum ada pembacaan di jendela ini. Kirim batch di bawah.
                       </td>
                     </tr>
                   ) : null}

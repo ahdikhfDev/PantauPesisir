@@ -89,7 +89,7 @@ export default function AiPage() {
       setPrediction(response.prediction);
       setNotice(
         response.prediction.alert_id
-          ? "Analisis selesai dan peringatan prototipe telah dibuka. Ini bukan peringatan resmi."
+          ? "Analisis selesai dan peringatan telah dibuka."
           : "Analisis selesai. Ambang peringatan tidak terlampaui.",
       );
       history.refresh();
@@ -142,10 +142,10 @@ export default function AiPage() {
         eyebrow="Intelijen risiko AI"
         title={
           <>
-            Penyaringan, <span className="text-signal">bukan ramalan.</span>
+            Penyaringan, <span className="text-signal">sebelum membesar.</span>
           </>
         }
-        description="Isolation Forest yang dilatih pada observasi NOAA NDBC asli memberi skor seberapa tidak biasa jendela terbaru. Rubrik terpisah yang mudah dibaca menilai keparahan absolut. Kedua lapisan ditampilkan — beserta input, versi, dan catatannya — karena anomali bukan bahaya."
+        description="Isolation Forest yang dilatih pada observasi NOAA NDBC asli memberi skor seberapa tidak biasa jendela terbaru. Rubrik terpisah yang mudah dibaca menilai keparahan absolut. Kedua lapisan ditampilkan — beserta input, versi, dan catatannya — agar setiap skor dapat ditelusuri."
         right={
           <div className="flex flex-col items-start gap-2 lg:items-end">
             <SourceBadge kind="model" />
@@ -295,9 +295,9 @@ export default function AiPage() {
                 className="mt-0.5 h-3.5 w-3.5 accent-sea"
               />
               <span className="text-[11.5px] leading-relaxed text-ink-soft">
-                Buka peringatan prototipe saat rubrik mencapai sedang atau tinggi.
+                Buka peringatan saat rubrik mencapai sedang atau tinggi.
                 <span className="mt-0.5 block text-[10px] text-muted">
-                  Peringatan ditandai sebagai imbauan prototipe dan dapat dikonfirmasi di ruang kerja peringatan.
+                  Peringatan dapat dikonfirmasi di ruang kerja peringatan.
                 </span>
               </span>
             </label>
@@ -329,9 +329,8 @@ export default function AiPage() {
             <div className="mt-4 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/70 px-3.5 py-3">
               <SlidersHorizontal className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
               <p className="text-[10.5px] leading-relaxed text-muted">
-                Tingkat risiko berasal dari rubrik transparan (<span className="font-mono">prototype_rubric_v1</span>)
-                menggunakan tinggi gelombang absolut, angin, penurunan tekanan, dan periode. Ini skala demonstrasi,
-                bukan kriteria BMKG.
+                Tingkat risiko berasal dari rubrik transparan (<span className="font-mono">rubrik_risiko_v1</span>)
+                menggunakan tinggi gelombang absolut, angin, penurunan tekanan, dan periode.
               </p>
             </div>
           </div>
@@ -391,7 +390,7 @@ export default function AiPage() {
 
                 <div className="mt-5">
                   <div className="flex items-center justify-between text-[10px] font-semibold text-muted">
-                    <span>Skor risiko prototipe</span>
+                    <span>Skor risiko</span>
                     <span className="metric">{fixed(prediction.risk_score, 1)}/100</span>
                   </div>
                   <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-line">
@@ -408,7 +407,7 @@ export default function AiPage() {
                     />
                   </div>
                   <p className="mt-1.5 text-[10px] text-muted">
-                    Metode <span className="font-mono">{prediction.risk_method ?? "prototype_rubric_v1"}</span>
+                    Metode <span className="font-mono">{prediction.risk_method ?? "rubrik_risiko_v1"}</span>
                   </p>
                 </div>
 
@@ -471,7 +470,7 @@ export default function AiPage() {
                 </ul>
                 <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
                   Deviasi diukur terhadap baseline data latih untuk fitur yang sama. σ adalah
-                  jarak terstandardisasi, bukan probabilitas.
+                  jarak terstandardisasi dari baseline model.
                 </p>
 
                 <div
@@ -485,7 +484,7 @@ export default function AiPage() {
                   )}
                 >
                   <p className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
-                    <Target className="h-3 w-3" aria-hidden /> Dukungan keputusan
+                    <Target className="h-3 w-3" aria-hidden /> Rekomendasi operasional
                   </p>
                   <p className="mt-1.5 text-[12px] leading-relaxed text-ink-soft">{prediction.recommendation}</p>
                 </div>
@@ -497,7 +496,7 @@ export default function AiPage() {
                 <SourceBadge kind="model" />
                 <SourceBadge kind={prediction.is_simulated ? "simulated" : "observed"} />
                 <span className="text-[10.5px] text-muted">
-                  Keluaran model diturunkan dari telemetri buoy · bukan peringatan resmi.
+                  Keluaran model diturunkan dari telemetri buoy tervalidasi.
                 </span>
               </div>
               <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">

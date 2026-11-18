@@ -1,4 +1,4 @@
-"""Prototype alert lifecycle."""
+"""Alert lifecycle."""
 
 from __future__ import annotations
 

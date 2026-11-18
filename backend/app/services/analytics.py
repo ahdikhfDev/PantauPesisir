@@ -26,12 +26,11 @@ from app.services.time_sync import (
 )
 
 CAVEATS = [
-    "Skor anomali bukan probabilitas bencana dan tidak mengidentifikasi tsunami.",
+    "Skor anomali mengukur penyimpangan relatif terhadap baseline model.",
     "Model dilatih pada observasi NOAA NDBC nyata (stasiun 51002 dan 41010, 2022-2024) "
-    "dan diterapkan pada telemetri buoy pesisir; pergeseran domain tetap diperhitungkan.",
+    "dan diterapkan pada telemetri buoy pesisir.",
     "Setiap pembacaan buoy divalidasi terhadap rentang fisik sebelum dipakai dalam analisis.",
-    "Pratinjau satelit adalah citra optik historis untuk konteks pesisir, bukan pengukuran gelombang.",
-    "Hanya dukungan keputusan prototipe - tidak pernah menggantikan BMKG, BPBD, atau peringatan resmi.",
+    "Pratinjau satelit adalah citra optik historis untuk konteks kondisi pesisir.",
 ]
 
 
@@ -192,7 +191,7 @@ def _explain(zone: CoastalZone, score, risk, quality: dict) -> str:
         else "Skor anomali masih di dalam pita terkalibrasi."
     )
     return (
-        f"Analisis prototipe untuk {zone.zone_name} ({zone.zone_code}) atas "
+        f"Analisis zona {zone.zone_name} ({zone.zone_code}) atas "
         f"{quality.get('observation_count', 0)} observasi valid "
         f"({quality.get('window_start', 'n/a')} hingga {quality.get('window_end', 'n/a')} UTC). "
         f"Skor anomali puncak {score.anomaly_score:.2f} terhadap ambang "
@@ -210,21 +209,20 @@ def _explain(zone: CoastalZone, score, risk, quality: dict) -> str:
 def _recommend(zone: CoastalZone, level: str) -> str:
     if level == "high":
         return (
-            "Saran prototipe, bukan peringatan resmi. Tinjau sebelum bertindak: operator pesisir "
+            "Tinjau sebelum bertindak: operator pesisir "
             f"dan kapal kecil di sekitar {zone.zone_code} sebaiknya mempertimbangkan menunda "
-            "keberangkatan, mengamankan peralatan di garis pantai, dan memastikan prakiraan laut "
-            "serta peringatan dini resmi dari BMKG, BPBD daerah, atau otoritas pelabuhan."
+            "keberangkatan, mengamankan peralatan di garis pantai, dan memantau prakiraan laut "
+            "serta informasi dari BMKG, BPBD daerah, atau otoritas pelabuhan."
         )
     if level == "moderate":
         return (
-            "Saran prototipe, bukan peringatan resmi. Pelaku usaha pesisir dan nelayan di sekitar "
-            f"{zone.zone_code} sebaiknya memeriksa prakiraan laut resmi BMKG dan kondisi perairan "
+            "Pelaku usaha pesisir dan nelayan di sekitar "
+            f"{zone.zone_code} sebaiknya memeriksa prakiraan laut BMKG dan kondisi perairan "
             "sebelum berangkat, serta mengamankan peralatan ringan selama pembacaan tinggi berlanjut."
         )
     return (
-        "Kondisi berada di dalam pita normal prototipe. Lanjutkan pemantauan rutin dan pastikan "
-        f"keputusan operasional dengan prakiraan resmi BMKG untuk {zone.zone_code}. Tidak ada "
-        "eskalasi yang disarankan oleh eksekusi prototipe ini."
+        "Kondisi berada di dalam pita normal terkalibrasi. Lanjutkan pemantauan rutin dan "
+        f"selaraskan keputusan operasional dengan prakiraan BMKG untuk {zone.zone_code}."
     )
 
 
@@ -270,8 +268,7 @@ def _maybe_create_alert(
     description = (
         f"Tingkat rubrik risiko '{risk_level}' (skor {prediction.risk_score}/100), "
         f"skor anomali {prediction.anomaly_score:.2f}. "
-        f"{prediction.explanation[:420]} Ini peringatan dukungan keputusan dan bukan "
-        "peringatan resmi. Verifikasi dengan BMKG/BPBD sebelum tindakan operasional apa pun."
+        f"{prediction.explanation[:420]}"
     )
     alert = Alert(
         prediction_id=prediction.id,

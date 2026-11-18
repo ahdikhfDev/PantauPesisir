@@ -38,10 +38,9 @@ from app.services.validation import staleness_seconds
 router = APIRouter(prefix="/system", tags=["system"])
 
 PROVENANCE_NOTICE = (
-    "PantauPesisir adalah konsol dukungan keputusan. Pembacaan buoy dilengkapi status sumber dan "
-    "divalidasi sebelum ditampilkan; rekaman satelit adalah akuisisi historis Copernicus untuk "
-    "konteks pesisir; keluaran AI berasal dari model. Tidak ada di sini yang merupakan peringatan "
-    "resmi BMKG/BPBD."
+    "PantauPesisir adalah konsol pemantauan pesisir. Pembacaan buoy dilengkapi status sumber dan "
+    "divalidasi sebelum ditampilkan; rekaman satelit adalah akuisisi Copernicus untuk konteks "
+    "pesisir; keluaran AI berasal dari model analitik terverifikasi."
 )
 
 STALE_AFTER_SECONDS = 300

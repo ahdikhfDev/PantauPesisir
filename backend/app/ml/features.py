@@ -8,7 +8,7 @@ climatology is therefore *not* used as model input - a warm, short-period bay se
 state is not "anomalous", it is simply a different regime. Instead the model
 learns how a sea state departs from its own recent window: relative deviations,
 pressure residuals and change rates. Absolute severity is handled by the
-transparent prototype risk rubric (``app/ml/rubric.py``).
+transparent risk rubric (``app/ml/rubric.py``).
 
 All features are trailing (past-only), so chronological splits do not leak.
 """

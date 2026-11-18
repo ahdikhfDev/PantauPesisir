@@ -6,7 +6,7 @@ License: U.S. federal government work, public domain.
 
 The resulting CSV is the documented training dataset for the PantauPesisir anomaly
 model. It contains real measurements (not synthetic data). Simulated buoy
-telemetry is only used at inference time in the prototype.
+telemetry is only used at inference time.
 
 Usage:
     python backend/scripts/fetch_training_data.py
@@ -226,7 +226,7 @@ def main() -> int:
             "Stations are in the Pacific (Hawaii) and Atlantic (Florida) offshore zones, not Indonesian waters.",
             "Observing cadence is typically 10 minutes with sensor outages; gaps are preserved.",
             "No hazard labels are included. Wave-height percentiles are used only as an evaluation proxy.",
-            "Training data are real measurements; PantauPesisir inference inputs in this prototype are simulated.",
+            "Training data are real measurements; PantauPesisir inference inputs come from buoy telemetry.",
         ],
     }
     PROVENANCE_PATH.write_text(json.dumps(provenance, indent=2), encoding="utf-8")

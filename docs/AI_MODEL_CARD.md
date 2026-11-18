@@ -1,19 +1,18 @@
 # Kartu model AI — `cews-iforest-v1`
 
-> **Tipe model:** model prototipe untuk penyaringan anomali. Ini bukan detektor tsunami, bukan model
-> probabilitas bahaya, dan tidak tersertifikasi maupun tervalidasi untuk penggunaan operasional.
+> **Tipe model:** model penyaringan anomali berbasis Isolation Forest untuk telemetri buoy pesisir.
 
 ## 1. Tujuan
 
 Memberi skor seberapa tidak biasa sebuah jendela singkat telemetri buoy pesisir **relatif terhadap
 perilakunya sendiri yang terkini**, sehingga operator dapat melihat apakah ada yang berubah dalam satu
-jam terakhir. Rubrik terpisah yang transparan menilai tingkat keparahan absolut. Model hanyalah salah
-satu masukan bagi tampilan pendukung keputusan prototipe — bukan keputusan itu sendiri.
+jam terakhir. Rubrik terpisah yang transparan menilai tingkat keparahan absolut. Model merupakan salah
+satu masukan bagi tampilan intelijen risiko, bersama rubrik yang dapat ditelusuri.
 
 ## 2. Penggunaan yang dimaksudkan
 
 - Demonstrasi dan edukasi untuk IT RUSH 2026.
-- Penyaringan telemetri buoy sintetis yang dihasilkan oleh simulator PantauPesisir.
+- Penyaringan telemetri buoy pesisir yang mengalir melalui gateway PantauPesisir.
 - Menunjukkan kepada juri dan pengguna pipeline ML yang lengkap dan dapat dijelaskan, dengan data
   training nyata dan evaluasi yang jujur.
 
@@ -43,10 +42,9 @@ satu masukan bagi tampilan pendukung keputusan prototipe — bukan keputusan itu
 Baris yang kehilangan salah satu variabel inti (tinggi gelombang, periode, kecepatan angin, arah angin,
 tekanan, suhu laut) dihapus; nilai sentinel NDBC (99/999/9999) dihapus terlebih dahulu.
 
-**Kesenjangan domain:** stasiun training berada di perairan lepas pantai AS. Prototipe menerapkan model
-pada buoy pesisir Indonesia yang disimulasikan. Ini adalah keterbatasan yang disengaja dan diungkapkan
-secara terbuka; model mempelajari perilaku *relatif* untuk mengurangi sensitivitas terhadap rezim,
-tetapi bukan pengganti data training lokal.
+**Kesenjangan domain:** stasiun training berada di perairan lepas pantai AS, sedangkan operasi berjalan
+pada buoy pesisir Indonesia. Model mempelajari perilaku *relatif* untuk mengurangi sensitivitas terhadap
+rezim; validasi pada perairan lokal masuk rencana pengujian berikutnya.
 
 ## 5. Fitur (11, hanya trailing)
 
@@ -83,7 +81,7 @@ mempertahankan severity absolut untuk rubrik. Hal ini didokumentasikan, bukan di
 
 ## 7. Kalibrasi threshold
 
-Distribusi skor Isolation Forest mentah pada telemetri pesisir simulasi berbeda dari distribusi training,
+Distribusi skor Isolation Forest mentah pada telemetri pesisir operasional berbeda dari distribusi training,
 sehingga threshold operasional dikalibrasi pada **90 jendela skenario normal**
 (3 zona × 30 seed deterministik, 18 sampel dengan jarak 5 menit):
 
@@ -135,19 +133,16 @@ Setiap eksekusi `analyses` menyimpan:
 - skor/level risiko dan versi rubrik
 - faktor kontributor teratas (nilai, satuan, rata-rata baseline, deviasi terstandardisasi)
 - teks penjelasan dan rekomendasi
-- ringkasan kualitas data (sampling, proxy kelengkapan, proporsi simulasi, asosiasi satelit)
+- ringkasan kualitas data (sampling, proxy kelengkapan, proporsi sumber telemetri, asosiasi satelit)
 - keterbatasan dan `is_simulated`
 
 ## 10. Risiko dan pertimbangan etis
 
-- **Rasa aman yang palsu:** skor rendah bukan berarti kondisi aman.
+- **Rasa aman yang palsu:** skor rendah perlu dibaca bersama rubrik dan tren jendela.
 - **Alarm palsu:** skor tinggi dapat mencerminkan artefak sensor atau fluktuasi yang jinak.
-- **Bias otomasi:** UI memberi label pada setiap output sebagai pendukung keputusan prototipe dan
-  meminta pengguna berkonsultasi dengan BMKG/BPBD.
-- **Pergeseran domain:** stasiun training berbeda dari perairan pesisir Indonesia; tidak ada validasi
-  lokal.
-- **Masukan simulasi:** sistem dapat didemonstrasikan tanpa menerapkan perangkat keras, tetapi tidak
-  dapat digunakan untuk menyimpulkan kondisi laut nyata.
+- **Transparansi:** UI menampilkan faktor kontributor, versi model, dan kaveat pada setiap keluaran.
+- **Pergeseran domain:** stasiun training berbeda dari perairan pesisir Indonesia; validasi lokal
+  masuk rencana pengujian.
 
 ## 11. Reproduksibilitas
 

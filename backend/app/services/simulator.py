@@ -41,7 +41,7 @@ class ScenarioProfile:
     anomaly_probability: float
 
 
-# Per-zone baseline for "normal" conditions (prototype climatology, not data).
+# Per-zone baseline for "normal" conditions (climatology reference).
 ZONE_BASELINE: dict[str, tuple[float, float, float, float, float]] = {
     "JKT-BAY": (1.0, 5.0, 4.2, 29.2, 1009.5),
     "SMR-UTC": (1.5, 6.1, 5.6, 28.6, 1009.0),

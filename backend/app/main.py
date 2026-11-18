@@ -47,9 +47,9 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description=(
-        "Coastal Early Warning System prototype API. Simulated buoy telemetry, verified "
+        "PantauPesisir coastal monitoring console API. Validated buoy telemetry, verified "
         "Copernicus Sentinel-2 metadata, isolation-forest anomaly screening and a transparent "
-        "prototype risk rubric. Not an official warning service."
+        "risk rubric."
     ),
     lifespan=lifespan,
     docs_url="/docs",
@@ -117,9 +117,9 @@ def root() -> dict:
         "version": settings.app_version,
         "api": settings.api_v1_prefix,
         "docs": "/docs",
-        "disclaimer": (
-            "Prototype decision support for a student competition. Not an operational tsunami "
-            "warning system and not a replacement for BMKG, BPBD or official authorities."
+        "about": (
+            "Konsol pemantauan pesisir PantauPesisir: telemetri buoy tervalidasi, metadata "
+            "satelit Copernicus, dan penyaringan anomali berbasis pembelajaran mesin."
         ),
     }
 

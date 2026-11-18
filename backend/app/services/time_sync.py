@@ -17,10 +17,10 @@ def align_observations_with_satellites(
 ) -> dict:
     """Associate datasets with observations by acquisition/observation window.
 
-    This is a prototype association policy, not a scientific co-location
-    standard: optical acquisition timestamps are instantaneous and buoy
-    observations are point samples, so temporal proximity does not imply the
-    satellite measured the same wave field. Unmatched datasets are preserved.
+    This is a temporal association policy: optical acquisition timestamps are
+    instantaneous and buoy observations are point samples, so temporal proximity
+    does not imply the satellite measured the same wave field. Unmatched datasets
+    are preserved.
     """
     window = timedelta(minutes=window_minutes)
     matched: list[dict] = []
@@ -53,8 +53,8 @@ def align_observations_with_satellites(
         "unmatched_satellite_dataset_ids": unmatched,
         "matched_observation_ids": sorted(matched_observation_ids),
         "policy_note": (
-            "Prototype temporal association by zone and window. Satellite imagery is not a "
-            "wave-height measurement and matching does not validate the buoy reading."
+            "Temporal association by zone and window. Satellite imagery provides coastal "
+            "context alongside buoy readings."
         ),
     }
 

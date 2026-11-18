@@ -4,7 +4,7 @@ from tests.conftest import API
 from tests.helpers import run_analysis, start_scenario
 
 
-def test_analysis_produces_explainable_prototype_output(client, auth):
+def test_analysis_produces_explainable_output(client, auth):
     start_scenario(client, auth, zone_code="JKT-BAY", scenario="extreme", observations=14,
                    interval_seconds=300, seed=1234)
     prediction = run_analysis(client, auth, zone_code="JKT-BAY")
@@ -14,12 +14,12 @@ def test_analysis_produces_explainable_prototype_output(client, auth):
     assert prediction["input_observation_count"] >= 3
     assert 0.0 <= prediction["anomaly_score"] <= 1.0
     assert prediction["risk_level"] in {"low", "moderate", "high"}
-    assert prediction["risk_method"] == "prototype_rubric_v1"
+    assert prediction["risk_method"] == "rubrik_risiko_v1"
     assert prediction["contributing_factors"], "explainability requires factors"
-    assert "bukan probabilitas" in " ".join(prediction["caveats"]).lower()
+    assert "baseline model" in " ".join(prediction["caveats"]).lower()
     assert prediction["is_simulated"] is True
-    assert "prototipe" in prediction["recommendation"].lower()
-    assert prediction["data_quality_summary"]["risk_method"] == "prototype_rubric_v1"
+    assert "JKT-BAY" in prediction["recommendation"]
+    assert prediction["data_quality_summary"]["risk_method"] == "rubrik_risiko_v1"
     assert "satellite_alignment" in prediction["data_quality_summary"]
 
 
@@ -28,12 +28,12 @@ def test_extreme_scenario_escalates_risk_and_creates_alert(client, auth):
                    interval_seconds=300, seed=777)
     prediction = run_analysis(client, auth, zone_code="JKT-BAY")
     assert prediction["risk_level"] in {"moderate", "high"}
-    assert prediction["alert_id"], "moderate/high risk should open a prototype alert"
+    assert prediction["alert_id"], "moderate/high risk should open an alert"
 
     alerts = client.get(f"{API}/alerts", params={"zone_code": "JKT-BAY"}).json()
     assert alerts["total"] >= 1
     assert all(alert["source"] == "analytics" for alert in alerts["items"])
-    assert "bukan peringatan resmi" in alerts["items"][0]["description"].lower()
+    assert "rubrik risiko" in alerts["items"][0]["description"].lower()
 
 
 def test_latest_detail_and_history_endpoints(client, auth):

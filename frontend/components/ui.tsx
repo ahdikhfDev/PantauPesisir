@@ -253,7 +253,7 @@ export function ApiKeyField({
         </button>
       </div>
       <p className="mt-2 text-[10px] leading-relaxed text-muted">
-        Kunci demo bersifat publik dan hanya mengontrol aksi prototipe. Disimpan di tab ini.
+        Kunci operator hanya mengontrol aksi tulis dan disimpan di tab ini.
       </p>
     </div>
   );

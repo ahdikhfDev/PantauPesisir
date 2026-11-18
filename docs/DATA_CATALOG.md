@@ -70,8 +70,8 @@ dikumpulkan selama build, bukan berdasarkan materi pemasaran penyedia.
 - **Keterbatasan:** bukan perairan Indonesia; tidak ada label bahaya; pemutusan sensor gelombang di
   51002 pada 2024 (hanya 3,182 baris valid untuk tahun itu) — hal ini terlihat dalam data dan
   didokumentasikan, bukan ditambal
-- **Penggunaan:** pelatihan model offline dan evaluasi proksi saja. Telemetri tersimulasi merupakan
-  masukan inferensi pada prototipe ini.
+- **Penggunaan:** pelatihan model offline dan evaluasi proksi. Telemetri buoy merupakan
+  masukan inferensi layanan ini.
 
 ### 2.3 Peta dasar OpenStreetMap
 

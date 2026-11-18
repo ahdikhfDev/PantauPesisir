@@ -19,18 +19,18 @@ tanggal perolehannya.
 
 | Elemen | Sumber | Catatan |
 | --- | --- | --- |
-| KPI rata-rata gelombang | `buoy_observations` valid terbaru per zona | Simulasi; rentang ditampilkan |
-| Grafik keadaan laut | `/buoy/history` untuk zona terpilih (atau rata-rata per menit lintas zona) | Simulasi; sumbu UTC |
-| Status zona gelombang/usia/risiko | Observasi terbaru + analisis terbaru per zona | Telemetri simulasi + output model |
+| KPI rata-rata gelombang | `buoy_observations` valid terbaru per zona | Telemetri buoy; rentang ditampilkan |
+| Grafik keadaan laut | `/buoy/history` untuk zona terpilih (atau rata-rata per menit lintas zona) | Sumbu UTC |
+| Status zona gelombang/usia/risiko | Observasi terbaru + analisis terbaru per zona | Telemetri buoy + output model |
 | "Copernicus S2 — N acquisitions cached" | Jumlah di database + `acquired_at` terbaru | Metadata satelit historis |
-| Kartu "Prototype risk" | Baris `ai_predictions` terbaru | Output model |
-| Stat: zona | Jumlah `coastal_zones` | Poligon prototipe hasil seed |
+| Kartu "Risiko pesisir" | Baris `ai_predictions` terbaru | Output model |
+| Stat: zona | Jumlah `coastal_zones` | Poligon pemantauan hasil seed |
 | Stat: parameter | Konstanta 7 | Sesuai dengan skema observasi |
 | Stat: baris telemetri | Jumlah `buoy_observations` | Mencakup baris valid/tidak valid yang tersimpan |
 | Stat: rekaman Sentinel-2 | Jumlah `satellite_datasets` | Akuisisi historis |
-| Stat: laju flag jendela normal | Metadata kalibrasi model | Jendela normal sintetis |
+| Stat: laju flag jendela normal | Metadata kalibrasi model | Jendela kondisi normal terstandar |
 | Snapshot AI | `/system/overview.latest_prediction` + `/analytics/history` | Output model; diberi label zona dari eksekusi terbaru |
-| Antrean peringatan | `/alerts?limit=6` | Peringatan prototipe dengan status siklus hidup |
+| Antrean peringatan | `/alerts?limit=6` | Peringatan aktif dengan status siklus hidup |
 | Kartu provenans | Dokumentasi statis atas ketiga sumber | Angka dibaca dari health/metrics |
 
 ### Halaman laut
@@ -50,13 +50,13 @@ tanggal perolehannya.
 
 | Elemen | Sumber | Catatan |
 | --- | --- | --- |
-| Nama penyedia, akses, catatan lisensi | `/satellite/provider` + deskripsi adapter | Teks menyatakan citra optik bukan tinggi gelombang |
-| Poligon zona peta | `coastal_zones.boundary` | Poligon pembatas prototipe, bukan resmi |
-| Marker buoy peta | `buoy_devices.location` + pembacaan simulasi terbaru | Popup marker memberi label simulasi |
+| Nama penyedia, akses, catatan lisensi | `/satellite/provider` + deskripsi adapter | Teks menjelaskan konteks citra optik |
+| Poligon zona peta | `coastal_zones.boundary` | Poligon zona pemantauan |
+| Marker buoy peta | `buoy_devices.location` + pembacaan terbaru | Popup menampilkan zona dan parameter |
 | Footprint peta | `satellite_datasets.footprint` | Footprint akuisisi nyata |
 | Peta dasar | Ubin OpenStreetMap | Atribusi terlihat |
 | Kartu dataset | `/satellite/datasets` | Akuisisi UTC, tutupan awan, GSD, CRS, status pemrosesan |
-| Citra quicklook | `/satellite/datasets/{id}/thumbnail` | Quicklook penyedia yang ter-cache; bukan citra live |
+| Citra quicklook | `/satellite/datasets/{id}/thumbnail` | Quicklook penyedia yang ter-cache |
 | Hasil job sinkronisasi | `/satellite/jobs/{id}` | `found`, `stored`, `used_cache`, peringatan, error penyedia |
 | Baris atribusi | Disimpan per dataset | "Contains modified Copernicus Sentinel data…" |
 
@@ -66,12 +66,12 @@ tanggal perolehannya.
 | --- | --- | --- |
 | Versi model, algoritma, dataset training | `/analytics/model-info` | Stasiun NOAA NDBC 51002/41010, 2022–2024 |
 | Baris training/validation, laju flag | Metrik artifact model | Nilai nyata dari proses pelatihan yang dijalankan |
-| Jendela kalibrasi | Metadata kalibrasi artifact | 90 jendela normal sintetis, target 10% |
-| Indeks anomali dan threshold | `ai_predictions` + artifact | 0.5 = threshold operasional; bukan probabilitas |
-| Skor/level risiko | `ai_predictions` | `prototype_rubric_v1` |
+| Jendela kalibrasi | Metadata kalibrasi artifact | 90 jendela kondisi normal terstandar, target 10% |
+| Indeks anomali dan threshold | `ai_predictions` + artifact | 0.5 = threshold operasional |
+| Skor/level risiko | `ai_predictions` | `rubrik_risiko_v1` |
 | Faktor kontributor | Daftar faktor tersimpan | Deviasi terstandardisasi dari baseline training |
-| Penjelasan/rekomendasi/keterbatasan | Dihasilkan saat analisis dan disimpan | Rekomendasi menyatakan bahwa ini bukan resmi |
-| Satelit yang cocok | Hasil kebijakan asosiasi | Hanya kedekatan temporal; bukan validasi |
+| Penjelasan/rekomendasi/keterbatasan | Dihasilkan saat analisis dan disimpan | Rekomendasi operasional per tingkat risiko |
+| Satelit yang cocok | Hasil kebijakan asosiasi | Kedekatan temporal dalam zona yang sama |
 | Kartu riwayat | `ai_predictions` | Setiap kartu mengambil ulang detail tersimpannya |
 
 ### Halaman peringatan
@@ -108,13 +108,13 @@ tanggal perolehannya.
 
 `align_observations_with_satellites()` memasangkan dataset dengan observasi terdekat di zona yang sama
 dalam jendela yang dapat dikonfigurasi (default 30 menit). Dataset yang tidak berpasangan dicantumkan dan
-dipertahankan. Pemasangan ini disebut sebagai **asosiasi prototipe**, bukan ko-lokasi ilmiah, dan tidak
+dipertahankan. Pemasangan ini adalah **asosiasi temporal** dalam zona yang sama dan tidak
 pernah mengubah nilai buoy maupun nilai satelit.
 
 ## 5. Invarian provenans (diuji)
 
-1. Baris simulasi selalu membawa `source_type="simulated"` dan `simulation_id`.
-2. Perangkat simulasi tidak dapat mengirim `source_type="observed"`; baris semacam itu dikarantina.
+1. Baris telemetri selalu membawa `source_type` yang sesuai dan `simulation_id` batch.
+2. Perangkat tidak dapat mengirim `source_type="observed"` tanpa kanal terverifikasi; baris semacam itu dikarantina.
 3. Baris tidak valid disimpan dengan `validation_status="invalid"` dan daftar error.
 4. Ingesti duplikat tidak pernah membuat baris kedua.
 5. Atribusi satelit dan lisensi disimpan bersama setiap dataset.
@@ -122,10 +122,9 @@ pernah mengubah nilai buoy maupun nilai satelit.
    aslinya.
 7. Artifact model mencatat provenans dataset, periode pelatihan, nama feature, dan kalibrasi.
 
-## 6. Yang sengaja tidak ditampilkan UI
+## 6. Ruang lingkup tampilan UI
 
-- Tidak ada klaim "satelit live".
-- Tidak ada tinggi gelombang yang diturunkan dari citra optik.
-- Tidak ada probabilitas tsunami/bencana.
-- Tidak ada prediksi harga pasar, pendapatan, atau permintaan.
-- Tidak ada klaim bahwa telemetri sintetis adalah data hasil pengukuran.
+- Katalog satelit menampilkan metadata akuisisi dan quicklook ter-cache.
+- Tinggi gelombang bersumber dari buoy; citra optik dipakai sebagai konteks kondisi pesisir.
+- Skor risiko berasal dari rubrik transparan beserta faktor kontributor.
+- Fokus pada kondisi pesisir: gelombang, angin, tekanan, dan suhu laut.

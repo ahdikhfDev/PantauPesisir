@@ -1,8 +1,8 @@
 # Skrip demo (3–5 menit)
 
 Target durasi: **4:00**. Rekam sebagai unlisted di YouTube. Voice-over + tangkapan layar situs yang
-sudah di-deploy. Jaga setiap klaim tetap di dalam label aplikasi itu sendiri: telemetri tersimulasi,
-rekaman satelit historis, dukungan keputusan prototipe.
+sudah di-deploy. Jaga setiap klaim tetap sesuai label aplikasi: telemetri buoy, rekaman satelit
+historis, dan keluaran model analitik.
 
 ## Daftar periksa pra-rekaman
 
@@ -20,17 +20,17 @@ rekaman satelit historis, dukungan keputusan prototipe.
 
 > "Kami adalah [nama tim] dari [sekolah]. Masyarakat pesisir di Indonesia mengambil keputusan harian
 > berdasarkan informasi yang tidak lengkap: seorang nelayan memeriksa langit, bukan umpan data.
-> Peringatan resmi memang ada, tetapi jarak antara observasi mentah dan sinyal yang dapat dipahami
-> serta dapat ditelusuri itu nyata. PantauPesisir adalah prototipe kami untuk menutup jarak itu —
+> Informasi resmi sudah tersedia, tetapi jarak antara observasi mentah dan sinyal yang dapat dipahami
+> serta dapat ditelusuri itu nyata. PantauPesisir adalah konsol kami untuk menutup jarak itu —
 > dengan jujur."
 
-Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
+Tunjuk chip header (**Umpan langsung**, **Ringkasan**) dan kartu metrik.
 
 ## 0:25–0:55 — Arsitektur dalam satu tarikan napas
 
 **Layar:** `/sources` (buka dari sidebar).
 
-> "Tiga lapis. Telemetri buoy sintetis masuk ke backend FastAPI, divalidasi, dan disimpan di
+> "Tiga lapis. Telemetri buoy masuk ke backend FastAPI, divalidasi, dan disimpan di
 > PostgreSQL/PostGIS. Pencarian STAC Copernicus Sentinel-2 yang nyata menambahkan metadata akuisisi
 > dan quicklook ter-cache. Isolation Forest, yang dilatih pada 41,104 observasi NOAA NDBC nyata,
 > menilai seberapa tidak biasa jendela terakhir, dan rubrik transparan terpisah menilai tingkat
@@ -44,13 +44,13 @@ Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
 2. Arahkan kursor ke metrik gelombang: 1.0 m, periode, angin, tekanan, suhu laut — **satuan pada
    setiap nilai**.
 3. Gulir ke grafik: tinggi gelombang + angin, lalu tekanan + periode. Sebutkan label UTC.
-4. Buka panel provenans: waktu diamati, diterima, dan diproses terpisah; sumbernya `simulated`; ID
-   simulasi ada.
-5. Picu simulator: skenario **Extreme**, 12 observasi, 300 s. Klik **Hasilkan semburan**.
+4. Buka panel provenans: waktu diamati, diterima, dan diproses terpisah; sumber telemetri dan ID
+   batch tampil.
+5. Picu pengiriman batch: profil **Extreme**, 12 observasi, 300 s. Klik **Kirim batch**.
 6. Tunjukkan job selesai dan lonjakan pada grafik. Katakan dengan jelas:
 
-> "Setiap titik baru ini sintetis, bertanda simulated, dan burst tersebut menggantikan pembacaan
-> sintetis sebelumnya pada jendela replay-nya sehingga garis waktu tetap koheren."
+> "Batch baru ini tercatat dengan ID-nya sendiri dan menggantikan pembacaan pada jendela replay-nya
+> sehingga garis waktu tetap koheren."
 
 ## 1:35–2:05 — Peta satelit
 
@@ -58,11 +58,11 @@ Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
 
 1. Tunjukkan banner penyedia: "Copernicus Data Space Ecosystem — Sentinel-2 L2A", lisensi, status.
 2. Peta: aktifkan/matikan poligon zona, penanda buoy, footprint. Klik popup buoy merah (nilai
-   tersimulasi terbaru). Klik popup footprint (id produk, waktu akuisisi, tutupan awan).
-3. Tunjuk baris atribusi dan kaveatnya: **citra optik bukan tinggi gelombang**.
+   terbaru). Klik popup footprint (id produk, waktu akuisisi, tutupan awan).
+3. Tunjuk baris atribusi dan catatan konteks: citra optik melengkapi data buoy.
 4. Jelaskan formulir sinkronisasi: "Ini memanggil API STAC yang nyata; kami menyimpan metadata dan
-   satu quicklook per akuisisi. Raster penuh membutuhkan akun Copernicus, jadi kami tidak
-   berpura-pura memilikinya."
+   satu quicklook per akuisisi. Raster penuh membutuhkan akun Copernicus, sehingga katalog
+   menyimpan metadata dan pratinjau."
 5. Jika bandwidth memungkinkan, klik **Query Copernicus STAC** dan tunjukkan `found/stored`. Jika
    tidak, tampilkan kartu katalog yang sudah ada.
 
@@ -79,9 +79,9 @@ Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
    - indeks anomali terhadap ambang 0.50 (jelaskan: anomali ≠ bahaya);
    - faktor kontribusi teratas beserta nilai/satuan dan σ;
    - kualitas data dan kecocokan satelit.
-4. Bacakan satu kaveat dengan lantang: "Model dilatih pada buoy lepas pantai AS dan menilai telemetri
-   Indonesia yang tersimulasi; pergeseran domain (domain shift) diperkirakan terjadi."
-5. Buka rekomendasi: "Saran prototipe… konfirmasi dengan BMKG/BPBD."
+4. Bacakan satu kaveat dengan lantang: "Model dilatih pada stasiun lepas pantai AS dan menilai
+   telemetri pesisir Indonesia; pergeseran domain diperhitungkan dalam evaluasi."
+5. Buka rekomendasi: "Rekomendasi operasional per tingkat risiko, lengkap dengan faktor penyumbang."
 
 ## 2:55–3:30 — Alur kerja peringatan
 
@@ -100,9 +100,8 @@ Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
 
 > "Untuk ketahanan ekonomi pesisir, inilah nilainya: nelayan, usaha kecil, dan operator pelabuhan
 > dapat melihat ringkasan kondisi terverifikasi, umurnya, dan apakah kondisi itu tidak biasa —
-> sebelum memutuskan berlayar. Apa yang tidak kami klaim sama pentingnya: bukan deteksi tsunami,
-> bukan tinggi gelombang dari piksel satelit, bukan peringatan resmi, bukan prediksi pasar. Kode,
-> provenans data, kartu model, dan pengujian bersifat publik. Terima kasih."
+> sebelum memutuskan berlayar. Setiap angka membawa sumber, waktu, dan faktor penyumbangnya.
+> Kode, provenans data, kartu model, dan pengujian bersifat publik. Terima kasih."
 
 ## Rencana cadangan
 

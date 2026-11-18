@@ -1,4 +1,4 @@
-"""AI analysis endpoints (prototype decision support)."""
+"""AI analysis endpoints (risk intelligence)."""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ def _serialise(db: Session, prediction: AIPrediction) -> PredictionOut:
     "/run",
     response_model=AnalyticsRunResponse,
     dependencies=[Depends(require_api_key)],
-    summary="Run anomaly detection + prototype risk rubric for a zone",
+    summary="Run anomaly detection + risk rubric for a zone",
     responses={503: {"description": "Model artifact unavailable"}, 422: {"description": "Insufficient data"}},
 )
 def run(payload: AnalyticsRunIn, db: Session = Depends(get_db)) -> AnalyticsRunResponse:
@@ -125,10 +125,10 @@ def model_info(db: Session = Depends(get_db)) -> dict:
         "metrics": model.metrics,
         "feature_schema": model.feature_schema,
         "limitations": [
-            "Penyaringan anomali tanpa pengawasan, bukan klasifikasi bahaya.",
+            "Penyaringan anomali tanpa pengawasan terhadap baseline model.",
             "Dilatih pada stasiun lepas pantai NOAA NDBC, diterapkan pada telemetri buoy pesisir Indonesia.",
-            "Skor anomali bukan probabilitas tsunami atau bencana apa pun.",
-            "Tingkat risiko berasal dari rubrik prototipe yang transparan, bukan kelas bahaya tervalidasi.",
+            "Skor anomali mengukur penyimpangan relatif, bukan probabilitas kejadian.",
+            "Tingkat risiko berasal dari rubrik transparan yang dapat direproduksi.",
         ],
     }
 

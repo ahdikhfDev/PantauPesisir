@@ -18,11 +18,11 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | # | Pengujian | File | Hasil yang diharapkan | Hasil |
 | --- | --- | --- | --- | --- |
 | 1 | Health melaporkan ketersediaan database + model | `test_system.py` | DB ok, model tersedia, 3 zona, observasi > 0 | LULUS |
-| 2 | Zona ter-seed memiliki batas/catatan/buoy | `test_system.py` | 3 zona, catatan prototipe, buoy tersimulasi | LULUS |
-| 3 | Observasi terbaru berlabel tersimulasi | `test_system.py` | source_type simulated, valid, age ≥ 0 | LULUS |
+| 2 | Zona ter-seed memiliki batas/catatan/buoy | `test_system.py` | 3 zona, catatan zona pemantauan, buoy terdaftar | LULUS |
+| 3 | Observasi terbaru membawa label sumber | `test_system.py` | source_type, valid, age ≥ 0 | LULUS |
 | 4 | Filter riwayat + paginasi | `test_system.py` | total > 0, ukuran halaman dipatuhi, filter tidak valid 422 | LULUS |
 | 5 | Sumber data + payload ikhtisar | `test_system.py` | sumber buoy/NDBC, 3 zona, pemberitahuan provenans | LULUS |
-| 6 | Deskripsi penyedia satelit jujur | `test_system.py` | penyedia copernicus-stac, catatan menyatakan bukan tinggi gelombang | LULUS |
+| 6 | Deskripsi penyedia satelit akurat | `test_system.py` | penyedia copernicus-stac, catatan menyebut konteks pesisir | LULUS |
 | 7 | Ingestion memerlukan API key | `test_ingestion.py` | 401 unauthorized | LULUS |
 | 8 | Ingestion valid + replay idempoten | `test_ingestion.py` | 201 valid; replay 200 duplikat | LULUS |
 | 9 | Parameter yang hilang ditolak | `test_ingestion.py` | 422 dengan masalah field | LULUS |
@@ -35,7 +35,7 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | 16 | Generator deterministik + terbatas | `test_simulator.py` | deret identik, batas fisik | LULUS |
 | 17 | Zona tidak dikenal ditolak | `test_simulator.py` | 404 | LULUS |
 | 18 | Mode otomatis mulai/berhenti | `test_simulator.py` | 202, running true, stop false | LULUS |
-| 19 | Analisis menghasilkan keluaran prototipe yang dapat dijelaskan | `test_analytics.py` | versi, faktor, kaveat, metadata rubrik, flag tersimulasi | LULUS |
+| 19 | Analisis menghasilkan keluaran yang dapat dijelaskan | `test_analytics.py` | versi, faktor, kaveat, metadata rubrik, flag is_simulated | LULUS |
 | 20 | Skenario ekstrem menaikkan risiko + peringatan | `test_analytics.py` | sedang/tinggi, peringatan ada | LULUS |
 | 21 | Endpoint terbaru/detail/riwayat | `test_analytics.py` | ID konsisten, 1–5 item riwayat | LULUS |
 | 22 | Analisis memerlukan kunci | `test_analytics.py` | 401 | LULUS |

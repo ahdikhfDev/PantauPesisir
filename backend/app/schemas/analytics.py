@@ -63,6 +63,6 @@ class PredictionOut(BaseModel):
 class AnalyticsRunResponse(BaseModel):
     prediction: PredictionOut
     acceptance_note: str = (
-        "Prototype decision support only. Anomaly scores are not disaster probabilities "
-        "and this output is not an official tsunami or weather warning."
+        "Hasil analisis risiko untuk zona terpilih, dihitung dari telemetri valid pada jendela "
+        "waktu yang diminta."
     )

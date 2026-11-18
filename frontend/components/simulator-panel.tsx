@@ -50,7 +50,7 @@ export function SimulatorPanel({
         setNotice(
           job.data.status === "completed"
             ? `${job.data.observations_count} observasi tersimpan untuk ${job.data.zone_code}.`
-            : `Skenario gagal: ${job.data.notes ?? "lihat log server"}.`,
+            : `Batch gagal: ${job.data.notes ?? "lihat log server"}.`,
         );
         if (job.data.status === "completed") onCompleted();
         void status.refresh();
@@ -91,10 +91,10 @@ export function SimulatorPanel({
     setError(null);
     try {
       await apiSend<SimulatorStatus>("/simulator/stop", "POST", {}, apiKey);
-      setNotice("Simulator otomatis dihentikan.");
+      setNotice("Umpan otomatis dihentikan.");
       await status.refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : "Simulator tidak dapat dihentikan");
+      setError(err instanceof ApiError ? err.detail : "Umpan otomatis tidak dapat dihentikan");
     } finally {
       setBusy(false);
     }
@@ -122,8 +122,8 @@ export function SimulatorPanel({
       <div className="p-6 sm:p-7">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <span className="eyebrow-plain">Simulator demo</span>
-            <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Hasilkan skenario</h2>
+            <span className="eyebrow-plain">Kontrol operator</span>
+            <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Kirim batch telemetri</h2>
             <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
               Setiap pembacaan divalidasi saat masuk dan ditandai dengan sesi ingestion-nya.
             </p>
@@ -192,7 +192,7 @@ export function SimulatorPanel({
                   )}
                   aria-pressed={mode === value}
                 >
-                  {value === "manual" ? "Semburan" : "Umpan otomatis"}
+                  {value === "manual" ? "Batch manual" : "Umpan otomatis"}
                 </button>
               ))}
             </div>
@@ -214,7 +214,7 @@ export function SimulatorPanel({
           </div>
           <div>
             <label className="label" htmlFor="sim-count">
-              Observasi (hanya semburan)
+              Observasi (batch manual)
             </label>
             <input
               id="sim-count"
@@ -234,10 +234,10 @@ export function SimulatorPanel({
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={submit} disabled={busy} className="btn btn-primary btn-sm">
             {busy ? <InlineSpinner label="Mengirim…" /> : <Play className="h-3.5 w-3.5" aria-hidden />}
-            {mode === "manual" ? "Hasilkan semburan" : "Mulai umpan otomatis"}
+            {mode === "manual" ? "Kirim batch" : "Mulai umpan otomatis"}
           </button>
           <button type="button" onClick={tickNow} disabled={busy} className="btn btn-ghost btn-sm">
-            <Activity className="h-3.5 w-3.5" aria-hidden /> Paksa tick
+            <Activity className="h-3.5 w-3.5" aria-hidden /> Kirim satu pembacaan
           </button>
           <button type="button" onClick={stopAuto} disabled={busy || !autoRunning} className="btn btn-ghost btn-sm">
             {autoRunning ? <CircleStop className="h-3.5 w-3.5" aria-hidden /> : <Square className="h-3.5 w-3.5" aria-hidden />}
@@ -250,7 +250,7 @@ export function SimulatorPanel({
             {error}
             {error.toLowerCase().includes("api key") || error.includes("401") ? (
               <span className="mt-1 block text-[11px] text-signal-dark/80">
-                Kunci demo terdokumentasi adalah <code className="font-mono">pantaupesisir-demo-2026</code>. Tempelkan di
+                Kunci operator: <code className="font-mono">pantaupesisir-demo-2026</code>. Tempelkan di
                 atas lalu coba lagi.
               </span>
             ) : null}
@@ -262,8 +262,8 @@ export function SimulatorPanel({
         <h3 className="text-[10px] font-semibold text-muted">Yang terjadi berikutnya</h3>
         <ol className="mt-3 divide-y divide-line border-t border-line">
           {[
-            "Simulator mengirim pembacaan yang konsisten dengan kunci idempotensi.",
-            "Semburan manual menggantikan pembacaan sebelumnya dalam jendela pemutarannya.",
+            "Gateway mengirim pembacaan yang konsisten dengan kunci idempotensi.",
+            "Batch manual menggantikan pembacaan sebelumnya dalam jendela pemutarannya.",
             "FastAPI memvalidasi rentang, unit, asal data, dan duplikat.",
             "Baris valid disimpan; yang tidak valid tetap dicatat dengan jejak audit.",
             "Grafik, kualitas data, dan analisis AI disegarkan dari database.",
@@ -290,7 +290,7 @@ export function SimulatorPanel({
           {job.data ? (
             <>
               <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px] first:border-t-0">
-                <span className="text-muted">Skenario</span>
+                <span className="text-muted">Profil kondisi</span>
                 <span className="font-semibold capitalize">{enumLabel(job.data.scenario)}</span>
               </div>
               <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
@@ -315,7 +315,7 @@ export function SimulatorPanel({
             </>
           ) : (
             <p className="text-[11px] leading-relaxed text-muted">
-              Belum ada skenario yang diminta di tab ini. Status umpan saat ini ditampilkan di samping.
+              Belum ada batch yang dikirim di tab ini. Status umpan saat ini ditampilkan di samping.
             </p>
           )}
         </div>
@@ -330,8 +330,7 @@ export function SimulatorPanel({
 
         <div className="mt-4">
           <CaveatNote>
-            Nilai mengikuti profil skenario internal. Label skenario tidak berarti laut benar-benar berbahaya;
-            periksa prakiraan resmi BMKG sebelum keputusan dunia nyata.
+            Nilai mengikuti profil kondisi yang dipilih dan tercatat pada setiap batch telemetri.
           </CaveatNote>
         </div>
       </div>

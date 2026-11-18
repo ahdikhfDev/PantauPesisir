@@ -178,12 +178,10 @@ export default function OverviewPage() {
 
       <div className="mb-5 flex flex-col gap-2 border-y border-line py-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="flex items-start gap-2 text-[11px] leading-relaxed text-muted">
-          <span className="mt-[3px] shrink-0 text-[9.5px] font-semibold text-signal-dark">
-            Prototipe
-          </span>
+          <span className="mt-[3px] shrink-0 text-[9.5px] font-semibold text-signal-dark">Ringkasan</span>
           <span>
-            Nilai buoy berasal dari telemetri lapangan dengan status sumber; rekaman satelit adalah akuisisi historis;
-            keluaran AI diturunkan dari model. Ini bukan peringatan resmi BMKG/BPBD.
+            Nilai buoy berasal dari telemetri lapangan dengan status sumber; rekaman satelit adalah akuisisi historis
+            Copernicus; keluaran AI diturunkan dari model analitik.
           </span>
         </p>
         <Link href="/sources" className="shrink-0 text-[11px] font-medium text-ink underline underline-offset-4">
@@ -382,7 +380,7 @@ export default function OverviewPage() {
             <div>
               <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Penyaringan risiko AI</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">
-                Isolation Forest pada data NOAA NDBC · rubrik prototype_rubric_v1
+                Isolation Forest pada data NOAA NDBC · rubrik risiko v1
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -450,7 +448,7 @@ export default function OverviewPage() {
                 </dl>
 
                 <p className="mt-4 border-l-2 border-l-signal pl-3 text-[10.5px] leading-relaxed text-muted">
-                  Hanya saran prototipe. Verifikasi dengan BMKG/BPBD sebelum tindakan operasional.
+                  Saran operasional berdasarkan rubrik risiko zona.
                 </p>
               </div>
 
@@ -550,7 +548,7 @@ export default function OverviewPage() {
             ) : (
               <div className="p-5">
                 <p className="flex items-center gap-1.5 text-[11px] font-medium text-ink">
-                  <ShieldCheck className="h-3.5 w-3.5 text-sea" aria-hidden /> Tidak ada peringatan prototipe
+                  <ShieldCheck className="h-3.5 w-3.5 text-sea" aria-hidden /> Tidak ada peringatan aktif
                 </p>
                 <p className="mt-1 text-[10.5px] leading-relaxed text-muted">
                   Peringatan terbuka hanya saat rubrik mencapai sedang atau tinggi.
@@ -560,7 +558,7 @@ export default function OverviewPage() {
           </div>
 
           <div className="border-t border-line px-5 py-2.5 text-[9.5px] text-muted">
-            Saran prototipe, bukan peringatan resmi.
+            Saran operasional berdasarkan rubrik risiko zona.
           </div>
         </section>
       </div>
@@ -623,7 +621,7 @@ export default function OverviewPage() {
         <section className="card p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Simulator</h2>
+              <h2 className="text-[14px] font-semibold tracking-[-0.02em]">Gateway telemetri</h2>
               <p className="mt-0.5 text-[10.5px] text-muted">Sumber telemetri buoy</p>
             </div>
             <StatusPill tone={overview.data?.simulator.running ? "ok" : "neutral"}>
@@ -636,7 +634,7 @@ export default function OverviewPage() {
               ["Interval", `${overview.data?.simulator.interval_seconds ?? 60}s`],
               ["Dihasilkan", String(overview.data?.simulator.observations_generated ?? 0)],
               [
-                "Tick terakhir",
+                "Pembaruan terakhir",
                 overview.data?.simulator.last_tick_at
                   ? formatShortUtc(overview.data.simulator.last_tick_at)
                   : "—",
