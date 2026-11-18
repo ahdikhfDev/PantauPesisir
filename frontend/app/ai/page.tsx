@@ -89,8 +89,8 @@ export default function AiPage() {
       setPrediction(response.prediction);
       setNotice(
         response.prediction.alert_id
-          ? "Analisis selesai dan peringatan telah dibuka."
-          : "Analisis selesai. Ambang peringatan tidak terlampaui.",
+          ? "Analisis selesai. Pemberitahuan baru ditambahkan ke halaman Peringatan warga."
+          : "Analisis selesai. Kondisi belum melewati ambang pemberitahuan.",
       );
       history.refresh();
     } catch (err) {
@@ -295,7 +295,7 @@ export default function AiPage() {
                 className="mt-0.5 h-3.5 w-3.5 accent-sea"
               />
               <span className="text-[11.5px] leading-relaxed text-ink-soft">
-                Buka peringatan saat rubrik mencapai sedang atau tinggi.
+                Tambahkan pemberitahuan warga saat risiko mencapai sedang atau tinggi.
                 <span className="mt-0.5 block text-[10px] text-muted">
                   Peringatan dapat dikonfirmasi di ruang kerja peringatan.
                 </span>
