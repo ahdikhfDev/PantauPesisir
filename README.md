@@ -251,22 +251,35 @@ data/             local SQLite database, cached quicklooks, raw downloads (gitig
 
 ## 9. Penerapan
 
-Agen belum menerapkan URL publik apa pun — deployment memerlukan kredensial proyek. Penyiapan yang
-dimaksudkan telah didokumentasikan dan dapat direproduksi:
+Status per 18 November 2026:
 
-1. **Database:** PostgreSQL terkelola dengan PostGIS (mis. Neon/Supabase dengan ekstensi `postgis`
-   diaktifkan). Jalankan `alembic upgrade head` dengan `DATABASE_URL=postgresql+psycopg://...`.
-2. **Backend:** host Python (Render/Railway/Fly). Root `backend/`, instal
-   `pip install -r requirements.txt`, jalankan `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-   Set `DATABASE_URL`, `API_SECRET_KEY`, `CORS_ORIGINS`, `SIMULATOR_AUTOSTART=true`,
-   `SIMULATOR_ZONE_CODE=ALL`, variabel satelit. Pertahankan `DEMO_MODE=true` hanya untuk demo publik.
-3. **Frontend:** Vercel, root `frontend/`, env `NEXT_PUBLIC_API_BASE_URL=https://<backend>/api/v1`
-   dan `NEXT_PUBLIC_DEMO_API_KEY=pantaupesisir-demo-2026`.
-4. Verifikasi `/api/v1/system/health`, lalu jaga deployment tetap hidup hingga 30 November 2026.
+| Komponen | Status |
+| --- | --- |
+| Frontend | **Live** di <https://pantaupesisir.vercel.app> (Vercel, root `frontend/`) |
+| Basis data | **Live** di Supabase PostgreSQL 17 + PostGIS 3.3.7; migrasi `alembic upgrade head` sudah dijalankan (11 tabel + `alembic_version`) |
+| Backend | **Belum diterapkan** — `render.yaml` disediakan untuk deploy satu klik |
 
-DDL khusus PostGIS (ekstensi, indeks GiST) diimplementasikan dalam migrasi tetapi belum diuji
-terhadap instans PostgreSQL live di lingkungan ini — hanya SQLite yang tersedia. Anggap verifikasi
-PostgreSQL sebagai tugas deployment yang masih tertunda.
+Backend tidak dapat dijalankan di Vercel: dependensi Python (numpy + scipy + pandas + scikit-learn)
+berukuran ±340 MB, melebihi batas 250 MB per fungsi. Gunakan Render, Railway, atau Fly.
+
+Langkah backend (Render):
+
+1. Buat Blueprint dari repositori ini; Render membaca `render.yaml` (root `backend/`, region
+   Singapore, plan free).
+2. Isi variabel `DATABASE_URL` (connection string **Session pooler** Supabase, dengan
+   `postgresql+psycopg://` dan `?sslmode=require`). Variabel lain sudah terisi di blueprint.
+3. Start command menjalankan `alembic upgrade head` lalu `uvicorn app.main:app --port $PORT` pada
+   satu instans (jangan multi-replica karena simulator menulis telemetri berkala).
+4. Setelah backend hidup, tambahkan `NEXT_PUBLIC_API_BASE_URL=https://<backend>/api/v1` pada project
+   Vercel, lalu redeploy frontend.
+5. Verifikasi `/api/v1/system/health` → `dialect: postgresql`, `status: ok`.
+
+Catatan operasional:
+
+- Pada plan gratis Render, disk bersifat sementara; cache pratinjau satelit disimpan di
+  `/tmp/satellite` dan akan hilang saat redeploy (metadata tetap ada).
+- Free tier Render tidur setelah tidak ada trafik; lakukan pemanasan sebelum penjurian.
+- Jaga deployment tetap aktif hingga pengumuman pemenang 30 November 2026.
 
 ## 10. Posisi tema (IT RUSH 2026 — subtema 3)
 
