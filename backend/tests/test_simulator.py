@@ -99,6 +99,18 @@ def test_backfill_refreshes_all_zones_synchronously(client, auth):
     assert unauthenticated.status_code == 401
 
 
+def test_startup_freshness_skips_when_disabled_or_recent(monkeypatch):
+    from app.services import freshness
+
+    monkeypatch.setattr(freshness.settings, "refresh_on_start", False, raising=False)
+    assert freshness.ensure_recent_telemetry()["skipped"] is True
+
+    monkeypatch.setattr(freshness.settings, "refresh_on_start", True, raising=False)
+    monkeypatch.setattr(freshness.settings, "refresh_after_seconds", 10**9, raising=False)
+    result = freshness.ensure_recent_telemetry()
+    assert result["skipped"] is True
+
+
 def test_auto_mode_starts_and_stops(client, auth):
     started = client.post(
         f"{API}/simulator/scenarios",

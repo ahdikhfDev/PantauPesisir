@@ -1,4 +1,4 @@
-"""Engine + session factory. SQLite is used for the local demo, PostgreSQL for deployment."""
+"""Engine + session factory. SQLite is used for local work, PostgreSQL for deployment."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 
@@ -17,13 +18,20 @@ if settings.database_url.startswith("sqlite"):
     sqlite_path = settings.database_url.removeprefix("sqlite:///")
     if sqlite_path and sqlite_path != ":memory:":
         Path(sqlite_path).parent.mkdir(parents=True, exist_ok=True)
+elif settings.database_url.startswith("postgresql"):
+    # Transaction poolers (pgbouncer) do not support session-level prepared statements.
+    _connect_args = {"prepare_threshold": None}
 
-engine: Engine = create_engine(
-    settings.database_url,
-    pool_pre_ping=True,
-    future=True,
-    connect_args=_connect_args,
-)
+_engine_kwargs: dict[str, object] = {
+    "pool_pre_ping": True,
+    "future": True,
+    "connect_args": _connect_args,
+}
+if settings.db_null_pool:
+    # Serverless: never hold pooled connections between invocations.
+    _engine_kwargs["poolclass"] = NullPool
+
+engine: Engine = create_engine(settings.database_url, **_engine_kwargs)
 
 if settings.database_url.startswith("sqlite"):
 

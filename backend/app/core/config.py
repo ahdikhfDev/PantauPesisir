@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     # --- database ---
     # Production: postgresql+psycopg://user:pass@host:5432/cews
     database_url: str = f"sqlite:///{(REPO_ROOT / 'data' / 'cews.db').as_posix()}"
+    # Serverless hosts must not keep pooled connections between invocations.
+    db_null_pool: bool = False
 
     # --- buoy simulator ---
     simulator_default_interval_seconds: int = 60
@@ -66,6 +68,10 @@ class Settings(BaseSettings):
     # --- freshness ---
     # Deployment cadence for telemetry delivery; the UI marks data as stale after this window.
     freshness_window_seconds: int = 300
+    # Serverless deployments refresh a recent window on cold start.
+    refresh_on_start: bool = False
+    refresh_after_seconds: int = 900
+    refresh_window_minutes: int = 60
 
     # --- demo seed ---
     seed_demo_observations: bool = True

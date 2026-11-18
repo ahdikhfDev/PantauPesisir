@@ -461,6 +461,24 @@ def run_manual_scenario(
                 raise RuntimeError(f"No buoy devices found for zone {zone.zone_code}")
 
             end_at = datetime.now(timezone.utc).replace(microsecond=0)
+            window_start = end_at - timedelta(seconds=interval_seconds * max(count - 1, 0))
+            replaced = 0
+            # A manual scenario is a coherent replay: remove synthetic readings inside its
+            # window first so the timeline never mixes two storylines and the newest sample
+            # is the replay's own final reading.
+            for buoy in buoys:
+                replaced += (
+                    db.execute(
+                        delete(BuoyObservation).where(
+                            BuoyObservation.buoy_id == buoy.id,
+                            BuoyObservation.source_type == "simulated",
+                            BuoyObservation.observed_at >= window_start,
+                            BuoyObservation.observed_at <= end_at,
+                        )
+                    ).rowcount
+                    or 0
+                )
+            db.commit()
             end_at = _choose_non_colliding_end(
                 db,
                 buoy_ids=[buoy.id for buoy in buoys],
@@ -469,7 +487,6 @@ def run_manual_scenario(
                 end_at=end_at,
             )
             written = 0
-            replaced = 0
             for offset, buoy in enumerate(buoys):
                 series = generate_series(
                     zone_code=zone.zone_code,
@@ -480,18 +497,6 @@ def run_manual_scenario(
                     end_at=end_at,
                     force_anomaly=simulation.scenario == "extreme",
                 )
-                # A manual scenario is a coherent replay. Existing synthetic readings inside
-                # its window are removed so the buoy timeline never mixes two storylines.
-                # Only simulated rows are touched, and the removal count is recorded below.
-                previous = db.execute(
-                    delete(BuoyObservation).where(
-                        BuoyObservation.buoy_id == buoy.id,
-                        BuoyObservation.source_type == "simulated",
-                        BuoyObservation.observed_at >= series[0]["observed_at"],
-                        BuoyObservation.observed_at <= series[-1]["observed_at"],
-                    )
-                ).rowcount or 0
-                replaced += previous
                 for snapshot in series:
                     payload = BuoyObservationIn(
                         simulation_id=simulation.id,

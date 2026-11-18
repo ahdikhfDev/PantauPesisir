@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 import uuid
@@ -16,6 +17,7 @@ from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 from app.api.v1.router import api_router
 from app.core.config import settings
 from app.db.seed import ensure_schema, seed_if_empty
+from app.services.freshness import ensure_recent_telemetry
 from app.services.simulator import simulator
 
 logging.basicConfig(
@@ -33,6 +35,12 @@ async def lifespan(_app: FastAPI):
         logger.info("Seed state: %s", result)
     except Exception:  # noqa: BLE001 - startup should not crash the API on seed issues
         logger.exception("Seeding failed; API will start with the existing database state")
+    if settings.refresh_on_start:
+        try:
+            refreshed = await asyncio.to_thread(ensure_recent_telemetry)
+            logger.info("Startup freshness: %s", refreshed)
+        except Exception:  # noqa: BLE001 - freshness is best-effort
+            logger.exception("Startup telemetry refresh failed")
     if settings.simulator_autostart:
         try:
             await simulator.start()
