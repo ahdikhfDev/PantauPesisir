@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420" role="img" aria-label="PantauPesisir — Konsol Pemantauan Pesisir">
+  <g transform="translate(64 74)">
+    <rect width="272" height="272" rx="60" fill="#0c2c31"/>
+    <path d="M52 158 q28 -31 56 0 t56 0 t56 0" fill="none" stroke="#f4f2ec" stroke-width="16" stroke-linecap="round"/>
+    <path d="M52 194 q28 -31 56 0 t56 0 t56 0" fill="none" stroke="#6fb3b8" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="208" cy="88" r="16" fill="#d93a2b"/>
+  </g>
+  <text x="392" y="196" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="96" font-weight="700" letter-spacing="-3" fill="#123f46">PantauPesisir</text>
+  <text x="396" y="252" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="34" font-weight="500" letter-spacing="0.5" fill="#5d6a6d">Konsol Pemantauan Pesisir</text>
+  <rect x="396" y="292" width="72" height="6" rx="3" fill="#d93a2b"/>
+</svg>

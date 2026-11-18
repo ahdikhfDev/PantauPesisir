@@ -33,9 +33,20 @@ anomali berbasis machine learning** dengan rubrik risiko transparan — disajika
 | Peringatan | Siklus hidup tersimpan open → acknowledged → resolved, deduplikasi, dilindungi API key | ✅ pengujian + live |
 | Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
 | Dasbor | 6 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
+| PWA | Manifest + ikon 192/512/maskable, service worker (app-shell + cache runtime), halaman offline, pintasan aplikasi | ✅ build + endpoint |
 
 Semua yang terlihat di UI terhubung ke backend. Tidak ada metrik placeholder, tidak ada grafik
 hard-coded, dan tidak ada tombol mati: kontrol istimewa memerlukan kunci demo API yang didokumentasikan.
+
+### PWA dan aset merek
+
+PantauPesisir dapat dipasang sebagai aplikasi (Chrome/Edge: “Instal aplikasi”, Safari iOS: “Tambah ke
+Layar Utama”). Service worker menyimpan app-shell halaman utama dan aset statis, lalu menampilkan
+halaman `/offline` bila jaringan terputus. Permintaan ke `/api/*` **tidak pernah** di-cache agar data
+operasional selalu segar; service worker hanya aktif pada build produksi.
+
+Aset merek tersedia di `frontend/public/brand/` (`mark.svg`, `logo.svg`) dan ikon PWA di
+`frontend/public/icons/` (192, 512, dan maskable 512).
 
 ## 2. Konsol
 

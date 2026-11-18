@@ -1,0 +1,32 @@
+import Link from "next/link";
+
+export const metadata = {
+  title: "Mode offline",
+};
+
+export default function OfflinePage() {
+  return (
+    <div className="mx-auto max-w-xl py-16">
+      <div className="card border-l-2 border-l-amber p-6">
+        <p className="text-[10px] font-semibold tracking-[0.12em] text-muted">MODE OFFLINE</p>
+        <h1 className="font-display mt-3 text-[22px] font-semibold">Koneksi terputus</h1>
+        <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
+          Halaman yang sudah pernah dibuka masih dapat diakses dari cache. Data operasional
+          membutuhkan koneksi karena konsol selalu mengambil nilai terbaru dari API.
+        </p>
+        <ul className="mt-4 space-y-1.5 text-[11.5px] text-muted">
+          <li>
+            · Ringkasan, Pemantauan laut, Satelit, Risiko AI, Peringatan, dan Sumber data tersedia
+            offline.
+          </li>
+          <li>· Analisis baru, sinkronisasi satelit, dan perubahan peringatan memerlukan jaringan.</li>
+        </ul>
+        <div className="mt-5 flex gap-2">
+          <Link href="/" className="btn btn-primary btn-sm">
+            Kembali ke Ringkasan
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

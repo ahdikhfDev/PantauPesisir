@@ -80,16 +80,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center justify-between px-4 pb-4 pt-5">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-[9px] border border-white/15">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M2.5 9c2.2-2.3 4.3-2.3 6.5 0s4.3 2.3 6.5 0 4.3-2.3 6 0M2.5 15.5c2.2-2.3 4.3-2.3 6.5 0s4.3 2.3 6.5 0 4.3-2.3 6 0"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
+            <img
+              src="/brand/mark.svg"
+              alt=""
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-[9px]"
+              aria-hidden
+            />
             <span className="leading-none">
               <span className="font-display block text-[15.5px] font-semibold tracking-[-0.03em]">PantauPesisir</span>
               <span className="mt-1 block text-[9px] text-white/40">Operasi pesisir</span>
