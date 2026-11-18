@@ -17,8 +17,8 @@ import { EmptyState } from "@/components/ui";
 import { fixed } from "@/lib/format";
 import type { Observation } from "@/lib/types";
 
-const AXIS = { stroke: "#6d7a7c", fontSize: 10, fontFamily: "var(--font-mono)" };
-const GRID = "#e5e1d6";
+const AXIS = { stroke: "#7a7170", fontSize: 10, fontFamily: "var(--font-mono)" };
+const GRID = "#eaddd9";
 
 function timeLabel(value: unknown): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -82,8 +82,8 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
             <ComposedChart data={data} margin={{ top: 6, right: 6, bottom: 0, left: -18 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#d93a2b" stopOpacity={0.22} />
-                  <stop offset="100%" stopColor="#d93a2b" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#e11d2e" stopOpacity={0.22} />
+                  <stop offset="100%" stopColor="#e11d2e" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
@@ -111,7 +111,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value: number) => `${fixed(value, 1)}`}
-                label={{ value: "m", angle: -90, position: "insideLeft", fill: "#6d7a7c", fontSize: 10 }}
+                label={{ value: "m", angle: -90, position: "insideLeft", fill: "#7a7170", fontSize: 10 }}
               />
               <YAxis
                 yAxisId="wind"
@@ -120,12 +120,12 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value: number) => `${fixed(value, 0)}`}
-                label={{ value: "m/s", angle: 90, position: "insideRight", fill: "#6d7a7c", fontSize: 10 }}
+                label={{ value: "m/s", angle: 90, position: "insideRight", fill: "#7a7170", fontSize: 10 }}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #e5e1d6",
+                  border: "1px solid #eaddd9",
                   fontSize: 11,
                   fontFamily: "var(--font-sans)",
                   boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
@@ -141,7 +141,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="height"
                 name="Tinggi gelombang"
-                stroke="#d93a2b"
+                stroke="#e11d2e"
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
                 dot={false}
@@ -197,7 +197,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #e5e1d6",
+                  border: "1px solid #eaddd9",
                   fontSize: 11,
                   fontFamily: "var(--font-sans)",
                 }}

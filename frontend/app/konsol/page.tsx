@@ -179,7 +179,7 @@ export default function OverviewPage() {
       />
 
       <Link
-        href="/"
+        href="/cek"
         className="mb-4 flex flex-col gap-3 rounded-[14px] border border-sea/25 bg-sea-soft/60 p-4 transition-colors hover:bg-sea-soft sm:flex-row sm:items-center sm:justify-between"
       >
         <span className="flex items-start gap-3">

@@ -228,7 +228,7 @@ export default function BelajarPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/" className="btn btn-primary btn-sm">
+            <Link href="/cek" className="btn btn-primary btn-sm">
               Cek kondisi <ArrowRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
             <Link href="/konsol" className="btn btn-ghost btn-sm">

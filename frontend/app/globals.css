@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f4f2ec;
-  --color-surface: #fbfaf7;
-  --color-ink: #14181a;
-  --color-ink-soft: #3a4447;
-  --color-muted: #707a7b;
-  --color-line: #e2ded4;
-  --color-line-strong: #cfc9bc;
-  --color-signal: #d93a2b;
-  --color-signal-dark: #a92a1e;
-  --color-signal-soft: #f7e4df;
+  --color-paper: #faf3f1;
+  --color-surface: #fffdfb;
+  --color-ink: #17191c;
+  --color-ink-soft: #3c4247;
+  --color-muted: #7a7170;
+  --color-line: #efe0dc;
+  --color-line-strong: #d9c6c1;
+  --color-signal: #e11d2e;
+  --color-signal-dark: #ad1220;
+  --color-signal-soft: #fde8ea;
   --color-sea: #123f46;
   --color-sea-deep: #0c2c31;
-  --color-sea-soft: #e3ecea;
+  --color-sea-soft: #e4ecea;
   --color-amber: #94651a;
-  --color-amber-soft: #f4e9d5;
+  --color-amber-soft: #f7e9d4;
   --color-ok: #1c555c;
-  --color-ok-soft: #e3ecea;
+  --color-ok-soft: #e4ecea;
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
   --font-display: var(--font-space), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
@@ -80,9 +80,16 @@
 
   .btn,
   .btn-primary,
+  .btn-signal,
   .btn-dark,
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-[9px] px-4 py-2.5 text-[12.5px] font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Brand action on public/marketing surfaces. Inside the console, red stays
+     reserved for risk, so app actions keep using .btn-primary (ink). */
+  .btn-signal {
+    @apply bg-signal text-white hover:bg-signal-dark;
   }
 
   .btn-primary {

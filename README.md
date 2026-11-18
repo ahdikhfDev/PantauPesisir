@@ -64,11 +64,16 @@ alasannya dalam bahasa sehari-hari. Halaman **Belajar** menjelaskan istilah laut
 pengguna mencoba slider ombak/angin. **Konsol `/konsol`** ditujukan untuk pengguna lanjutan dan
 penilaian teknis, dibuka lewat tombol **Mode Admin (demo)** di sidebar warga.
 
-![Cek kondisi sebelum ke laut](docs/screenshots/cek.png)
+![Beranda PantauPesisir](docs/screenshots/beranda.png)
+
+Masuk ke alat pemeriksaan lewat tombol **Cek kondisi**. Halaman warga memuat status, grafik ombak
+dengan garis batas aman aktivitas, peta tiga pantai, dan tombol bagikan WhatsApp — semuanya dari
+endpoint publik, tanpa akun.
 
 | Rute | Ruang kerja |
 | --- | --- |
-| **`/` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), grafik ombak 24 jam dengan garis batas aman aktivitas, peta tiga pantai yang dipantau (klik untuk memilih), dan tautan ke detail teknis |
+| **`/` Beranda** | Halaman publik: penjelasan singkat produk, tiga kelompok pengguna beserta batas ombaknya, cara kerja tiga langkah, catatan provenans data, dan ajakan membuka alat pemeriksaan |
+| **`/cek` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), grafik ombak 24 jam dengan garis batas aman aktivitas, peta tiga pantai yang dipantau (klik untuk memilih), tombol bagikan WhatsApp, dan tautan ke detail teknis |
 | **`/ringkasan` Kabar Laut** | Dua kalimat bahasa sehari-hari per pantai dan aktivitas, dibuat dari data dan status sistem; tersedia fallback template bila penyedia bahasa tidak tersedia |
 | **`/belajar` Belajar** | Kamus istilah laut (ombak, periode, angin, tekanan, peringatan) dan eksperimen slider ombak/angin per aktivitas |
 | **`/konsol` Ringkasan teknis** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |
@@ -78,7 +83,8 @@ penilaian teknis, dibuka lewat tombol **Mode Admin (demo)** di sidebar warga.
 | **`/alerts`** | Daftar pemberitahuan aktif (read-only) dengan filter keparahan dan pantai; berakhir otomatis setelah 6 jam |
 | **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
-Tangkapan layar lainnya: [kabar laut](docs/screenshots/ringkasan.png) ·
+Tangkapan layar lainnya: [cek kondisi](docs/screenshots/cek.png) ·
+[kabar laut](docs/screenshots/ringkasan.png) ·
 [belajar](docs/screenshots/belajar.png) ·
 [konsol](docs/screenshots/konsol.png) ·
 [ocean](docs/screenshots/ocean.png) ·

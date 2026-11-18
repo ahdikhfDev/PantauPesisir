@@ -70,17 +70,17 @@ export function ZoneMap({
                 style={
                   simple
                     ? {
-                        color: active ? "#d93a2b" : "#123f46",
+                        color: active ? "#e11d2e" : "#123f46",
                         weight: active ? 1.8 : 1,
                         dashArray: active ? undefined : "2 4",
-                        fillColor: active ? "#d93a2b" : "#123f46",
+                        fillColor: active ? "#e11d2e" : "#123f46",
                         fillOpacity: active ? 0.07 : 0.03,
                       }
                     : {
-                        color: "#d93a2b",
+                        color: "#e11d2e",
                         weight: 1.4,
                         dashArray: "6 4",
-                        fillColor: "#d93a2b",
+                        fillColor: "#e11d2e",
                         fillOpacity: 0.04,
                       }
                 }
@@ -140,13 +140,13 @@ export function ZoneMap({
                             color: "#fbfaf7",
                             weight: 1.5,
                             fillColor:
-                              activeZoneCode === zone.zone_code ? "#d93a2b" : "#123f46",
+                              activeZoneCode === zone.zone_code ? "#e11d2e" : "#123f46",
                             fillOpacity: 0.9,
                           }
                         : {
                             color: "#0c2c31",
                             weight: 2,
-                            fillColor: "#d93a2b",
+                            fillColor: "#e11d2e",
                             fillOpacity: 0.95,
                           }
                     }

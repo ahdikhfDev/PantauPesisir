@@ -57,7 +57,8 @@ docs/                 checklist lomba, rencana uji, tangkapan layar
 
 | Rute | Untuk | Isi |
 | --- | --- | --- |
-| `/` | warga | Cek Kondisi — pilih pantai + aktivitas → status, grafik ombak 24 jam, peta 3 pantai |
+| `/` | warga | Beranda: penjelasan produk, batas per aktivitas, cara kerja, ajakan cek |
+| `/cek` | warga | Cek Kondisi — pilih pantai + aktivitas → status, grafik ombak 24 jam, peta 3 pantai |
 | `/ringkasan` | warga | Kabar Laut — dua kalimat per pantai/aktivitas |
 | `/belajar` | warga | Kamus istilah + eksperimen slider |
 | `/alerts` | warga | Pemberitahuan aktif (read-only, kedaluwarsa 6 jam) |
@@ -67,7 +68,8 @@ docs/                 checklist lomba, rencana uji, tangkapan layar
 | `/ai` | admin | Model card, eksekusi analisis, rubrik risiko |
 | `/sources` | admin | Kesehatan sumber, lineage, permukaan API |
 
-`/cek` hanya redirect 307 ke `/`.
+`/cek` adalah alat pemeriksaan; beranda `/` memakai chrome sendiri tanpa sidebar. Sidebar muncul di
+semua rute lain (`DashboardShell` melewati dirinya saat `pathname === "/"`).
 
 Halaman warga memakai 
 `WaveHistoryChart` (`components/warga/wave-chart.tsx`) dan `ZoneMap` dengan `variant="warga"`:

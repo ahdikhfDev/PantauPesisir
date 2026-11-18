@@ -14,8 +14,8 @@ import {
 
 import { fixed, formatShortWib } from "@/lib/format";
 
-const AXIS = { stroke: "#6d7a7c", fontSize: 10, fontFamily: "var(--font-mono)" };
-const GRID = "#e5e1d6";
+const AXIS = { stroke: "#7a7170", fontSize: 10, fontFamily: "var(--font-mono)" };
+const GRID = "#eaddd9";
 
 export interface WavePoint {
   time: number;
@@ -112,7 +112,7 @@ export function WaveHistoryChart({
           <Tooltip
             contentStyle={{
               borderRadius: 10,
-              border: "1px solid #e5e1d6",
+              border: "1px solid #eaddd9",
               fontSize: 11,
               fontFamily: "var(--font-sans)",
               boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",

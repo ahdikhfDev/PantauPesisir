@@ -5,6 +5,7 @@ import {
   BellRing,
   BookOpen,
   BrainCircuit,
+  Compass,
   Database,
   KeyRound,
   LayoutDashboard,
@@ -28,7 +29,8 @@ import type { SystemHealth } from "@/lib/types";
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
 const WARGA_NAV: NavItem[] = [
-  { href: "/", label: "Cek Kondisi", icon: LifeBuoy },
+  { href: "/", label: "Beranda", icon: Compass },
+  { href: "/cek", label: "Cek Kondisi", icon: LifeBuoy },
   { href: "/ringkasan", label: "Kabar Laut", icon: Sparkles },
   { href: "/belajar", label: "Belajar", icon: BookOpen },
   { href: "/alerts", label: "Peringatan warga", icon: BellRing },
@@ -80,6 +82,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
   const visibleNav = isConsole ? KONSOL_NAV : WARGA_NAV;
   const healthy = health.data?.status === "ok";
+
+  // The landing page brings its own chrome; the console shell only wraps app screens.
+  if (pathname === "/") {
+    return <div className="min-h-screen bg-paper">{children}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -160,7 +167,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
           {isConsole ? (
             <Link
-              href="/"
+              href="/cek"
               className="mt-4 flex items-center gap-2 rounded-[8px] px-2.5 py-2 text-[10.5px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
             >
               <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Kembali ke halaman warga

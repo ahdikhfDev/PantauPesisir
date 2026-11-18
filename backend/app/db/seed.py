@@ -72,6 +72,9 @@ def seed_if_empty() -> dict:
     with SessionLocal() as db:
         existing = db.scalar(select(func.count(CoastalZone.id))) or 0
         if existing:
+            # Keeping the labels in sync matters for existing demo databases: a renamed
+            # zone should not keep showing its old name to citizens forever.
+            _sync_zone_definitions(db)
             _ensure_reference_rows(db)
             return {"seeded": False, "zones": int(existing)}
 
@@ -104,6 +107,25 @@ def seed_if_empty() -> dict:
 
         _ensure_reference_rows(db)
         return {"seeded": True, "zones": len(zone_rows)}
+
+
+def _sync_zone_definitions(db) -> None:
+    """Apply renamed zone labels/descriptions to an already-seeded database."""
+    changed = False
+    for definition in ZONE_DEFINITIONS:
+        zone = db.scalar(
+            select(CoastalZone).where(CoastalZone.zone_code == definition["zone_code"])
+        )
+        if zone is None:
+            continue
+        if zone.zone_name != definition["zone_name"]:
+            zone.zone_name = definition["zone_name"]
+            changed = True
+        if zone.description != definition["description"]:
+            zone.description = definition["description"]
+            changed = True
+    if changed:
+        db.commit()
 
 
 def _backfill(db, zone_rows: list[tuple[CoastalZone, BuoyDevice]]) -> None:
