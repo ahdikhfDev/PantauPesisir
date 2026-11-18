@@ -1,3 +1,13 @@
+<p align="center">
+  <img src="docs/brand/logo.png" alt="PantauPesisir" width="460">
+</p>
+
+<p align="center">
+  <a href="https://pantaupesisir.vercel.app"><strong>Aplikasi live</strong></a>
+  ·
+  <a href="https://pantaupesisir-api.vercel.app/docs"><strong>Dokumentasi API</strong></a>
+</p>
+
 # PantauPesisir — Konsol Pemantauan Pesisir
 
 Konsol pemantauan pesisir yang dapat diterapkan, menggabungkan **pipeline telemetri buoy**, **metadata
@@ -9,8 +19,9 @@ anomali berbasis machine learning** dengan rubrik risiko transparan — disajika
 > gerbang validasi, dan catatan provenans yang sama dengan perangkat lapangan, sehingga gateway mitra
 > dapat terhubung tanpa perubahan UI atau skema.
 >
-> **Status pengumpulan:** kode sumber lengkap, 37 pengujian otomatis lulus, video demo telah dibuat
-> (`docs/DEMO_VIDEO.md`); langkah deployment publik ada di bagian 9.
+> **Status pengumpulan:** kode sumber lengkap, 40 pengujian otomatis lulus, aplikasi live di
+> <https://pantaupesisir.vercel.app>, video demo telah dibuat (`docs/DEMO_VIDEO.md`); langkah
+> deployment ada di bagian 9.
 
 ---
 

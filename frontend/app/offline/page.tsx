@@ -8,6 +8,7 @@ export default function OfflinePage() {
   return (
     <div className="mx-auto max-w-xl py-16">
       <div className="card border-l-2 border-l-amber p-6">
+        <img src="/brand/logo.svg" alt="PantauPesisir" width={280} height={74} className="mb-5 h-auto w-[230px]" />
         <p className="text-[10px] font-semibold tracking-[0.12em] text-muted">MODE OFFLINE</p>
         <h1 className="font-display mt-3 text-[22px] font-semibold">Koneksi terputus</h1>
         <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
