@@ -1,84 +1,85 @@
 # PantauPesisir — Konsol Pemantauan Pesisir
 
-A deployable coastal-monitoring console that combines a **buoy telemetry pipeline**, **real Copernicus
-Sentinel-2 acquisition metadata**, a **FastAPI + PostgreSQL/PostGIS backend**, and **machine-learning
-anomaly screening** with a transparent risk rubric — presented in a Next.js operations dashboard.
+Konsol pemantauan pesisir yang dapat diterapkan, menggabungkan **pipeline telemetri buoy**, **metadata
+akuisisi Copernicus Sentinel-2 yang nyata**, **backend FastAPI + PostgreSQL/PostGIS**, dan **penyaringan
+anomali berbasis machine learning** dengan rubrik risiko transparan — disajikan dalam dasbor operasional Next.js.
 
-> **Decision support, not authority.** PantauPesisir is a student-competition demonstrator. It is
-> not an operational tsunami warning system, not a certified forecasting system, and not a
-> replacement for BMKG, BPBD, port authorities or any official source.
+> **Pendukung keputusan, bukan otoritas.** PantauPesisir adalah demonstrator kompetisi mahasiswa. Ini
+> bukan sistem peringatan tsunami operasional, bukan sistem prakiraan tersertifikasi, dan bukan
+> pengganti BMKG, BPBD, otoritas pelabuhan, atau sumber resmi mana pun.
 >
-> **Data provenance.** Satellite metadata and thumbnails are real historical Copernicus acquisitions.
-> The model is trained on real NOAA NDBC observations. For the reproducible demonstration, buoy
-> telemetry is produced by an internal time-series generator; the ingestion path, validation gates and
-> provenance records are the same ones used for field devices, so a partner gateway can replace the
-> generator without UI or schema changes.
+> **Provenans data.** Metadata satelit dan thumbnail adalah akuisisi historis Copernicus yang nyata.
+> Model dilatih pada observasi NOAA NDBC yang nyata. Untuk demonstrasi yang reprodusibel, telemetri
+> buoy dihasilkan oleh generator deret waktu internal; jalur ingesti, gerbang validasi, dan catatan
+> provenans sama dengan yang dipakai untuk perangkat lapangan, sehingga gateway mitra dapat
+> menggantikan generator tanpa perubahan UI atau skema.
 >
-> **Submission status:** source-complete, 37 automated tests passing, demo video produced
-> (`docs/DEMO_VIDEO.md`); public deployment steps are in section 9.
+> **Status pengumpulan:** kode sumber lengkap, 37 pengujian otomatis lulus, video demo telah dibuat
+> (`docs/DEMO_VIDEO.md`); langkah deployment publik ada di bagian 9.
 
 ---
 
-## 1. What actually works
+## 1. Apa yang benar-benar berfungsi
 
-| Capability | Implementation | Verified |
+| Kapabilitas | Implementasi | Terverifikasi |
 | --- | --- | --- |
-| Coherent synthetic buoy simulator | Deterministic AR(1)-style generator, 3 scenarios, manual burst + automatic interval loop, separate `simulation_id` namespace | ✅ tests + live |
-| Validated ingestion | Pydantic + plausibility ranges + timezone checks + provenance checks + duplicate prevention + quarantine of invalid rows | ✅ 8 tests |
-| Real satellite connector | Copernicus Data Space Ecosystem STAC search (no auth) + quicklook thumbnails cached locally + provenance metadata | ✅ live, 7+ records |
-| Time alignment | 30-minute configurable prototype window; unmatched datasets preserved | ✅ tests |
-| Anomaly detection | scikit-learn Isolation Forest trained on 41,104 real NOAA NDBC observations | ✅ reproducible artifact |
-| Prototype risk grading | Transparent `prototype_rubric_v1` over absolute wave/wind/pressure/period | ✅ tests |
-| AI explanations | Contributing factors, window, model version, caveats, data quality | ✅ live |
-| Alerts | Persisted lifecycle open → acknowledged → resolved, dedupe, API-key protected | ✅ tests + live |
-| Degradation | Cached satellite metadata with original acquisition dates; explicit provider failure status | ✅ tests |
-| Dashboard | 6 responsive pages reading only from the API | ✅ browser-checked |
+| Simulator buoy sintetis yang koheren | Generator bergaya AR(1) deterministik, 3 skenario, burst manual + loop interval otomatis, namespace `simulation_id` terpisah | ✅ pengujian + live |
+| Ingesti tervalidasi | Pydantic + rentang kelayakan + pemeriksaan zona waktu + pemeriksaan provenans + pencegahan duplikat + karantina baris tidak valid | ✅ 8 pengujian |
+| Konektor satelit nyata | Pencarian STAC Copernicus Data Space Ecosystem (tanpa autentikasi) + thumbnail quicklook di-cache lokal + metadata provenans | ✅ live, 7+ rekaman |
+| Penyelarasan waktu | Jendela prototipe 30 menit yang dapat dikonfigurasi; dataset yang tidak cocok tetap disimpan | ✅ pengujian |
+| Deteksi anomali | Isolation Forest scikit-learn yang dilatih pada 41,104 observasi NOAA NDBC nyata | ✅ artefak reprodusibel |
+| Penilaian risiko prototipe | `prototype_rubric_v1` transparan atas gelombang/angin/tekanan/periode absolut | ✅ pengujian |
+| Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data | ✅ live |
+| Peringatan | Siklus hidup tersimpan open → acknowledged → resolved, deduplikasi, dilindungi API key | ✅ pengujian + live |
+| Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
+| Dasbor | 6 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
 
-Everything visible in the UI is wired to the backend. There are no placeholder metrics, no
-hard-coded charts, and no dead buttons: privileged controls require the documented demo API key.
+Semua yang terlihat di UI terhubung ke backend. Tidak ada metrik placeholder, tidak ada grafik
+hard-coded, dan tidak ada tombol mati: kontrol istimewa memerlukan kunci demo API yang didokumentasikan.
 
-## 2. The console
+## 2. Konsol
 
-PantauPesisir is a dashboard application with a persistent workspace shell (sidebar + status bar), not a
-marketing landing page. Every screen reads live API data; privileged actions use the documented demo
-key.
+PantauPesisir adalah aplikasi dasbor dengan kerangka ruang kerja persisten (sidebar + bilah status),
+bukan halaman pendaratan pemasaran. Setiap layar membaca data API langsung; aksi istimewa memakai
+kunci demo yang didokumentasikan.
 
-![PantauPesisir operations overview](docs/screenshots/overview.png)
+![Ringkasan operasional PantauPesisir](docs/screenshots/overview.png)
 
-| Route | Workspace |
+| Rute | Ruang kerja |
 | --- | --- |
-| **`/` Overview** | KPI row (buoy sites, mean wave, open alerts, satellite records, model), sea-state chart with per-zone/mean scope, zone status list, AI snapshot with contributing factors, alert queue, source freshness and simulator state |
-| **`/ocean`** | Seven-parameter telemetry, wave/wind and pressure/period charts, readings table, full provenance panel, simulator controls |
-| **`/satellite`** | Leaflet map (zone polygons, buoys, Sentinel-2 footprints), real STAC sync form, acquisition gallery with quicklooks, cloud cover, CRS and attribution |
-| **`/ai`** | Model card, run form, anomaly index on a calibrated threshold scale, risk score, contributing factors, recommendation, caveats and analysis history |
-| **`/alerts`** | Filterable alert workflow with acknowledgement and resolution |
-| **`/sources`** | Database/model/simulator/provider health, source freshness, validation gates, lineage and the public API surface |
+| **`/` Ringkasan** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status simulator |
+| **`/ocean`** | Telemetri tujuh parameter, grafik gelombang/angin dan tekanan/periode, tabel pembacaan, panel provenans lengkap, kontrol simulator |
+| **`/satellite`** | Peta Leaflet (poligon zona, buoy, footprint Sentinel-2), formulir sinkronisasi STAC nyata, galeri akuisisi dengan quicklook, tutupan awan, CRS dan atribusi |
+| **`/ai`** | Kartu model, formulir eksekusi, indeks anomali pada skala ambang terkalibrasi, skor risiko, faktor penyumbang, rekomendasi, keterbatasan dan riwayat analisis |
+| **`/alerts`** | Alur kerja peringatan yang dapat difilter dengan pengakuan dan penyelesaian |
+| **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
-More screenshots: [ocean](docs/screenshots/ocean.png) ·
+Tangkapan layar lainnya: [ocean](docs/screenshots/ocean.png) ·
 [satellite](docs/screenshots/satellite.png) · [AI](docs/screenshots/ai.png) ·
 [alerts](docs/screenshots/alerts.png) · [sources](docs/screenshots/sources.png) ·
 [mobile](docs/screenshots/mobile.png).
 
-### Access model
+### Model akses
 
-There is **no login**. Read-only screens are public. The three write paths — buoy ingestion,
-simulator scenarios, satellite sync, analysis runs and alert transitions — require the documented
-demo header `X-API-Key: pantaupesisir-demo-2026`, which is intentionally public in this prototype so judges
-can exercise every control. The key is held in `sessionStorage`, never in a cookie or account.
+Tidak ada **login**. Layar hanya-baca bersifat publik. Tiga jalur tulis — ingesti buoy, skenario
+simulator, sinkronisasi satelit, eksekusi analisis dan transisi peringatan — memerlukan header demo
+yang didokumentasikan `X-API-Key: pantaupesisir-demo-2026`, yang sengaja dibuat publik dalam
+prototipe ini agar juri dapat mencoba setiap kontrol. Kunci disimpan di `sessionStorage`, tidak
+pernah di cookie atau akun.
 
-### Visual language
+### Bahasa visual
 
-One system, applied consistently: warm paper (`#f4f2ec`) surfaces, deep-sea ink (`#123f46`) chrome,
-a single **signal red** (`#d93a2b`) reserved for risk, simulation and attention — never decoration.
-Type is Manrope for interface, Space Grotesk for display headings, JetBrains Mono for every number so
-columns align. Data provenance is always text-labelled (`Simulated`, `Satellite · historical`,
-`Model output`), never colour alone. Motion is limited to a short reveal on load and is disabled
-under `prefers-reduced-motion`.
+Satu sistem, diterapkan secara konsisten: permukaan kertas hangat (`#f4f2ec`), chrome tinta laut
+dalam (`#123f46`), satu **merah sinyal** (`#d93a2b`) yang dikhususkan untuk risiko, simulasi dan
+perhatian — tidak pernah untuk dekorasi. Tipografi memakai Manrope untuk antarmuka, Space Grotesk
+untuk judul tampilan, JetBrains Mono untuk setiap angka agar kolom sejajar. Provenans data selalu
+diberi label teks (`Telemetri buoy`, `Satelit · historis`, `Keluaran model`), tidak pernah warna saja.
+Gerak dibatasi pada reveal singkat saat pemuatan dan dinonaktifkan pada `prefers-reduced-motion`.
 
-## 3. Quick start
+## 3. Mulai cepat
 
-Prerequisites: Python 3.12+, Node.js 20+ (npm), no Docker required for the demo.
-The demo database is SQLite; production targets PostgreSQL + PostGIS.
+Prasyarat: Python 3.12+, Node.js 20+ (npm), Docker tidak diperlukan untuk demo.
+Database demo adalah SQLite; target produksi adalah PostgreSQL + PostGIS.
 
 ### 3.1 Backend
 
@@ -102,10 +103,10 @@ python scripts/bootstrap_demo.py
 uvicorn app.main:app --reload --port 8000
 ```
 
-API docs: <http://localhost:8000/docs> · health: <http://localhost:8000/api/v1/system/health>
+Dokumentasi API: <http://localhost:8000/docs> · health: <http://localhost:8000/api/v1/system/health>
 
-Create `.env` from `.env.example` first (the backend reads it from the repository root). For a
-self-updating demo set `SIMULATOR_AUTOSTART=true` and `SIMULATOR_ZONE_CODE=ALL`.
+Buat `.env` dari `.env.example` terlebih dahulu (backend membacanya dari root repositori). Untuk demo
+yang memperbarui diri sendiri, set `SIMULATOR_AUTOSTART=true` dan `SIMULATOR_ZONE_CODE=ALL`.
 
 ### 3.2 Frontend
 
@@ -116,20 +117,20 @@ npm install
 npm run dev                          # http://localhost:3000
 ```
 
-### 3.3 Demo API key
+### 3.3 Kunci demo API
 
-`DEMO_MODE=true` enables the documented public demo key:
+`DEMO_MODE=true` mengaktifkan kunci demo publik yang didokumentasikan:
 
 ```
 pantaupesisir-demo-2026
 ```
 
-It unlocks **only** ingestion, simulator control, satellite sync, analysis runs and alert updates.
-It is intentionally visible in the browser (`NEXT_PUBLIC_DEMO_API_KEY`) and in this README. A real
-deployment must rotate `API_SECRET_KEY` and disable `DEMO_MODE` for real operator access; the demo
-key is not a privileged production credential.
+Kunci ini **hanya** membuka ingesti, kontrol simulator, sinkronisasi satelit, eksekusi analisis dan
+pembaruan peringatan. Kunci sengaja terlihat di browser (`NEXT_PUBLIC_DEMO_API_KEY`) dan di README
+ini. Deployment nyata harus merotasi `API_SECRET_KEY` dan menonaktifkan `DEMO_MODE` untuk akses
+operator sesungguhnya; kunci demo bukan kredensial produksi istimewa.
 
-### 3.4 Tests
+### 3.4 Pengujian
 
 ```bash
 cd backend
@@ -137,14 +138,14 @@ python -m pytest -q
 # 37 passed (SQLite, isolated temp database, seeded fixtures)
 ```
 
-Rebuild the model and sanity-check its behaviour:
+Bangun ulang model dan periksa kewajarannya:
 
 ```bash
 python scripts/train_model.py --version cews-iforest-v1
 python scripts/check_model_behavior.py
 ```
 
-## 4. Architecture at a glance
+## 4. Ringkasan arsitektur
 
 ```
 ┌──────────────┐   X-API-Key    ┌──────────────────────────┐
@@ -170,55 +171,57 @@ python scripts/check_model_behavior.py
                                  └─────────────────────────┘
 ```
 
-Details and diagrams: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Detail dan diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## 5. Data sources (verified 2026-11-18)
+## 5. Sumber data (terverifikasi 2026-11-18)
 
-| Source | What PantauPesisir uses | Access | Licence / attribution | Verified |
+| Sumber | Yang digunakan PantauPesisir | Akses | Lisensi / atribusi | Terverifikasi |
 | --- | --- | --- | --- | --- |
-| **Copernicus Data Space Ecosystem — Sentinel-2 L2A STAC** | Product metadata, footprint, acquisition time, cloud cover, CRS, quicklook thumbnail. **No raster download.** | `GET https://stac.dataspace.copernicus.eu/v1/search`, no authentication | Free and open Sentinel data under Copernicus Data Space Ecosystem terms; "Contains modified Copernicus Sentinel data" | Live calls returned real items; quicklooks cached |
-| **NOAA NDBC historical stdmet** | Real 10-minute wave/weather observations used to **train** the anomaly model | `https://www.ndbc.noaa.gov/data/historical/stdmet/{station}h{year}.txt.gz`, no authentication | U.S. federal government work, public domain | 41,104 valid rows, stations 51002 + 41010, 2022–2024 |
-| **OpenStreetMap** | Base map tiles only | `tile.openstreetmap.org` | © OpenStreetMap contributors, ODbL | Used with attribution |
+| **Copernicus Data Space Ecosystem — Sentinel-2 L2A STAC** | Metadata produk, footprint, waktu akuisisi, tutupan awan, CRS, thumbnail quicklook. **Tanpa unduhan raster.** | `GET https://stac.dataspace.copernicus.eu/v1/search`, tanpa autentikasi | Data Sentinel gratis dan terbuka di bawah ketentuan Copernicus Data Space Ecosystem; "Contains modified Copernicus Sentinel data" | Panggilan live mengembalikan item nyata; quicklook di-cache |
+| **NOAA NDBC historical stdmet** | Observasi gelombang/cuaca 10 menit nyata yang digunakan untuk **melatih** model anomali | `https://www.ndbc.noaa.gov/data/historical/stdmet/{station}h{year}.txt.gz`, tanpa autentikasi | Karya pemerintah federal AS, domain publik | 41,104 baris valid, stasiun 51002 + 41010, 2022–2024 |
+| **OpenStreetMap** | Hanya tile peta dasar | `tile.openstreetmap.org` | © OpenStreetMap contributors, ODbL | Digunakan dengan atribusi |
 
-Full comparison, scorecard and rejected alternatives: [docs/DATA_CATALOG.md](docs/DATA_CATALOG.md).
-What each UI element means: [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md).
+Perbandingan lengkap, scorecard dan alternatif yang ditolak: [docs/DATA_CATALOG.md](docs/DATA_CATALOG.md).
+Arti setiap elemen UI: [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md).
 
-**What the satellite layer is not:** Sentinel-2 imagery does not measure wave height, bathymetry or
-tsunami potential. The 30-minute temporal association is a prototype policy, not a scientific
-co-location standard, and does not validate a buoy reading.
+**Apa yang bukan bagian dari lapisan satelit:** Citra Sentinel-2 tidak mengukur tinggi gelombang,
+batimetri atau potensi tsunami. Asosiasi temporal 30 menit adalah kebijakan prototipe, bukan standar
+co-location ilmiah, dan tidak memvalidasi pembacaan buoy.
 
 ## 6. Model
 
-- Algorithm: `sklearn.ensemble.IsolationForest` (250 trees, `random_state=42`).
-- Training data: 41,104 real NDBC rows → 32,883 training / 8,221 chronological validation rows.
-- Features: absolute wave height and pressure plus **cadence-aware local deviations** (relative
-  wave height/period/steepness/wind, pressure residual and rate, wave-change ratio, SST residual,
-  direction change). Relative features let one model work across open-ocean training data and
-  coastal simulation without treating a warm, short-period bay as "anomalous" by definition.
-- Operating threshold: calibrated on 90 documented **normal-scenario windows** to a 10% flag rate.
-  This makes it a *scenario-calibrated demonstration detector*, not an operational model.
-- Risk levels: a separate, readable rubric (`prototype_rubric_v1`), not the model.
-- Evaluation (real validation slice): 0.16% flagged at the deployed threshold; at a 1% reference
-  threshold, 6.5% recall of the top-5% rapid pressure changes and 2.2% of the top-5% rapid wave
-  changes, against a 1.0% random baseline. Flagged rows have a median wave height of 6.29 m versus
-  2.12 m unflagged. No hazard labels exist, so these are proxy checks only.
+- Algoritma: `sklearn.ensemble.IsolationForest` (250 pohon, `random_state=42`).
+- Data pelatihan: 41,104 baris NDBC nyata → 32,883 baris pelatihan / 8,221 baris validasi kronologis.
+- Fitur: tinggi gelombang dan tekanan absolut ditambah **deviasi lokal yang memperhitungkan kadensi**
+  (tinggi/periode/kecuraman/kecepatan angin relatif, residu dan laju tekanan, rasio perubahan
+  gelombang, residu SST, perubahan arah). Fitur relatif memungkinkan satu model bekerja pada data
+  pelatihan laut lepas dan simulasi pesisir tanpa menganggap teluk hangat berperiode pendek sebagai
+  "anomali" secara definisi.
+- Ambang operasi: dikalibrasi pada 90 **jendela skenario normal** terdokumentasi hingga laju flag 10%.
+  Ini menjadikannya *detektor demonstrasi terkalibrasi skenario*, bukan model operasional.
+- Tingkat risiko: rubrik terpisah yang mudah dibaca (`prototype_rubric_v1`), bukan model.
+- Evaluasi (irisan validasi nyata): 0.16% ditandai pada ambang yang diterapkan; pada ambang referensi
+  1%, recall 6.5% dari 5% perubahan tekanan cepat teratas dan 2.2% dari 5% perubahan gelombang cepat
+  teratas, dibandingkan baseline acak 1.0%. Baris yang ditandai memiliki median tinggi gelombang
+  6.29 m versus 2.12 m pada baris yang tidak ditandai. Tidak ada label bahaya, sehingga ini hanya
+  pemeriksaan proksi.
 
-Read the model card: [docs/AI_MODEL_CARD.md](docs/AI_MODEL_CARD.md). Reproduce it:
+Baca kartu model: [docs/AI_MODEL_CARD.md](docs/AI_MODEL_CARD.md). Reproduksi:
 `python scripts/fetch_training_data.py && python scripts/train_model.py`.
 
 ## 7. API
 
-Base path `/api/v1`, JSON, UTC ISO 8601. Full contract with examples:
-[docs/API_CONTRACT.md](docs/API_CONTRACT.md), interactive docs at `/docs`.
+Base path `/api/v1`, JSON, UTC ISO 8601. Kontrak lengkap dengan contoh:
+[docs/API_CONTRACT.md](docs/API_CONTRACT.md), dokumentasi interaktif di `/docs`.
 
-Public reads: `/buoy/latest`, `/buoy/history`, `/coastal/zones`, `/satellite/datasets`,
+Pembacaan publik: `/buoy/latest`, `/buoy/history`, `/coastal/zones`, `/satellite/datasets`,
 `/analytics/latest`, `/analytics/history`, `/analytics/model-info`, `/alerts`, `/system/health`,
 `/system/data-sources`, `/system/overview`.
 
-Key-protected writes: `POST /ingestion/buoy`, `POST /simulator/scenarios`, `POST /simulator/tick`,
+Penulisan yang dilindungi kunci: `POST /ingestion/buoy`, `POST /simulator/scenarios`, `POST /simulator/tick`,
 `POST /simulator/stop`, `POST /satellite/sync`, `POST /analytics/run`, `PATCH /alerts/{id}`.
 
-## 8. Repository layout
+## 8. Tata letak repositori
 
 ```
 backend/
@@ -235,67 +238,68 @@ docs/             architecture, API, data catalog, provenance, model card, schem
 data/             local SQLite database, cached quicklooks, raw downloads (gitignored)
 ```
 
-## 9. Deployment
+## 9. Penerapan
 
-No public URL has been deployed yet by the agent — deployment needs project credentials. The
-intended setup is documented and reproducible:
+Agen belum menerapkan URL publik apa pun — deployment memerlukan kredensial proyek. Penyiapan yang
+dimaksudkan telah didokumentasikan dan dapat direproduksi:
 
-1. **Database:** managed PostgreSQL with PostGIS (e.g. Neon/Supabase with the `postgis` extension
-   enabled). Run `alembic upgrade head` with `DATABASE_URL=postgresql+psycopg://...`.
-2. **Backend:** Python host (Render/Railway/Fly). Root `backend/`, install
-   `pip install -r requirements.txt`, start `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+1. **Database:** PostgreSQL terkelola dengan PostGIS (mis. Neon/Supabase dengan ekstensi `postgis`
+   diaktifkan). Jalankan `alembic upgrade head` dengan `DATABASE_URL=postgresql+psycopg://...`.
+2. **Backend:** host Python (Render/Railway/Fly). Root `backend/`, instal
+   `pip install -r requirements.txt`, jalankan `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
    Set `DATABASE_URL`, `API_SECRET_KEY`, `CORS_ORIGINS`, `SIMULATOR_AUTOSTART=true`,
-   `SIMULATOR_ZONE_CODE=ALL`, satellite variables. Keep `DEMO_MODE=true` only for the public demo.
+   `SIMULATOR_ZONE_CODE=ALL`, variabel satelit. Pertahankan `DEMO_MODE=true` hanya untuk demo publik.
 3. **Frontend:** Vercel, root `frontend/`, env `NEXT_PUBLIC_API_BASE_URL=https://<backend>/api/v1`
-   and `NEXT_PUBLIC_DEMO_API_KEY=pantaupesisir-demo-2026`.
-4. Verify `/api/v1/system/health`, then keep the deployment alive through 30 November 2026.
+   dan `NEXT_PUBLIC_DEMO_API_KEY=pantaupesisir-demo-2026`.
+4. Verifikasi `/api/v1/system/health`, lalu jaga deployment tetap hidup hingga 30 November 2026.
 
-PostGIS-specific DDL (extension, GiST indexes) is implemented in the migration but has not been
-exercised against a live PostgreSQL instance in this environment — only SQLite was available.
-Treat PostgreSQL verification as an outstanding deployment task.
+DDL khusus PostGIS (ekstensi, indeks GiST) diimplementasikan dalam migrasi tetapi belum diuji
+terhadap instans PostgreSQL live di lingkungan ini — hanya SQLite yang tersedia. Anggap verifikasi
+PostgreSQL sebagai tugas deployment yang masih tertunda.
 
-## 10. Theme positioning (IT RUSH 2026 — subtheme 3)
+## 10. Posisi tema (IT RUSH 2026 — subtema 3)
 
-Per the team's most recent decision, the work is positioned under **Ekonomi dan Pemberdayaan
-Masyarakat**. PantauPesisir supports coastal economic resilience by giving fishers, small coastal businesses
-and port operators **verified coastal-condition intelligence**: what was observed, when, how fresh,
-how unusual, and what caveats apply — so avoidable disruption and unsafe departures can be reduced.
+Sesuai keputusan terbaru tim, karya ini diposisikan di bawah **Ekonomi dan Pemberdayaan
+Masyarakat**. PantauPesisir mendukung ketahanan ekonomi pesisir dengan memberi nelayan, usaha pesisir kecil
+dan operator pelabuhan **kecerdasan kondisi pesisir yang terverifikasi**: apa yang diamati, kapan, seberapa
+segar, seberapa tidak biasa, dan keterbatasan apa yang berlaku — sehingga gangguan yang dapat dihindari
+dan keberangkatan yang tidak aman dapat dikurangi.
 
-PantauPesisir does **not** predict fish prices, income or market demand, and it does not claim that buoy or
-satellite data alone can do so. If the team reverts to *Mitigasi Bencana dan Perubahan Iklim*, the
-proposal must be updated consistently (the technical prototype already fits that framing).
+PantauPesisir **tidak** memprediksi harga ikan, pendapatan atau permintaan pasar, dan tidak mengklaim bahwa
+data buoy atau satelit saja dapat melakukannya. Jika tim kembali ke *Mitigasi Bencana dan Perubahan Iklim*,
+proposal harus diperbarui secara konsisten (prototipe teknis sudah sesuai dengan kerangka tersebut).
 
-## 11. Limitations and honest gaps
+## 11. Keterbatasan dan celah yang jujur
 
-- No buoy hardware is deployed; all telemetry is simulated (clearly labelled).
-- The model is trained on offshore Hawaiian/Florida NDBC stations, not Indonesian waters. Domain
-  shift is real and measured (see model card); the threshold is calibrated on synthetic normal
-  windows, not on real coastal buoy deployments.
-- Satellite integration stores metadata + quicklooks only; full-resolution Sentinel-2 raster
-  download requires a Copernicus OIDC/S3 account and is out of scope.
-- The 30-minute buoy/satellite association window is a prototype parameter.
-- Risk levels are demonstration rubric output, not BMKG criteria, probabilities or official alerts.
-- PostgreSQL/PostGIS deployment path is implemented but only SQLite was available for verification.
-- Rate limiting is per process, not distributed; production deployment needs a shared limiter.
-- Public deployment, PDF proposal, originality/AI declaration and the 3–5 minute demo video are
-  required submission items still outstanding.
+- Tidak ada perangkat keras buoy yang dipasang; semua telemetri disimulasikan (dilabeli dengan jelas).
+- Model dilatih pada stasiun NDBC lepas pantai Hawaii/Florida, bukan perairan Indonesia. Pergeseran domain
+  nyata dan terukur (lihat kartu model); ambang dikalibrasi pada jendela normal sintetis, bukan pada
+  deployment buoy pesisir nyata.
+- Integrasi satelit hanya menyimpan metadata + quicklook; unduhan raster Sentinel-2 resolusi penuh
+  memerlukan akun Copernicus OIDC/S3 dan berada di luar cakupan.
+- Jendela asosiasi buoy/satelit 30 menit adalah parameter prototipe.
+- Tingkat risiko adalah keluaran rubrik demonstrasi, bukan kriteria BMKG, probabilitas atau peringatan resmi.
+- Jalur deployment PostgreSQL/PostGIS sudah diimplementasikan tetapi hanya SQLite yang tersedia untuk verifikasi.
+- Pembatasan laju bersifat per proses, bukan terdistribusi; deployment produksi memerlukan limiter bersama.
+- Deployment publik, proposal PDF, pernyataan orisinalitas/AI dan video demo 3–5 menit adalah
+  item pengumpulan wajib yang masih tertunda.
 
-## 12. Third-party and AI disclosure
+## 12. Pengungkapan pihak ketiga dan AI
 
-Libraries: FastAPI, Starlette, Pydantic, SQLAlchemy, Alembic, GeoAlchemy2, Shapely, NumPy, pandas,
+Pustaka: FastAPI, Starlette, Pydantic, SQLAlchemy, Alembic, GeoAlchemy2, Shapely, NumPy, pandas,
 scikit-learn, joblib, httpx, pytest; Next.js, React, TypeScript, Tailwind CSS, Recharts, Leaflet,
-react-leaflet, lucide-react. No UI template was copied; the visual system was built for this project.
+react-leaflet, lucide-react. Tidak ada templat UI yang disalin; sistem visual dibangun untuk proyek ini.
 
-Data: NOAA NDBC (public domain), Copernicus Data Space Ecosystem (free/open Sentinel data),
-OpenStreetMap (ODbL, base map only).
+Data: NOAA NDBC (domain publik), Copernicus Data Space Ecosystem (data Sentinel gratis/terbuka),
+OpenStreetMap (ODbL, hanya peta dasar).
 
-AI assistance: parts of the implementation scaffolding, UI copy and documentation were drafted with
-an AI coding assistant. Architecture, data validation rules, API behaviour, model evaluation and the
-37 automated tests were designed, executed and reviewed by the team — every dataset, endpoint and
-result reported in this repository was verified by running it, not taken from generated text. The
-assistance is declared here and in the proposal, as required by the IT RUSH 2026 guidebook
-(section V.5).
+Bantuan AI: sebagian perancah implementasi, teks UI dan dokumentasi disusun dengan asisten pengodean
+AI. Arsitektur, aturan validasi data, perilaku API, evaluasi model dan 37 pengujian otomatis
+dirancang, dijalankan dan ditinjau oleh tim — setiap dataset, endpoint dan hasil yang dilaporkan dalam
+repositori ini diverifikasi dengan menjalankannya, bukan diambil dari teks yang dihasilkan. Bantuan
+ini dideklarasikan di sini dan dalam proposal, sesuai persyaratan panduan IT RUSH 2026
+(bagian V.5).
 
-## 13. License
+## 13. Lisensi
 
-MIT — see [LICENSE](LICENSE). The team should confirm the final licence before submission.
+MIT — lihat [LICENSE](LICENSE). Tim harus mengonfirmasi lisensi final sebelum pengumpulan.

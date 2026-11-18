@@ -1,110 +1,115 @@
-# Demo script (3–5 minutes)
+# Skrip demo (3–5 menit)
 
-Target length: **4:00**. Record unlisted on YouTube. Voice-over + screen capture of the deployed
-site. Keep every claim inside the app's own labels: simulated telemetry, historical satellite
-records, prototype decision support.
+Target durasi: **4:00**. Rekam sebagai unlisted di YouTube. Voice-over + tangkapan layar situs yang
+sudah di-deploy. Jaga setiap klaim tetap di dalam label aplikasi itu sendiri: telemetri tersimulasi,
+rekaman satelit historis, dukungan keputusan prototipe.
 
-## Pre-flight checklist
+## Daftar periksa pra-rekaman
 
-- [ ] Backend healthy: `/api/v1/system/health` → `status: ok`, model available.
-- [ ] Simulator running (`SIMULATOR_AUTOSTART=true`, scope `ALL`) so zone cards are fresh.
-- [ ] Satellite catalogue populated (run one sync before recording).
-- [ ] One analysis exists so the AI page is not empty.
-- [ ] Browser zoom 100%, 1440×900, dark-mode off.
-- [ ] Demo key `pantaupesisir-demo-2026` already stored in the tab, or ready to paste.
-- [ ] Close unrelated tabs/notifications.
+- [ ] Backend sehat: `/api/v1/system/health` → `status: ok`, model tersedia.
+- [ ] Simulator berjalan (`SIMULATOR_AUTOSTART=true`, scope `ALL`) sehingga kartu zona tetap segar.
+- [ ] Katalog satelit terisi (jalankan satu sinkronisasi sebelum merekam).
+- [ ] Sudah ada satu analisis sehingga halaman AI tidak kosong.
+- [ ] Zoom browser 100%, 1440×900, dark-mode mati.
+- [ ] Kunci demo `pantaupesisir-demo-2026` sudah tersimpan di tab, atau siap ditempel.
+- [ ] Tutup tab/notifikasi yang tidak berkaitan.
 
-## 0:00–0:25 — Team and problem
+## 0:00–0:25 — Tim dan masalah
 
-**Screen:** Overview dashboard (sidebar + KPI row).
+**Layar:** dashboard Ikhtisar (sidebar + baris KPI).
 
-> "We are [team name] from [school]. Coastal communities in Indonesia make daily decisions on
-> incomplete information: a fisher checks the sky, not a data feed. Official warnings exist, but the
-> gap between raw observations and an understandable, traceable signal is real. PantauPesisir is our
-> prototype for closing that gap — honestly."
+> "Kami adalah [nama tim] dari [sekolah]. Masyarakat pesisir di Indonesia mengambil keputusan harian
+> berdasarkan informasi yang tidak lengkap: seorang nelayan memeriksa langit, bukan umpan data.
+> Peringatan resmi memang ada, tetapi jarak antara observasi mentah dan sinyal yang dapat dipahami
+> serta dapat ditelusuri itu nyata. PantauPesisir adalah prototipe kami untuk menutup jarak itu —
+> dengan jujur."
 
-Point at the header chips (**Simulated feed**, **Prototype**) and the metric cards.
+Tunjuk chip header (**Umpan langsung**, **Prototype**) dan kartu metrik.
 
-## 0:25–0:55 — Architecture in one breath
+## 0:25–0:55 — Arsitektur dalam satu tarikan napas
 
-**Screen:** `/sources` (open it from the sidebar).
+**Layar:** `/sources` (buka dari sidebar).
 
-> "Three layers. Synthetic buoy telemetry enters a FastAPI backend, is validated and stored in
-> PostgreSQL/PostGIS. A real Copernicus Sentinel-2 STAC search adds acquisition metadata and cached
-> quicklooks. An Isolation Forest, trained on 41,104 real NOAA NDBC observations, scores how unusual
-> the last window is, and a separate transparent rubric grades absolute severity. The dashboard never
-> mixes those sources."
+> "Tiga lapis. Telemetri buoy sintetis masuk ke backend FastAPI, divalidasi, dan disimpan di
+> PostgreSQL/PostGIS. Pencarian STAC Copernicus Sentinel-2 yang nyata menambahkan metadata akuisisi
+> dan quicklook ter-cache. Isolation Forest, yang dilatih pada 41,104 observasi NOAA NDBC nyata,
+> menilai seberapa tidak biasa jendela terakhir, dan rubrik transparan terpisah menilai tingkat
+> keparahan absolut. Dashboard tidak pernah mencampur sumber-sumber itu."
 
-## 0:55–1:35 — Ocean monitoring
+## 0:55–1:35 — Pemantauan laut
 
-**Screen:** `/ocean`.
+**Layar:** `/ocean`.
 
-1. Point at the freshness strip: last observed, received, age, within freshness window.
-2. Hover the wave metric: 1.0 m, period, wind, pressure, sea temperature — **units on every value**.
-3. Scroll to the charts: wave height + wind, then pressure + period. Mention UTC labels.
-4. Open the provenance panel: observed, received and processed times are separate; source is
-   `simulated`; simulation ID present.
-5. Trigger the simulator: scenario **Extreme**, 12 observations, 300 s. Click **Generate burst**.
-6. Show the job completing and the chart spike. Say clearly:
+1. Tunjuk strip kesegaran: terakhir diamati, diterima, umur, dalam jendela kesegaran.
+2. Arahkan kursor ke metrik gelombang: 1.0 m, periode, angin, tekanan, suhu laut — **satuan pada
+   setiap nilai**.
+3. Gulir ke grafik: tinggi gelombang + angin, lalu tekanan + periode. Sebutkan label UTC.
+4. Buka panel provenans: waktu diamati, diterima, dan diproses terpisah; sumbernya `simulated`; ID
+   simulasi ada.
+5. Picu simulator: skenario **Extreme**, 12 observasi, 300 s. Klik **Hasilkan semburan**.
+6. Tunjukkan job selesai dan lonjakan pada grafik. Katakan dengan jelas:
 
-> "Every one of these new points is synthetic, tagged simulated, and the burst replaced earlier
-> synthetic readings in its replay window so the timeline stays coherent."
+> "Setiap titik baru ini sintetis, bertanda simulated, dan burst tersebut menggantikan pembacaan
+> sintetis sebelumnya pada jendela replay-nya sehingga garis waktu tetap koheren."
 
-## 1:35–2:05 — Satellite map
+## 1:35–2:05 — Peta satelit
 
-**Screen:** `/satellite`.
+**Layar:** `/satellite`.
 
-1. Show provider banner: "Copernicus Data Space Ecosystem — Sentinel-2 L2A", licence, status.
-2. Map: toggle zone polygons, buoy markers, footprints. Click a red buoy popup (latest simulated
-   values). Click a footprint popup (product id, acquired time, cloud cover).
-3. Point at the attribution line and the caveat: **optical imagery is not wave height**.
-4. Explain the sync form: "This calls the real STAC API; we store metadata and one quicklook per
-   acquisition. Full rasters need a Copernicus account, so we do not pretend to have them."
-5. If bandwidth allows, click **Query Copernicus STAC** and show `found/stored`. If not, show the
-   existing catalogue cards.
+1. Tunjukkan banner penyedia: "Copernicus Data Space Ecosystem — Sentinel-2 L2A", lisensi, status.
+2. Peta: aktifkan/matikan poligon zona, penanda buoy, footprint. Klik popup buoy merah (nilai
+   tersimulasi terbaru). Klik popup footprint (id produk, waktu akuisisi, tutupan awan).
+3. Tunjuk baris atribusi dan kaveatnya: **citra optik bukan tinggi gelombang**.
+4. Jelaskan formulir sinkronisasi: "Ini memanggil API STAC yang nyata; kami menyimpan metadata dan
+   satu quicklook per akuisisi. Raster penuh membutuhkan akun Copernicus, jadi kami tidak
+   berpura-pura memilikinya."
+5. Jika bandwidth memungkinkan, klik **Query Copernicus STAC** dan tunjukkan `found/stored`. Jika
+   tidak, tampilkan kartu katalog yang sudah ada.
 
-## 2:05–2:55 — AI demo
+## 2:05–2:55 — Demo AI
 
-**Screen:** `/ai`.
+**Layar:** `/ai`.
 
-1. Model card: version `cews-iforest-v1`, Isolation Forest, training data NDBC stations 51002/41010,
-   calibration 10% on normal windows.
-2. Run analysis: zone Jakarta Bay, window 60 minutes, alert enabled. Click **Run AI analysis**.
-3. Read the result:
-   - risk level and rubric score;
-   - anomaly index versus the 0.50 threshold (explain: anomaly ≠ hazard);
-   - top contributing factors with values/units and σ;
-   - data quality and satellite matches.
-4. Read one caveat aloud: "The model was trained on offshore US buoys and scores simulated
-   Indonesian telemetry; domain shift is expected."
-5. Open the recommendation: "Prototype advisory… confirm with BMKG/BPBD."
+1. Kartu model: versi `cews-iforest-v1`, Isolation Forest, data pelatihan stasiun NDBC 51002/41010,
+   kalibrasi 10% pada jendela normal.
+2. Jalankan analisis: zona Jakarta Bay, jendela 60 menit, peringatan diaktifkan. Klik **Run AI
+   analysis**.
+3. Bacakan hasilnya:
+   - tingkat risiko dan skor rubrik;
+   - indeks anomali terhadap ambang 0.50 (jelaskan: anomali ≠ bahaya);
+   - faktor kontribusi teratas beserta nilai/satuan dan σ;
+   - kualitas data dan kecocokan satelit.
+4. Bacakan satu kaveat dengan lantang: "Model dilatih pada buoy lepas pantai AS dan menilai telemetri
+   Indonesia yang tersimulasi; pergeseran domain (domain shift) diperkirakan terjadi."
+5. Buka rekomendasi: "Saran prototipe… konfirmasi dengan BMKG/BPBD."
 
-## 2:55–3:30 — Alert workflow
+## 2:55–3:30 — Alur kerja peringatan
 
-**Screen:** `/alerts`.
+**Layar:** `/alerts`.
 
-1. Show the alert created by the analysis (severity, zone, timestamps, status).
-2. Click **Read full note**, then **Acknowledge**; show the actor and UTC timestamp.
-3. Click **Resolve**; show the resolved timestamp. Mention the API rejects reopening (409) to keep an
-   audit trail.
-4. Mention the dedupe window: repeated runs within 30 minutes do not spam duplicate alerts.
+1. Tunjukkan peringatan yang dibuat oleh analisis (severity, zona, timestamp, status).
+2. Klik **Read full note**, lalu **Akui**; tunjukkan aktor dan timestamp UTC.
+3. Klik **Selesaikan**; tunjukkan timestamp penyelesaian. Sebutkan bahwa API menolak pembukaan ulang
+   (409) untuk menjaga jejak audit.
+4. Sebutkan jendela dedupe: eksekusi berulang dalam 30 menit tidak membanjiri dengan peringatan
+   duplikat.
 
-## 3:30–4:00 — Impact and close
+## 3:30–4:00 — Dampak dan penutup
 
-**Screen:** `/sources` or back to Overview.
+**Layar:** `/sources` atau kembali ke Ikhtisar.
 
-> "For coastal economic resilience, this is the value: fishers, small businesses and port operators
-> can see a verified condition summary, its age, and whether it is unusual — before committing a
-> trip. What we do not claim is just as important: no tsunami detection, no wave heights from
-> satellite pixels, no official warnings, no market predictions. The code, data provenance, model
-> card and tests are public. Thank you."
+> "Untuk ketahanan ekonomi pesisir, inilah nilainya: nelayan, usaha kecil, dan operator pelabuhan
+> dapat melihat ringkasan kondisi terverifikasi, umurnya, dan apakah kondisi itu tidak biasa —
+> sebelum memutuskan berlayar. Apa yang tidak kami klaim sama pentingnya: bukan deteksi tsunami,
+> bukan tinggi gelombang dari piksel satelit, bukan peringatan resmi, bukan prediksi pasar. Kode,
+> provenans data, kartu model, dan pengujian bersifat publik. Terima kasih."
 
-## Backup plans
+## Rencana cadangan
 
-| Problem during recording | Fix |
+| Masalah saat perekaman | Solusi |
 | --- | --- |
-| Copernicus unreachable | Show cached datasets + provider `unavailable` state; say that this is the designed fallback |
-| Analysis returns 422 | Generate a scenario first, or widen the window |
-| Model returns 503 | Restart backend; artifact path is in `/system/health` |
-| Charts empty | Check the zone has rows in the chosen window; switch to 24 h |
-| Demo key rejected | Paste `pantaupesisir-demo-2026` in the operator key field |
+| Copernicus tidak dapat dijangkau | Tampilkan dataset ter-cache + status penyedia `unavailable`; sebutkan bahwa ini adalah fallback yang memang dirancang |
+| Analisis mengembalikan 422 | Buat skenario terlebih dahulu, atau perlebar jendela |
+| Model mengembalikan 503 | Mulai ulang backend; path artefak ada di `/system/health` |
+| Grafik kosong | Periksa apakah zona memiliki baris pada jendela yang dipilih; beralih ke 24 h |
+| Kunci demo ditolak | Tempel `pantaupesisir-demo-2026` di field kunci operator |

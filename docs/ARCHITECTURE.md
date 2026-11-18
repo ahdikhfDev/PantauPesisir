@@ -1,10 +1,10 @@
-# Architecture
+# Arsitektur
 
-PantauPesisir is a modular monolith: one FastAPI backend, one Next.js frontend, one relational database
-(PostgreSQL/PostGIS in production, SQLite for the demo) and one model artifact. There are no
-microservices.
+PantauPesisir adalah monolit modular: satu backend FastAPI, satu frontend Next.js, satu basis data
+relasional (PostgreSQL/PostGIS di produksi, SQLite untuk demo) dan satu artefak model. Tidak ada
+mikroservis.
 
-## 1. Components
+## 1. Komponen
 
 ```mermaid
 flowchart LR
@@ -47,21 +47,21 @@ flowchart LR
   UI -- X-API-Key --> ANA
 ```
 
-### Layers
+### Lapisan
 
-| Layer | Module | Responsibility |
+| Lapisan | Modul | Tanggung jawab |
 | --- | --- | --- |
-| Source | `app/services/simulator.py` | Coherent synthetic series, scenario profiles, burst + interval modes, deterministic seeds |
-| Source | `app/services/satellite/` | Provider protocol, Copernicus STAC adapter, thumbnail caching, fallback |
-| Integration | `app/services/ingestion.py` | Single ingestion path used by API, simulator and seed |
-| Integration | `app/services/validation.py` | Plausibility, timezone, position, provenance, duplicates |
-| Integration | `app/services/time_sync.py` | 30-min association, quality summary |
-| Analytics | `app/ml/` | Features, calibration, threshold, scoring, rubric |
-| Analytics | `app/services/analytics.py` | Window selection, persistence, explanation, alert creation |
-| Application | `app/api/v1/routers/` | Public reads, privileged writes, OpenAPI |
-| Application | `frontend/` | Dashboard app shell (sidebar, status bar) + six workspaces reading from the API |
+| Sumber | `app/services/simulator.py` | Deret sintetis yang koheren, profil skenario, mode burst + interval, seed deterministik |
+| Sumber | `app/services/satellite/` | Protokol penyedia, adapter Copernicus STAC, caching thumbnail, fallback |
+| Integrasi | `app/services/ingestion.py` | Jalur ingesti tunggal yang dipakai oleh API, simulator dan seed |
+| Integrasi | `app/services/validation.py` | Kewajaran, zona waktu, posisi, provenans, duplikat |
+| Integrasi | `app/services/time_sync.py` | Asosiasi 30 menit, ringkasan kualitas |
+| Analitik | `app/ml/` | Fitur, kalibrasi, ambang, penilaian skor, rubrik |
+| Analitik | `app/services/analytics.py` | Pemilihan jendela, persistensi, penjelasan, pembuatan peringatan |
+| Aplikasi | `app/api/v1/routers/` | Pembacaan publik, penulisan berhak istimewa, OpenAPI |
+| Aplikasi | `frontend/` | Shell aplikasi dasbor (sidebar, bilah status) + enam ruang kerja yang membaca dari API |
 
-## 2. Ingestion sequence
+## 2. Urutan ingesti
 
 ```mermaid
 sequenceDiagram
@@ -87,7 +87,7 @@ sequenceDiagram
   end
 ```
 
-## 3. Satellite acquisition
+## 3. Akuisisi satelit
 
 ```mermaid
 sequenceDiagram
@@ -113,11 +113,11 @@ sequenceDiagram
   A-->>U: status, found/stored counts, warnings
 ```
 
-If the provider is unavailable the job ends `completed_with_fallback`, the source becomes
-`unavailable` and cached datasets stay visible unchanged. Buoy monitoring and analytics do not
-depend on satellite availability.
+Jika penyedia tidak tersedia, job berakhir `completed_with_fallback`, sumber menjadi `unavailable`
+dan dataset yang di-cache tetap terlihat tanpa perubahan. Pemantauan buoy dan analitik tidak
+bergantung pada ketersediaan satelit.
 
-## 4. AI analysis
+## 4. Analisis AI
 
 ```mermaid
 flowchart TB
@@ -136,31 +136,33 @@ flowchart TB
   AL -- no --> N[No alert]
 ```
 
-## 5. Key design decisions
+## 5. Keputusan desain utama
 
-1. **Provenance in the schema, not in prose.** `source_type`, `validation_status`,
-   `validation_errors`, `simulation_id`, `idempotency_key`, acquisition timestamps and attribution
-   are stored per row and surfaced in the UI.
-2. **Separate clocks.** `observed_at`, `received_at`, `processed_at` are never conflated.
-3. **Invalid ≠ deleted.** Out-of-range rows are stored with `validation_status="invalid"` and
-   excluded from charts/analytics.
-4. **Cadence-aware features.** The model must transfer from 10-minute NDBC cadence to 1–10-minute
-   simulation. Relative deviations and per-hour rates replace raw sample-to-sample statistics.
-5. **Calibration is explicit.** The operating threshold is fitted on documented normal-scenario
-   windows; the calibration metadata travels with the artifact and is shown in the UI.
-6. **Model ≠ risk.** The anomaly score measures unusual behaviour; the rubric grades absolute
-   severity. Either can be inspected independently.
-7. **Dialect-aware geometry.** `app/db/types.py` stores Shapely geometries as PostGIS
-   POINT/POLYGON/MULTIPOLYGON on PostgreSQL and WKT text on SQLite, so one model layer serves both.
-8. **Fail closed on writes.** Privileged endpoints require `X-API-Key`; with no key configured the
-   API returns 503 rather than allowing anonymous writes.
-9. **Bounded provider calls.** Timeouts, response-size limits, content-type checks and explicit
-   error kinds (`timeout`, `network`, `http`, `malformed`) for actionable degradation.
-10. **Demo coherence.** Manual scenario bursts replace earlier *synthetic* readings inside their
-    replay window and record the replaced count in the job notes, so charts never mix two
-    storylines. Real/observed rows are never touched by this rule.
+1. **Provenans di dalam skema, bukan di prosa.** `source_type`, `validation_status`,
+   `validation_errors`, `simulation_id`, `idempotency_key`, timestamp akuisisi dan atribusi
+   disimpan per baris dan ditampilkan di UI.
+2. **Jam yang terpisah.** `observed_at`, `received_at`, `processed_at` tidak pernah dicampur.
+3. **Tidak valid ≠ dihapus.** Baris di luar rentang disimpan dengan `validation_status="invalid"` dan
+   dikecualikan dari grafik/analitik.
+4. **Fitur yang sadar irama.** Model harus bertransfer dari irama NDBC 10 menit ke simulasi
+   1–10 menit. Deviasi relatif dan laju per jam menggantikan statistik sampel-ke-sampel mentah.
+5. **Kalibrasi bersifat eksplisit.** Ambang operasional di-fit pada jendela skenario normal yang
+   terdokumentasi; metadata kalibrasi menyertai artefak dan ditampilkan di UI.
+6. **Model ≠ risiko.** Skor anomali mengukur perilaku yang tidak biasa; rubrik menilai tingkat
+   keparahan absolut. Keduanya dapat diperiksa secara independen.
+7. **Geometri yang sadar dialek.** `app/db/types.py` menyimpan geometri Shapely sebagai PostGIS
+   POINT/POLYGON/MULTIPOLYGON pada PostgreSQL dan teks WKT pada SQLite, sehingga satu lapisan model
+   melayani keduanya.
+8. **Fail closed pada penulisan.** Endpoint berhak istimewa mewajibkan `X-API-Key`; jika tidak ada
+   key yang dikonfigurasi, API mengembalikan 503 alih-alih mengizinkan penulisan anonim.
+9. **Panggilan penyedia yang terbatas.** Timeout, batas ukuran respons, pemeriksaan content-type dan
+   jenis error eksplisit (`timeout`, `network`, `http`, `malformed`) untuk degradasi yang dapat
+   ditindaklanjuti.
+10. **Koherensi demo.** Burst skenario manual menggantikan pembacaan *sintetis* sebelumnya di dalam
+    jendela replay-nya dan mencatat jumlah yang digantikan pada catatan job, sehingga grafik tidak
+    pernah mencampur dua alur cerita. Baris nyata/teramati tidak pernah disentuh oleh aturan ini.
 
-## 6. Runtime topology
+## 6. Topologi runtime
 
 ```mermaid
 flowchart LR
@@ -173,31 +175,31 @@ flowchart LR
   A -->|cache JPEG| D[data/satellite]
 ```
 
-Local demo: `uvicorn` on :8000, `next dev` on :3000, SQLite at `data/cews.db`, cached quicklooks at
-`data/satellite/`.
+Demo lokal: `uvicorn` pada :8000, `next dev` pada :3000, SQLite di `data/cews.db`, quicklook yang
+di-cache di `data/satellite/`.
 
-## 7. Security posture
+## 7. Postur keamanan
 
-- Secrets via environment variables only (`.env`, gitignored).
-- Public demo key is intentional and documented; production rotates `API_SECRET_KEY` and disables
-  `DEMO_MODE`.
-- CORS restricted to configured origins; explicit methods and headers.
-- Ingestion rate limiting (per-process sliding window) returns 429 with `Retry-After`.
-- Thumbnail paths are resolved and confined to the cache directory before serving.
-- Satellite credentials (`SATELLITE_CLIENT_ID/SECRET`) exist for future authenticated download but
-  are unused and never sent to the browser.
-- API responses never include provider credentials or local filesystem paths except the model
-  artifact path in `/analytics/model-info` (administrative information).
+- Secret hanya melalui variabel environment (`.env`, di-gitignore).
+- Key demo publik memang disengaja dan terdokumentasi; produksi merotasi `API_SECRET_KEY` dan
+  menonaktifkan `DEMO_MODE`.
+- CORS dibatasi pada origin yang dikonfigurasi; metode dan header eksplisit.
+- Rate limit ingesti (sliding window per proses) mengembalikan 429 dengan `Retry-After`.
+- Jalur thumbnail di-resolve dan dibatasi pada direktori cache sebelum disajikan.
+- Kredensial satelit (`SATELLITE_CLIENT_ID/SECRET`) tersedia untuk pengunduhan terautentikasi di masa
+  depan tetapi tidak dipakai dan tidak pernah dikirim ke browser.
+- Respons API tidak pernah menyertakan kredensial penyedia atau jalur filesystem lokal kecuali jalur
+  artefak model di `/analytics/model-info` (informasi administratif).
 
-## 8. Failure modes
+## 8. Mode kegagalan
 
-| Failure | Behaviour |
+| Kegagalan | Perilaku |
 | --- | --- |
-| Provider timeout / 5xx / malformed JSON | Job failed or cached fallback; source `unavailable`; warning list |
-| Thumbnail download fails | Dataset stored `metadata_only`; job still completes with warning |
-| Model artifact missing/corrupt | `/analytics/run` returns 503; health shows `degraded` |
-| Empty observation window | `/analytics/run` returns 422 with an instruction to generate data |
-| Duplicate ingestion | 200 with `duplicate: true`, no second row |
-| Invalid measurement | 201 with `validation_status: invalid`, kept for audit |
-| Alert transition violation | 409 with the allowed lifecycle |
-| Database unreachable | Health `degraded`; UI error states with retry |
+| Timeout penyedia / 5xx / JSON malformed | Job gagal atau fallback ke cache; sumber `unavailable`; daftar peringatan |
+| Pengunduhan thumbnail gagal | Dataset disimpan `metadata_only`; job tetap selesai dengan peringatan |
+| Artefak model hilang/rusak | `/analytics/run` mengembalikan 503; health menampilkan `degraded` |
+| Jendela observasi kosong | `/analytics/run` mengembalikan 422 dengan instruksi untuk menghasilkan data |
+| Ingesti duplikat | 200 dengan `duplicate: true`, tanpa baris kedua |
+| Pengukuran tidak valid | 201 dengan `validation_status: invalid`, disimpan untuk audit |
+| Pelanggaran transisi peringatan | 409 dengan siklus hidup yang diizinkan |
+| Basis data tidak dapat dijangkau | Health `degraded`; UI menampilkan status error dengan retry |

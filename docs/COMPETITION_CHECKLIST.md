@@ -1,78 +1,78 @@
-# IT RUSH 2026 submission checklist
+# Daftar periksa pengumpulan IT RUSH 2026
 
-Deadline recorded in the guidebook: **20 November 2026, 23:59 WIB**. Judging 28–29 November 2026.
-Winner announcement 30 November 2026. The deployed site must stay live through 30 November 2026.
+Tenggat yang tercatat di buku panduan: **20 November 2026, 23:59 WIB**. Penjurian 28–29 November 2026.
+Pengumuman pemenang 30 November 2026. Situs yang telah diterapkan harus tetap aktif hingga 30 November 2026.
 
-Status legend: ✅ done · 🟡 partially done / needs team action · ⛔ not done yet
+Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔ belum selesai
 
-## 1. Deliverables
+## 1. Luaran
 
-| Requirement | Status | Evidence / action |
+| Persyaratan | Status | Bukti / tindakan |
 | --- | --- | --- |
-| Website application, public and deployed | ⛔ | Source complete; deploy `frontend/` + `backend/` + PostGIS (steps in README §9). Requires team credentials. |
-| Public GitHub/GitLab repository | ⛔ | Local repository is not initialised. `git init`, add commits in increments, publish. Do not rewrite history. |
-| AI integrated in at least one feature | ✅ | Isolation Forest anomaly screening + transparent risk rubric; `/ai` page; model card. |
-| Live site remains active through 30 Nov 2026 | ⛔ | Follows deployment; set reminders and uptime checks. |
-| Tech stack free / templates disclosed | ✅ | README §12 discloses libraries, data and AI assistance. |
-| Demo login (if login exists) | ✅ (n/a) | No user login. Public demo key `pantaupesisir-demo-2026` documented in README; no privileged credentials exposed. |
-| Unlisted YouTube demo video, 3–5 min | ⛔ | Script ready: `docs/DEMO_SCRIPT.md` (4:00). |
-| PDF proposal `ITRUSH26_Nama Tim_JudulKarya.pdf` | ⛔ | Content available in README/docs; needs team formatting and submission. |
-| PDF originality and AI declaration (organiser template) | ⛔ | Use organiser template; disclose AI coding assistance and open-source libraries. |
-| Registration / participant proof documents | ⛔ | Team responsibility; not handled in this repository. |
+| Aplikasi web, publik dan telah diterapkan | ⛔ | Kode sumber lengkap; terapkan `frontend/` + `backend/` + PostGIS (langkah di README §9). Memerlukan kredensial tim. |
+| Repositori GitHub/GitLab publik | ⛔ | Repositori lokal belum diinisialisasi. Jalankan `git init`, tambahkan commit secara bertahap, publikasikan. Jangan menulis ulang riwayat. |
+| AI terintegrasi pada setidaknya satu fitur | ✅ | Penyaringan anomali Isolation Forest + rubrik risiko transparan; laman `/ai`; model card. |
+| Situs aktif tetap tersedia hingga 30 Nov 2026 | ⛔ | Menyusul penerapan; atur pengingat dan pemeriksaan uptime. |
+| Tech stack gratis / templat diungkapkan | ✅ | README §12 mengungkapkan pustaka, data, dan bantuan AI. |
+| Login demo (jika login tersedia) | ✅ (n/a) | Tidak ada login pengguna. Kunci demo publik `pantaupesisir-demo-2026` didokumentasikan di README; tidak ada kredensial istimewa yang terekspos. |
+| Video demo YouTube tidak publik, 3–5 menit | ⛔ | Naskah siap: `docs/DEMO_SCRIPT.md` (4:00). |
+| Proposal PDF `ITRUSH26_Nama Tim_JudulKarya.pdf` | ⛔ | Konten tersedia di README/docs; perlu pemformatan dan pengumpulan oleh tim. |
+| Pernyataan orisinalitas dan AI dalam PDF (templat penyelenggara) | ⛔ | Gunakan templat penyelenggara; ungkapkan bantuan pengodean AI dan pustaka open-source. |
+| Dokumen pendaftaran / bukti peserta | ⛔ | Tanggung jawab tim; tidak ditangani di repositori ini. |
 
-## 2. Functional acceptance criteria
+## 2. Kriteria penerimaan fungsional
 
-| # | Criterion | Status | Where |
+| # | Kriteria | Status | Lokasi |
 | --- | --- | --- | --- |
-| 1 | Buoy simulator sends data automatically and manually | ✅ | `POST /simulator/scenarios` (manual/auto), `/simulator/tick`, `/ocean#simulator` |
-| 2 | Backend validates and stores observations | ✅ | `validation.py`, 8 ingestion tests |
-| 3 | At least one satellite API researched + working integration or documented fallback | ✅ | Copernicus CDSE STAC live; cached fallback tested |
-| 4 | Satellite metadata and acquisition time preserved | ✅ | `satellite_datasets`, `/satellite` page |
-| 5 | Buoy/satellite association without forced matches | ✅ | 30-min window, unmatched IDs preserved |
-| 6 | ML model loads and produces reproducible outputs | ✅ | `cews-iforest-v1`, seeded artifact, tests |
-| 7 | Risk analysis clearly prototype decision support | ✅ | Caveats, rubric version, recommendation wording |
-| 8 | Frontend displays backend data, not hard-coded values | ✅ | All pages fetch `/api/v1` |
-| 9 | Provider failure does not break buoy monitoring | ✅ | Fallback test + status rows |
-| 10 | Public website and public repository available | ⛔ | Deployment + repo publication pending |
-| 11 | README, data catalog, model card, setup complete | ✅ | README + `docs/*` |
-| 12 | No false operational warning claims | ✅ | Copy, caveats, model card, footer disclaimer |
+| 1 | Simulator buoy mengirim data secara otomatis dan manual | ✅ | `POST /simulator/scenarios` (manual/otomatis), `/simulator/tick`, `/ocean#simulator` |
+| 2 | Backend memvalidasi dan menyimpan observasi | ✅ | `validation.py`, 8 uji ingesti |
+| 3 | Setidaknya satu API satelit diteliti + integrasi yang berfungsi atau fallback terdokumentasi | ✅ | Copernicus CDSE STAC live; fallback cache diuji |
+| 4 | Metadata satelit dan waktu akuisisi dipertahankan | ✅ | `satellite_datasets`, laman `/satellite` |
+| 5 | Asosiasi buoy/satelit tanpa pemaksaan kecocokan | ✅ | Jendela 30 menit, ID yang tidak cocok dipertahankan |
+| 6 | Model ML dimuat dan menghasilkan luaran yang dapat direproduksi | ✅ | `cews-iforest-v1`, artefak dengan seed, uji |
+| 7 | Analisis risiko jelas sebagai pendukung keputusan prototipe | ✅ | Kaveat, versi rubrik, kata-kata rekomendasi |
+| 8 | Frontend menampilkan data backend, bukan nilai hard-coded | ✅ | Semua laman mengambil `/api/v1` |
+| 9 | Kegagalan penyedia tidak mengganggu pemantauan buoy | ✅ | Uji fallback + baris status |
+| 10 | Situs web publik dan repositori publik tersedia | ⛔ | Penerapan + publikasi repo masih tertunda |
+| 11 | README, katalog data, model card, penyiapan lengkap | ✅ | README + `docs/*` |
+| 12 | Tidak ada klaim peringatan operasional yang keliru | ✅ | Teks, kaveat, model card, disclaimer footer |
 
-## 3. Documentation
+## 3. Dokumentasi
 
-| Deliverable | Status | File |
+| Luaran | Status | Berkas |
 | --- | --- | --- |
-| README (setup, architecture, env, demo, deployment) | ✅ | `README.md` |
-| Architecture + diagrams | ✅ | `docs/ARCHITECTURE.md` |
-| API contract | ✅ | `docs/API_CONTRACT.md` |
-| Data catalog + scorecard + licences | ✅ | `docs/DATA_CATALOG.md` |
-| Data provenance map | ✅ | `docs/DATA_PROVENANCE.md` |
-| AI model card | ✅ | `docs/AI_MODEL_CARD.md` |
-| Database schema / ERD / migrations | ✅ | `docs/DATABASE_SCHEMA.md` |
-| Test plan + results | ✅ | `docs/TEST_PLAN.md` |
-| Demo script | ✅ | `docs/DEMO_SCRIPT.md` |
-| Competition checklist | ✅ | this file |
-| `.env.example` | ✅ | repository root + `frontend/.env.local.example` |
-| LICENSE | 🟡 | MIT file added; team must confirm licence choice |
+| README (penyiapan, arsitektur, env, demo, penerapan) | ✅ | `README.md` |
+| Arsitektur + diagram | ✅ | `docs/ARCHITECTURE.md` |
+| Kontrak API | ✅ | `docs/API_CONTRACT.md` |
+| Katalog data + scorecard + lisensi | ✅ | `docs/DATA_CATALOG.md` |
+| Peta provenans data | ✅ | `docs/DATA_PROVENANCE.md` |
+| Model card AI | ✅ | `docs/AI_MODEL_CARD.md` |
+| Skema basis data / ERD / migrasi | ✅ | `docs/DATABASE_SCHEMA.md` |
+| Rencana uji + hasil | ✅ | `docs/TEST_PLAN.md` |
+| Naskah demo | ✅ | `docs/DEMO_SCRIPT.md` |
+| Daftar periksa kompetisi | ✅ | berkas ini |
+| `.env.example` | ✅ | root repositori + `frontend/.env.local.example` |
+| LICENSE | 🟡 | Berkas MIT ditambahkan; tim harus mengonfirmasi pilihan lisensi |
 
-## 4. Judging criteria mapping
+## 4. Pemetaan kriteria penjurian
 
-| Criterion (weight) | How PantauPesisir addresses it | Evidence |
+| Kriteria (bobot) | Cara PantauPesisir menjawabnya | Bukti |
 | --- | --- | --- |
-| Website functionality & technical quality (25%) | Working API/database/ML/UI vertical slice, validation, tests, error/empty/stale states, deployment-ready config | 37 tests, live API checks, build |
-| Innovation & solution accuracy (20%) | Separation of behavioural anomaly detection and absolute severity; verified provider integration; calibrated threshold with published limitations | Model card, `/ai` UI |
-| Theme relevance & impact (15%) | Subtheme 3: verified coastal-condition intelligence for fishers, small businesses, port operators | README §10, recommendations copy |
-| UI/UX design (15%) | Purpose-built responsive design, consistent data-source badges, units everywhere, honest caveats | 6 pages, screenshots in `docs/screenshots/` |
-| Source-code quality (15%) | Modular monolith, typed schemas, documented decisions, dialected geometry, adversarial tests | repository structure, docs |
-| Documentation (10%) | All mandatory docs present with verified sources and dated results | `docs/` |
+| Fungsionalitas situs web & kualitas teknis (25%) | Irisan vertikal API/basis data/ML/UI yang berfungsi, validasi, uji, status error/kosong/basi, konfigurasi siap penerapan | 37 uji, pemeriksaan API live, build |
+| Inovasi & ketepatan solusi (20%) | Pemisahan deteksi anomali perilaku dan tingkat keparahan absolut; integrasi penyedia terverifikasi; ambang terkalibrasi dengan keterbatasan yang dipublikasikan | Model card, UI `/ai` |
+| Relevansi tema & dampak (15%) | Subtema 3: intelijen kondisi pesisir terverifikasi bagi nelayan, usaha kecil, operator pelabuhan | README §10, teks rekomendasi |
+| Desain UI/UX (15%) | Desain responsif yang dirancang khusus, badge sumber data yang konsisten, satuan di mana-mana, kaveat yang jujur | 6 laman, tangkapan layar di `docs/screenshots/` |
+| Kualitas kode sumber (15%) | Monolit modular, skema bertipe, keputusan terdokumentasi, geometri terdialek, uji adversarial | struktur repositori, docs |
+| Dokumentasi (10%) | Semua dokumen wajib tersedia dengan sumber terverifikasi dan hasil bertanggal | `docs/` |
 
-## 5. Known gaps before submission
+## 5. Kesenjangan yang diketahui sebelum pengumpulan
 
-1. **Deploy** backend + frontend + managed PostGIS; verify PostgreSQL migration/GiST indexes.
-2. **Initialise git** and commit in meaningful increments; publish the repository publicly.
-3. **Record** the demo video and upload unlisted.
-4. **Write and export** the proposal PDF with the required filename, and complete the AI/originality
-   declaration.
-5. **Cross-browser/mobile check** (only headless Chromium was available during development).
-6. **Rotate secrets** for production and set `DEMO_MODE=false` if real operator accounts are added.
-7. **Confirm the subtheme** with the team. If subtheme 1 (disaster mitigation) is chosen instead,
-   rewrite the proposal positioning consistently; the prototype supports either framing.
+1. **Terapkan** backend + frontend + PostGIS terkelola; verifikasi migrasi PostgreSQL/indeks GiST.
+2. **Inisialisasi git** dan commit secara bertahap yang bermakna; publikasikan repositori secara publik.
+3. **Rekam** video demo dan unggah sebagai tidak publik.
+4. **Tulis dan ekspor** proposal PDF dengan nama berkas yang disyaratkan, serta lengkapi pernyataan
+   AI/orisinalitas.
+5. **Pemeriksaan lintas peramban/mobile** (hanya Chromium headless yang tersedia selama pengembangan).
+6. **Rotasi secret** untuk produksi dan setel `DEMO_MODE=false` jika akun operator nyata ditambahkan.
+7. **Konfirmasi subtema** dengan tim. Jika subtema 1 (mitigasi bencana) dipilih, tulis ulang posisi
+   proposal secara konsisten; prototipe mendukung kedua kerangka tersebut.

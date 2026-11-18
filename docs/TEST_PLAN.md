@@ -1,7 +1,7 @@
-# Test plan and results
+# Rencana pengujian dan hasil
 
-Last run: **2026-11-18** · Python 3.12.10 · FastAPI 0.163.1 · SQLAlchemy 2.1.9 · scikit-learn 1.9.1 ·
-pandas 3.1.1 · Node 26.13.0 · Next.js 15.5.29
+Terakhir dijalankan: **2026-11-18** · Python 3.12.10 · FastAPI 0.163.1 · SQLAlchemy 2.1.9 ·
+scikit-learn 1.9.1 · pandas 3.1.1 · Node 26.13.0 · Next.js 15.5.29
 
 ```bash
 cd backend
@@ -9,93 +9,95 @@ python -m pytest -q
 # 37 passed, 1 warning (Starlette TestClient deprecation)
 ```
 
-The suite runs against an isolated temporary SQLite database with seeded zones and `DEMO_MODE=true`.
-No provider network calls are made in tests: the satellite adapter is exercised with
-`httpx.MockTransport` and the job/orchestration path with a fake provider.
+Suite dijalankan terhadap database SQLite sementara yang terisolasi dengan zona ter-seed dan
+`DEMO_MODE=true`. Tidak ada panggilan jaringan ke penyedia yang dilakukan dalam pengujian: adapter
+satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji dengan penyedia palsu.
 
-## 1. Backend and integration tests
+## 1. Pengujian backend dan integrasi
 
-| # | Test | File | Expected | Result |
+| # | Pengujian | File | Hasil yang diharapkan | Hasil |
 | --- | --- | --- | --- | --- |
-| 1 | Health reports database + model availability | `test_system.py` | DB ok, model available, 3 zones, observations > 0 | PASS |
-| 2 | Seeded zones have boundaries/notes/buoys | `test_system.py` | 3 zones, prototype note, simulated buoy | PASS |
-| 3 | Latest observations labelled simulated | `test_system.py` | source_type simulated, valid, age ≥ 0 | PASS |
-| 4 | History filters + pagination | `test_system.py` | total > 0, page size respected, invalid filter 422 | PASS |
-| 5 | Data sources + overview payload | `test_system.py` | buoy/NDBC sources, 3 zones, provenance notice | PASS |
-| 6 | Satellite provider description is honest | `test_system.py` | provider copernicus-stac, note says not wave height | PASS |
-| 7 | Ingestion requires API key | `test_ingestion.py` | 401 unauthorized | PASS |
-| 8 | Valid ingestion + idempotent replay | `test_ingestion.py` | 201 valid; replay 200 duplicate | PASS |
-| 9 | Missing parameter rejected | `test_ingestion.py` | 422 with field issue | PASS |
-| 10 | Naive timestamp rejected | `test_ingestion.py` | 422 timezone message | PASS |
-| 11 | Out-of-range coordinates rejected | `test_ingestion.py` | 422 | PASS |
-| 12 | Implausible wave height quarantined | `test_ingestion.py` | 201, accepted false, invalid, out_of_range | PASS |
-| 13 | Unknown buoy | `test_ingestion.py` | 404 | PASS |
-| 14 | Provenance mismatch quarantined | `test_ingestion.py` | 201 invalid, provenance_mismatch | PASS |
-| 15 | Manual scenario coherent + labelled | `test_simulator.py` | completed, rows match count, distinct times, warning label | PASS |
-| 16 | Generator deterministic + bounded | `test_simulator.py` | identical series, physical bounds | PASS |
-| 17 | Unknown zone rejected | `test_simulator.py` | 404 | PASS |
-| 18 | Auto mode starts/stops | `test_simulator.py` | 202, running true, stop false | PASS |
-| 19 | Analysis explainable prototype output | `test_analytics.py` | version, factors, caveats, rubric metadata, simulated flag | PASS |
-| 20 | Extreme scenario escalates risk + alert | `test_analytics.py` | moderate/high, alert exists | PASS |
-| 21 | Latest/detail/history endpoints | `test_analytics.py` | consistent IDs, 1–5 history items | PASS |
-| 22 | Analysis requires key | `test_analytics.py` | 401 | PASS |
-| 23 | Model info documents limitations | `test_analytics.py` | IsolationForest, >10k rows, proxy method, NDBC | PASS |
-| 24 | Alert acknowledge + resolve | `test_alerts.py` | timestamps/actor set, note appended, 409 on reopen | PASS |
-| 25 | Alert filters and counts | `test_alerts.py` | status/severity aggregates present | PASS |
-| 26 | Alert patch requires key | `test_alerts.py` | 401 | PASS |
-| 27 | Satellite sync stores metadata + quicklook | `test_satellite.py` | completed, 2 stored, thumbnail JPEG | PASS |
-| 28 | Provider failure degrades to cache | `test_satellite.py` | completed_with_fallback, used_cache, cached rows kept | PASS |
-| 29 | STAC adapter parses + filters cloud | `test_satellite.py` | 2 of 3 products, CRS, concept note, thumbnail bytes | PASS |
-| 30 | STAC adapter timeout + malformed handling | `test_satellite.py` | `timeout` and `malformed` error kinds | PASS |
-| 31 | Feature frame is trailing-only | `test_ml.py` | mutating the last row does not change earlier features | PASS |
-| 32 | Scoring deterministic + explainable | `test_ml.py` | identical scores, factors present, 0–1 bounds | PASS |
-| 33 | Extreme conditions flagged | `test_ml.py` | severity above normal, flag true | PASS |
-| 34 | Insufficient data rejected | `test_ml.py` | `InsufficientDataError` | PASS |
-| 35 | Artifact exposes metrics/provenance | `test_ml.py` | >10k rows, proxy method, NDBC, licence | PASS |
-| 36 | Feature matrix requires columns | `test_ml.py` | `KeyError` | PASS |
-| 37 | Rubric monotonic + transparent | `test_ml.py` | low < moderate < high, components sum | PASS |
+| 1 | Health melaporkan ketersediaan database + model | `test_system.py` | DB ok, model tersedia, 3 zona, observasi > 0 | LULUS |
+| 2 | Zona ter-seed memiliki batas/catatan/buoy | `test_system.py` | 3 zona, catatan prototipe, buoy tersimulasi | LULUS |
+| 3 | Observasi terbaru berlabel tersimulasi | `test_system.py` | source_type simulated, valid, age ≥ 0 | LULUS |
+| 4 | Filter riwayat + paginasi | `test_system.py` | total > 0, ukuran halaman dipatuhi, filter tidak valid 422 | LULUS |
+| 5 | Sumber data + payload ikhtisar | `test_system.py` | sumber buoy/NDBC, 3 zona, pemberitahuan provenans | LULUS |
+| 6 | Deskripsi penyedia satelit jujur | `test_system.py` | penyedia copernicus-stac, catatan menyatakan bukan tinggi gelombang | LULUS |
+| 7 | Ingestion memerlukan API key | `test_ingestion.py` | 401 unauthorized | LULUS |
+| 8 | Ingestion valid + replay idempoten | `test_ingestion.py` | 201 valid; replay 200 duplikat | LULUS |
+| 9 | Parameter yang hilang ditolak | `test_ingestion.py` | 422 dengan masalah field | LULUS |
+| 10 | Timestamp naive ditolak | `test_ingestion.py` | 422 pesan zona waktu | LULUS |
+| 11 | Koordinat di luar rentang ditolak | `test_ingestion.py` | 422 | LULUS |
+| 12 | Tinggi gelombang tidak masuk akal dikarantina | `test_ingestion.py` | 201, accepted false, invalid, out_of_range | LULUS |
+| 13 | Buoy tidak dikenal | `test_ingestion.py` | 404 | LULUS |
+| 14 | Ketidakcocokan provenans dikarantina | `test_ingestion.py` | 201 invalid, provenance_mismatch | LULUS |
+| 15 | Skenario manual koheren + berlabel | `test_simulator.py` | completed, baris sesuai jumlah, waktu berbeda, label peringatan | LULUS |
+| 16 | Generator deterministik + terbatas | `test_simulator.py` | deret identik, batas fisik | LULUS |
+| 17 | Zona tidak dikenal ditolak | `test_simulator.py` | 404 | LULUS |
+| 18 | Mode otomatis mulai/berhenti | `test_simulator.py` | 202, running true, stop false | LULUS |
+| 19 | Analisis menghasilkan keluaran prototipe yang dapat dijelaskan | `test_analytics.py` | versi, faktor, kaveat, metadata rubrik, flag tersimulasi | LULUS |
+| 20 | Skenario ekstrem menaikkan risiko + peringatan | `test_analytics.py` | sedang/tinggi, peringatan ada | LULUS |
+| 21 | Endpoint terbaru/detail/riwayat | `test_analytics.py` | ID konsisten, 1–5 item riwayat | LULUS |
+| 22 | Analisis memerlukan kunci | `test_analytics.py` | 401 | LULUS |
+| 23 | Info model mendokumentasikan keterbatasan | `test_analytics.py` | IsolationForest, >10k baris, metode proksi, NDBC | LULUS |
+| 24 | Acknowledge + resolve peringatan | `test_alerts.py` | timestamp/aktor terisi, catatan ditambahkan, 409 saat dibuka ulang | LULUS |
+| 25 | Filter dan jumlah peringatan | `test_alerts.py` | agregat status/severity tersedia | LULUS |
+| 26 | Patch peringatan memerlukan kunci | `test_alerts.py` | 401 | LULUS |
+| 27 | Sinkronisasi satelit menyimpan metadata + quicklook | `test_satellite.py` | completed, 2 tersimpan, thumbnail JPEG | LULUS |
+| 28 | Kegagalan penyedia turun ke cache | `test_satellite.py` | completed_with_fallback, used_cache, baris cache dipertahankan | LULUS |
+| 29 | Adapter STAC mengurai + memfilter awan | `test_satellite.py` | 2 dari 3 produk, CRS, catatan konsep, byte thumbnail | LULUS |
+| 30 | Adapter STAC menangani timeout + respons cacat | `test_satellite.py` | jenis galat `timeout` dan `malformed` | LULUS |
+| 31 | Frame fitur hanya bersifat trailing | `test_ml.py` | mengubah baris terakhir tidak mengubah fitur sebelumnya | LULUS |
+| 32 | Skoring deterministik + dapat dijelaskan | `test_ml.py` | skor identik, faktor tersedia, batas 0–1 | LULUS |
+| 33 | Kondisi ekstrem ditandai | `test_ml.py` | severity di atas normal, flag true | LULUS |
+| 34 | Data tidak memadai ditolak | `test_ml.py` | `InsufficientDataError` | LULUS |
+| 35 | Artefak mengekspos metrik/provenans | `test_ml.py` | >10k baris, metode proksi, NDBC, lisensi | LULUS |
+| 36 | Matriks fitur memerlukan kolom | `test_ml.py` | `KeyError` | LULUS |
+| 37 | Rubrik monoton + transparan | `test_ml.py` | rendah < sedang < tinggi, komponen berjumlah | LULUS |
 
-## 2. Manual / live verifications
+## 2. Verifikasi manual / langsung
 
-| Check | Method | Result |
+| Pemeriksaan | Metode | Hasil |
 | --- | --- | --- |
-| Copernicus STAC reachable without auth | `curl` search for Jakarta Bay | 200, real Sentinel-2 item returned |
-| Quicklook download | `curl` asset URL with redirects | 200, valid JPEG (343×343) |
-| NDBC archive download | `curl` `.txt.gz` files | 200 for 5 station-years |
-| Training dataset | `fetch_training_data.py` | 41,104 rows, 2022-01-01 → 2024-12-31 |
-| Model training | `train_model.py` | artifact + metrics written |
-| Demo bootstrap with live sync | `bootstrap_demo.py` | 7 datasets across 3 zones, 1–3 per zone |
-| End-to-end alert flow | API: extreme scenario → analysis → PATCH | risk high 94.9, anomaly 0.99, alert created + acknowledged |
-| Chart rendering | Headless Chrome screenshots | charts, map, tables, alert card render |
-| Alembic fresh database | `alembic upgrade head` on SQLite | 11 tables + `alembic_version` |
-| Frontend production build | `npm run build` | compiled, 9/9 static pages, types valid |
-| Frontend typecheck | `npx tsc --noEmit` | clean |
+| STAC Copernicus dapat dijangkau tanpa autentikasi | `curl` pencarian Teluk Jakarta | 200, item Sentinel-2 nyata dikembalikan |
+| Unduhan quicklook | `curl` URL aset dengan redirect | 200, JPEG valid (343×343) |
+| Unduhan arsip NDBC | `curl` file `.txt.gz` | 200 untuk 5 stasiun-tahun |
+| Dataset pelatihan | `fetch_training_data.py` | 41,104 baris, 2022-01-01 → 2024-12-31 |
+| Pelatihan model | `train_model.py` | artefak + metrik tertulis |
+| Bootstrap demo dengan sinkronisasi langsung | `bootstrap_demo.py` | 7 dataset di 3 zona, 1–3 per zona |
+| Alur peringatan end-to-end | API: skenario ekstrem → analisis → PATCH | risiko tinggi 94.9, anomali 0.99, peringatan dibuat + di-acknowledge |
+| Rendering grafik | Screenshot Chrome headless | grafik, peta, tabel, kartu peringatan tampil |
+| Database baru Alembic | `alembic upgrade head` pada SQLite | 11 tabel + `alembic_version` |
+| Build produksi frontend | `npm run build` | terkompilasi, 9/9 halaman statis, tipe valid |
+| Typecheck frontend | `npx tsc --noEmit` | bersih |
 
-## 3. Not verified (must be done before submission)
+## 3. Belum terverifikasi (harus dilakukan sebelum pengumpulan)
 
-| Item | Why | Action |
+| Butir | Alasan | Tindakan |
 | --- | --- | --- |
-| PostgreSQL + PostGIS migration | No PostgreSQL/Docker available in this environment | Run `alembic upgrade head` on managed Postgres, confirm extension + GiST indexes |
-| Public frontend deployment | Requires Vercel credentials | Deploy `frontend/` and set `NEXT_PUBLIC_API_BASE_URL` |
-| Public backend deployment | Requires Python host credentials | Deploy `backend/` with Postgres URL + secrets |
-| Demo video | Recording/permissions | Record 3–5 minutes, upload unlisted |
-| Cross-browser check | Only Chromium headless available | Check Safari/Firefox before judging |
-| Mobile device check | Responsive CSS written but not device-tested | Screenshot at 390 px and verify menu/pills |
-| Load/rate-limit behaviour | Per-process limiter | Test with concurrent clients; consider shared limiter |
-| Real coastal buoy validation | No hardware | Out of scope; state in proposal |
+| Migrasi PostgreSQL + PostGIS | Tidak ada PostgreSQL/Docker yang tersedia di lingkungan ini | Jalankan `alembic upgrade head` pada Postgres terkelola, pastikan extension + indeks GiST |
+| Deployment frontend publik | Memerlukan kredensial Vercel | Deploy `frontend/` dan setel `NEXT_PUBLIC_API_BASE_URL` |
+| Deployment backend publik | Memerlukan kredensial host Python | Deploy `backend/` dengan URL Postgres + secret |
+| Video demo | Perekaman/izin | Rekam 3–5 menit, unggah sebagai unlisted |
+| Pemeriksaan lintas browser | Hanya Chromium headless yang tersedia | Periksa Safari/Firefox sebelum penjurian |
+| Pemeriksaan perangkat mobile | CSS responsif sudah ditulis tetapi belum diuji pada perangkat | Screenshot pada 390 px dan verifikasi menu/pills |
+| Perilaku beban/rate-limit | Limiter per proses | Uji dengan klien konkuren; pertimbangkan limiter bersama |
+| Validasi buoy pesisir nyata | Tidak ada perangkat keras | Di luar cakupan; nyatakan dalam proposal |
 
-## 4. Frontend checks (manual)
+## 4. Pemeriksaan frontend (manual)
 
-- Overview renders KPI cards, per-zone sea-state chart, zone status, AI snapshot, alert queue and source strip.
-- Loading skeletons shown before API data; API errors show retry messages.
-- Unsupported/empty states: alerts empty state, satellite empty catalogue, AI "no analysis yet".
-- Privileged buttons surface the demo-key hint on 401.
-- Charts show units and UTC labels; simulated badge visible.
-- Map shows zone polygons, buoy markers and Sentinel-2 footprints with OSM attribution.
-- Alert card actions update status and timestamps after refresh.
-- Numbers use tabular monospace; long product IDs wrap safely.
+- Ikhtisar menampilkan kartu KPI, grafik kondisi laut per zona, status zona, snapshot AI, antrean
+  peringatan, dan strip sumber.
+- Skeleton loading ditampilkan sebelum data API; galat API menampilkan pesan coba ulang.
+- Status tidak didukung/kosong: empty state peringatan, katalog satelit kosong, AI "belum ada
+  analisis".
+- Tombol berhak istimewa memunculkan petunjuk kunci demo pada 401.
+- Grafik menampilkan satuan dan label UTC; badge tersimulasi terlihat.
+- Peta menampilkan poligon zona, penanda buoy, dan footprint Sentinel-2 dengan atribusi OSM.
+- Aksi kartu peringatan memperbarui status dan timestamp setelah refresh.
+- Angka menggunakan monospace tabular; ID produk yang panjang terbungkus dengan aman.
 
-## 5. Reproduce
+## 5. Mereproduksi
 
 ```bash
 # backend

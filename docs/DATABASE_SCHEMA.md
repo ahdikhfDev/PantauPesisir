@@ -1,11 +1,12 @@
-# Database schema
+# Skema basis data
 
-- Production: **PostgreSQL + PostGIS**, geometry `SRID 4326` (lon/lat order).
-- Local demo / tests: **SQLite**, geometry stored as WKT via a dialect-aware type decorator.
-- ORM: SQLAlchemy 2.x declarative models; migrations: Alembic.
-- UUID primary keys everywhere; foreign keys enforced (`PRAGMA foreign_keys=ON` on SQLite).
+- Produksi: **PostgreSQL + PostGIS**, geometri `SRID 4326` (urutan lon/lat).
+- Demo lokal / pengujian: **SQLite**, geometri disimpan sebagai WKT melalui type decorator yang sadar
+  dialek.
+- ORM: model deklaratif SQLAlchemy 2.x; migrasi: Alembic.
+- Primary key UUID di semua tabel; foreign key ditegakkan (`PRAGMA foreign_keys=ON` pada SQLite).
 
-## 1. ER diagram
+## 1. Diagram ER
 
 ```mermaid
 erDiagram
@@ -178,34 +179,35 @@ erDiagram
   }
 ```
 
-## 2. Constraints and indexes
+## 2. Batasan dan index
 
-| Table | Constraint / index | Purpose |
+| Tabel | Batasan / index | Tujuan |
 | --- | --- | --- |
-| `coastal_zones` | `zone_code` unique | Stable zone lookup |
-| `buoy_devices` | `buoy_code` unique; FK `zone_id`; index `zone_id` | Device identity |
-| `buoy_observations` | unique `(buoy_id, observed_at)`; unique `idempotency_key`; index `observed_at`; index `(source_type, observed_at)`; FK `buoy_id`, `simulation_id` | Duplicate prevention + history queries |
-| `satellite_datasets` | unique `(provider, product_id)`; index `acquired_at`, `product_id`, `zone_id` | Idempotent catalogue sync |
-| `satellite_jobs` | FK `zone_id`; index on zone | Job tracking |
+| `coastal_zones` | `zone_code` unique | Pencarian zona yang stabil |
+| `buoy_devices` | `buoy_code` unique; FK `zone_id`; index `zone_id` | Identitas perangkat |
+| `buoy_observations` | unique `(buoy_id, observed_at)`; unique `idempotency_key`; index `observed_at`; index `(source_type, observed_at)`; FK `buoy_id`, `simulation_id` | Pencegahan duplikat + kueri riwayat |
+| `satellite_datasets` | unique `(provider, product_id)`; index `acquired_at`, `product_id`, `zone_id` | Sinkronisasi katalog yang idempoten |
+| `satellite_jobs` | FK `zone_id`; index pada zone | Pelacakan job |
 | `ml_models` | unique `model_version` | Registry |
-| `ai_predictions` | FK `zone_id`, `model_id`; indexes | Latest/history queries |
-| `alerts` | FK `prediction_id`, `zone_id`; index `status` | Lifecycle filters |
-| `data_source_status` | unique `source_name` | Freshness table |
-| PostGIS geometry columns | GiST indexes created by migration | Spatial queries (production) |
+| `ai_predictions` | FK `zone_id`, `model_id`; index | Kueri terbaru/riwayat |
+| `alerts` | FK `prediction_id`, `zone_id`; index `status` | Filter siklus hidup |
+| `data_source_status` | unique `source_name` | Tabel kesegaran |
+| Kolom geometri PostGIS | Index GiST dibuat oleh migrasi | Kueri spasial (produksi) |
 
-## 3. Geometry handling
+## 3. Penanganan geometri
 
-`backend/app/db/types.py` defines a `Geometry` `TypeDecorator`:
+`backend/app/db/types.py` mendefinisikan sebuah `Geometry` `TypeDecorator`:
 
-- On **PostgreSQL** it renders `geoalchemy2.Geometry(POINT|POLYGON|MULTIPOLYGON, srid=4326)` and
-  binds Shapely geometries through GeoAlchemy2.
-- On **SQLite** it renders `TEXT` and stores WKT, returning Shapely objects to the application.
-- API responses always convert geometry to GeoJSON.
+- Pada **PostgreSQL** ia merender `geoalchemy2.Geometry(POINT|POLYGON|MULTIPOLYGON, srid=4326)` dan
+  mengikat geometri Shapely melalui GeoAlchemy2.
+- Pada **SQLite** ia merender `TEXT` dan menyimpan WKT, mengembalikan objek Shapely ke aplikasi.
+- Respons API selalu mengonversi geometri ke GeoJSON.
 
-Zone boundaries are approximate prototype polygons. The UI displays a `boundary_note` on every
-zone making that explicit. They are **not** official administrative or forecast boundaries.
+Batas zona adalah poligon prototipe yang bersifat perkiraan. UI menampilkan `boundary_note` pada
+setiap zona untuk menegaskan hal tersebut. Batas-batas itu **bukan** batas administratif resmi
+maupun batas prakiraan resmi.
 
-## 4. Migrations
+## 4. Migrasi
 
 ```bash
 cd backend
@@ -215,35 +217,35 @@ python -m alembic upgrade head
 
 `alembic/versions/0001_initial.py`:
 
-1. creates the PostGIS extension on PostgreSQL,
-2. creates all tables from the SQLAlchemy metadata (works for SQLite too),
-3. creates GiST indexes on zone boundaries, device locations, observation locations and satellite
-   footprints on PostgreSQL.
+1. membuat ekstensi PostGIS pada PostgreSQL,
+2. membuat semua tabel dari metadata SQLAlchemy (juga berfungsi untuk SQLite),
+3. membuat index GiST pada batas zona, lokasi perangkat, lokasi observasi dan footprint satelit pada
+   PostgreSQL.
 
-Trade-off: the initial revision uses `metadata.create_all` rather than hand-written `op.create_table`
-calls. It is idempotent and dialect-aware; future schema changes should be generated with
-`alembic revision --autogenerate`. The PostgreSQL/PostGIS branch has **not** been executed against a
-live PostgreSQL instance in this environment — verify during deployment.
+Trade-off: revisi awal menggunakan `metadata.create_all` alih-alih panggilan `op.create_table` yang
+ditulis tangan. Revisi itu idempoten dan sadar dialek; perubahan skema di masa depan sebaiknya
+dihasilkan dengan `alembic revision --autogenerate`. Cabang PostgreSQL/PostGIS **belum** dieksekusi
+terhadap instance PostgreSQL yang aktif di lingkungan ini — verifikasi saat penerapan.
 
-## 5. Seed data
+## 5. Data seed
 
-`app/db/seed.py` runs on API startup if no zones exist (also callable via
+`app/db/seed.py` berjalan saat startup API jika belum ada zona (juga dapat dipanggil melalui
 `python scripts/bootstrap_demo.py`):
 
-- 3 zones: `JKT-BAY` (Jakarta Bay), `SMR-UTC` (Semarang Coast), `MKS-STR` (Makassar Strait), each
-  with an approximate bounding `MULTIPOLYGON` and one virtual buoy.
-- 8 hours of synthetic 5-minute telemetry per buoy, deterministic seed selected so the baseline
-  window contains no injected spike.
-- Model registry row from the committed artifact metrics and reference data-source rows.
+- 3 zona: `JKT-BAY` (Teluk Jakarta), `SMR-UTC` (Pantai Semarang), `MKS-STR` (Selat Makassar),
+  masing-masing dengan `MULTIPOLYGON` pembatas perkiraan dan satu buoy virtual.
+- 8 jam telemetri sintetis berinterval 5 menit per buoy, seed deterministik dipilih agar jendela
+  baseline tidak memuat lonjakan yang disuntikkan.
+- Baris registry model dari metrik artefak yang di-commit serta baris sumber data referensi.
 
-Idempotent: re-running does not duplicate zones. To regenerate the demo database:
+Idempoten: menjalankan ulang tidak menggandakan zona. Untuk meregenerasi basis data demo:
 
 ```bash
 rm -f data/cews.db data/cews.db-wal data/cews.db-shm
 python backend/scripts/bootstrap_demo.py
 ```
 
-## 6. Backup / export
+## 6. Backup / ekspor
 
 ```bash
 # PostgreSQL
@@ -253,5 +255,5 @@ pg_dump "$DATABASE_URL" > cews_backup_$(date +%F).sql
 python -c "import sqlite3,shutil;src=sqlite3.connect('data/cews.db');dst=sqlite3.connect('data/cews_backup.db');src.backup(dst)"
 ```
 
-Cached quicklooks live in `data/satellite/` and are not stored in the database; back them up with the
-database if the demo must keep its imagery.
+Quicklook yang di-cache berada di `data/satellite/` dan tidak disimpan di basis data; cadangkan
+bersamaan dengan basis data jika demo harus mempertahankan citranya.

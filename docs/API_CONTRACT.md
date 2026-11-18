@@ -1,47 +1,47 @@
-# API contract
+# Kontrak API
 
 - Base path: `/api/v1`
-- Content type: `application/json`
-- Timestamps: UTC ISO 8601 (`2026-11-18T03:00:00Z`)
-- Interactive docs: `GET /docs` (Swagger UI), `GET /redoc`, `GET /api/v1/openapi.json`
-- Auth: `X-API-Key` header for privileged operations only
-- Idempotency: `idempotency_key` in the payload or a derived `buoy:observed_at:version` key
-- Rate limit: configurable sliding window on ingestion (default 240/min per client process);
-  responses use `429` with `Retry-After`
+- Tipe konten: `application/json`
+- Timestamp: UTC ISO 8601 (`2026-11-18T03:00:00Z`)
+- Dokumentasi interaktif: `GET /docs` (Swagger UI), `GET /redoc`, `GET /api/v1/openapi.json`
+- Autentikasi: header `X-API-Key` hanya untuk operasi istimewa
+- Idempotensi: `idempotency_key` di dalam payload atau kunci turunan `buoy:observed_at:version`
+- Rate limit: sliding window yang dapat dikonfigurasi pada ingesti (default 240/menit per proses klien);
+  response memakai `429` dengan `Retry-After`
 
-## 1. Endpoint summary
+## 1. Ringkasan endpoint
 
-| Method | Endpoint | Auth | Purpose |
+| Metode | Endpoint | Autentikasi | Tujuan |
 | --- | --- | --- | --- |
-| POST | `/ingestion/buoy` | key + rate limit | Ingest one buoy observation |
-| POST | `/simulator/scenarios` | key | Start a manual burst or automatic feed |
-| GET | `/simulator/jobs/{job_id}` | public | Simulation job status |
-| GET | `/simulator/status` | public | Automatic simulator state |
-| POST | `/simulator/tick` | key | Force one automatic tick |
-| POST | `/simulator/stop` | key | Stop the automatic feed |
-| GET | `/buoy/latest` | public | Latest valid observation per buoy |
-| GET | `/buoy/history` | public | Paginated, filtered history |
-| GET | `/buoy/{observation_id}` | public | Single stored observation |
-| GET | `/coastal/zones` | public | Zones, boundaries, devices |
-| GET | `/coastal/zones/{zone_code}` | public | Zone detail |
-| POST | `/satellite/sync` | key | Queue metadata + quicklook acquisition |
-| GET | `/satellite/jobs/{job_id}` | public | Satellite job status |
-| GET | `/satellite/datasets` | public | Stored dataset metadata |
-| GET | `/satellite/datasets/{id}` | public | Dataset detail |
-| GET | `/satellite/datasets/{id}/thumbnail` | public | Cached quicklook image |
-| GET | `/satellite/provider` | public | Provider description + cache summary |
-| POST | `/analytics/run` | key | Screen a zone window |
-| GET | `/analytics/latest` | public | Latest analysis |
-| GET | `/analytics/history` | public | Recent analyses |
-| GET | `/analytics/model-info` | public | Model card metrics |
-| GET | `/analytics/{analysis_id}` | public | Analysis detail |
-| GET | `/alerts` | public | Alert list with filters and counts |
-| PATCH | `/alerts/{alert_id}` | key | Acknowledge / resolve / reopen |
-| GET | `/system/health` | public | DB, model, simulator, provider health |
-| GET | `/system/data-sources` | public | Source freshness table |
-| GET | `/system/overview` | public | Aggregated dashboard payload |
+| POST | `/ingestion/buoy` | kunci + rate limit | Ingesti satu observasi buoy |
+| POST | `/simulator/scenarios` | kunci | Mulai burst manual atau feed otomatis |
+| GET | `/simulator/jobs/{job_id}` | publik | Status job simulasi |
+| GET | `/simulator/status` | publik | Status simulator otomatis |
+| POST | `/simulator/tick` | kunci | Paksa satu tick otomatis |
+| POST | `/simulator/stop` | kunci | Hentikan feed otomatis |
+| GET | `/buoy/latest` | publik | Observasi valid terbaru per buoy |
+| GET | `/buoy/history` | publik | Riwayat terpaginasi dengan filter |
+| GET | `/buoy/{observation_id}` | publik | Satu observasi tersimpan |
+| GET | `/coastal/zones` | publik | Zona, batas, perangkat |
+| GET | `/coastal/zones/{zone_code}` | publik | Detail zona |
+| POST | `/satellite/sync` | kunci | Antrekan metadata + pengambilan quicklook |
+| GET | `/satellite/jobs/{job_id}` | publik | Status job satelit |
+| GET | `/satellite/datasets` | publik | Metadata dataset tersimpan |
+| GET | `/satellite/datasets/{id}` | publik | Detail dataset |
+| GET | `/satellite/datasets/{id}/thumbnail` | publik | Gambar quicklook yang di-cache |
+| GET | `/satellite/provider` | publik | Deskripsi penyedia + ringkasan cache |
+| POST | `/analytics/run` | kunci | Skrining jendela zona |
+| GET | `/analytics/latest` | publik | Analisis terbaru |
+| GET | `/analytics/history` | publik | Analisis terkini |
+| GET | `/analytics/model-info` | publik | Metrik model card |
+| GET | `/analytics/{analysis_id}` | publik | Detail analisis |
+| GET | `/alerts` | publik | Daftar peringatan dengan filter dan jumlah |
+| PATCH | `/alerts/{alert_id}` | kunci | Akui / selesaikan / buka kembali |
+| GET | `/system/health` | publik | Kesehatan DB, model, simulator, penyedia |
+| GET | `/system/data-sources` | publik | Tabel kesegaran sumber |
+| GET | `/system/overview` | publik | Payload dasbor teragregasi |
 
-## 2. Ingestion
+## 2. Ingesti
 
 `POST /ingestion/buoy`
 
@@ -67,9 +67,9 @@
 }
 ```
 
-Responses:
+Response:
 
-- `201` new row:
+- `201` baris baru:
   ```json
   {
     "accepted": true,
@@ -79,23 +79,23 @@ Responses:
     "errors": []
   }
   ```
-- `200` idempotent replay: `{ "accepted": false, "duplicate": true, "validation_status": "valid", "observation": {...} }`
-- `201` implausible row (kept for audit): `{ "accepted": false, "validation_status": "invalid", "errors": [{ "field": "parameters.wave_height_m", "code": "out_of_range", "message": "…" }] }`
-- `404` unknown buoy · `401` missing/invalid key · `422` malformed payload · `429` rate limited
+- `200` replay idempoten: `{ "accepted": false, "duplicate": true, "validation_status": "valid", "observation": {...} }`
+- `201` baris tidak masuk akal (disimpan untuk audit): `{ "accepted": false, "validation_status": "invalid", "errors": [{ "field": "parameters.wave_height_m", "code": "out_of_range", "message": "…" }] }`
+- `404` buoy tidak dikenal · `401` kunci tidak ada/tidak valid · `422` payload tidak sesuai format · `429` terkena rate limit
 
-Validation rules:
+Aturan validasi:
 
-| Rule | Behaviour |
+| Aturan | Perilaku |
 | --- | --- |
-| Required fields present | 422 from Pydantic |
-| Timezone-aware timestamp | 422 from Pydantic |
-| Future > 5 min / older than 30 days | Row stored `invalid` |
-| Wave height 0–20 m, period 1–30 s, wind 0–75 m/s, SST −2–40 °C, pressure 870–1085 hPa | Row stored `invalid` |
-| Direction 0–360° | Row stored `invalid`; 360 normalised to 0 |
-| Position ≤ 50 km from buoy and inside zone envelope (+1°) | Row stored `invalid` |
-| `source_type=observed` on a simulated device | Row stored `invalid` (`provenance_mismatch`) |
-| Simulated row without a simulation reference | Row stored `invalid` |
-| Duplicate key or duplicate `(buoy, observed_at)` | `200`, no new row |
+| Field wajib tersedia | 422 dari Pydantic |
+| Timestamp dengan zona waktu | 422 dari Pydantic |
+| Masa depan > 5 menit / lebih lama dari 30 hari | Baris disimpan `invalid` |
+| Tinggi gelombang 0–20 m, periode 1–30 s, angin 0–75 m/s, SST −2–40 °C, tekanan 870–1085 hPa | Baris disimpan `invalid` |
+| Arah 0–360° | Baris disimpan `invalid`; 360 dinormalisasi menjadi 0 |
+| Posisi ≤ 50 km dari buoy dan di dalam envelope zona (+1°) | Baris disimpan `invalid` |
+| `source_type=observed` pada perangkat simulasi | Baris disimpan `invalid` (`provenance_mismatch`) |
+| Baris simulasi tanpa referensi simulasi | Baris disimpan `invalid` |
+| Kunci duplikat atau `(buoy, observed_at)` duplikat | `200`, tidak ada baris baru |
 
 ## 3. Simulator
 
@@ -113,12 +113,12 @@ Validation rules:
 }
 ```
 
-`"mode": "auto"` starts the interval loop instead (one reading per interval, all simulated buoys of
-the configured scope). `GET /simulator/status` reports `running`, `scenario`, `interval_seconds`,
+`"mode": "auto"` memulai loop interval (satu pembacaan per interval, semua buoy simulasi pada
+cakupan terkonfigurasi). `GET /simulator/status` melaporkan `running`, `scenario`, `interval_seconds`,
 `zone_code`, `last_tick_at`, `observations_generated`, `last_error`.
 
-Manual bursts are replay windows: earlier **synthetic** readings inside the window are replaced, and
-the replaced count is recorded in the job notes. This keeps the buoy timeline coherent.
+Burst manual adalah jendela replay: pembacaan **sintetis** sebelumnya di dalam jendela diganti, dan
+jumlah yang diganti dicatat pada catatan job. Ini menjaga linimasa buoy tetap koheren.
 
 `GET /simulator/jobs/{job_id}`:
 
@@ -140,9 +140,9 @@ the replaced count is recorded in the job notes. This keeps the buoy timeline co
 }
 ```
 
-## 4. Buoy reads
+## 4. Pembacaan buoy
 
-`GET /buoy/latest?zone_code=JKT-BAY` → latest valid row per device:
+`GET /buoy/latest?zone_code=JKT-BAY` → baris valid terbaru per perangkat:
 
 ```json
 {
@@ -171,11 +171,11 @@ the replaced count is recorded in the job notes. This keeps the buoy timeline co
 }
 ```
 
-`GET /buoy/history` query parameters: `zone_code`, `buoy_code`, `observed_from`, `observed_to`,
+Parameter query `GET /buoy/history`: `zone_code`, `buoy_code`, `observed_from`, `observed_to`,
 `source_type`, `validation_status`, `page` (≥1), `page_size` (1–500, default 100). Response:
 `{ items, page, page_size, total, has_next }`.
 
-## 5. Satellite
+## 5. Satelit
 
 `POST /satellite/sync` → `202`
 
@@ -191,10 +191,10 @@ the replaced count is recorded in the job notes. This keeps the buoy timeline co
 }
 ```
 
-Job status values: `queued`, `running`, `completed`, `completed_with_fallback`, `failed`.
-`completed_with_fallback` means the provider failed but cached datasets exist (`used_cache: true`).
+Nilai status job: `queued`, `running`, `completed`, `completed_with_fallback`, `failed`.
+`completed_with_fallback` berarti penyedia gagal tetapi dataset cache tersedia (`used_cache: true`).
 
-Dataset object (abridged):
+Objek dataset (diringkas):
 
 ```json
 {
@@ -218,10 +218,10 @@ Dataset object (abridged):
 }
 ```
 
-`thumbnail_url` is relative to the API base. Thumbnails are cached JPEG/PNG files served with
-`Cache-Control: public, max-age=86400`.
+`thumbnail_url` bersifat relatif terhadap base API. Thumbnail adalah berkas JPEG/PNG yang di-cache dan
+disajikan dengan `Cache-Control: public, max-age=86400`.
 
-## 6. Analytics
+## 6. Analitik
 
 `POST /analytics/run`
 
@@ -269,9 +269,9 @@ Dataset object (abridged):
 }
 ```
 
-Errors: `404` unknown zone · `422` fewer than 3 valid observations · `503` model artifact missing.
+Error: `404` zona tidak dikenal · `422` kurang dari 3 observasi valid · `503` artefak model tidak ditemukan.
 
-## 7. Alerts
+## 7. Peringatan
 
 `GET /alerts?status=open&severity=high&zone_code=JKT-BAY&limit=50&offset=0`
 
@@ -307,11 +307,11 @@ Errors: `404` unknown zone · `422` fewer than 3 valid observations · `503` mod
 { "status": "acknowledged", "actor": "demo-operator", "note": "Reviewed on the console." }
 ```
 
-Allowed transitions: `open → acknowledged`, `open → resolved`, `acknowledged → resolved`,
-`acknowledged → open`. `resolved → open` returns `409`. Notes are appended to the alert description
-with the actor label.
+Transisi yang diizinkan: `open → acknowledged`, `open → resolved`, `acknowledged → resolved`,
+`acknowledged → open`. `resolved → open` mengembalikan `409`. Catatan ditambahkan ke deskripsi peringatan
+dengan label aktor.
 
-## 8. System
+## 8. Sistem
 
 `GET /system/health`:
 
@@ -330,11 +330,11 @@ with the actor label.
 }
 ```
 
-`GET /system/data-sources` returns `{ items: [...], generated_at }`; each item includes
+`GET /system/data-sources` mengembalikan `{ items: [...], generated_at }`; setiap item mencakup
 `source_name`, `source_type`, `status`, `last_observed_at`, `last_received_at`, `last_success_at`,
 `last_error`, `age_seconds`, `metadata`.
 
-## 9. Error shape
+## 9. Bentuk error
 
 ```json
 { "error": "unprocessable_entity", "detail": "Request payload failed validation.", "issues": [{ "location": "body.observed_at", "message": "timestamp must include a timezone offset" }] }
@@ -352,7 +352,7 @@ with the actor label.
 | 500 | `internal_server_error` |
 | 503 | `service_unavailable` |
 
-## 10. Curl examples
+## 10. Contoh curl
 
 ```bash
 # Public read
