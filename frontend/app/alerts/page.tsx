@@ -84,13 +84,13 @@ export default function AlertsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Manajemen peringatan"
+        eyebrow="Peringatan warga"
         title={
           <>
-            Peringatan dengan <span className="text-signal">jejak audit.</span>
+            Pemberitahuan <span className="text-signal">kondisi pesisir.</span>
           </>
         }
-        description="Setiap peringatan tertaut ke analisis yang menghasilkannya, membawa tingkat keparahan dan stempel waktu, serta melewati siklus hidup yang eksplisit dan tercatat."
+        description="Daftar pemberitahuan aktif per pantai, lengkap dengan waktu kejadian dan tingkat keparahannya. Setiap pemberitahuan tertaut ke analisis yang menghasilkannya, sehingga bisa ditelusuri."
         right={
           <div className="flex flex-wrap items-center gap-2">
             <StatusPill tone="bad">{counts.open ?? 0} terbuka</StatusPill>
