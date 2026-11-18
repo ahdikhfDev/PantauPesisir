@@ -1,9 +1,12 @@
 "use client";
 
 import {
+  ArrowLeft,
   BellRing,
+  BookOpen,
   BrainCircuit,
   Database,
+  KeyRound,
   LayoutDashboard,
   LifeBuoy,
   Menu,
@@ -18,34 +21,29 @@ import { useEffect, useState } from "react";
 
 import type { LucideIcon } from "lucide-react";
 
-import { cn, formatShortUtc } from "@/lib/format";
+import { cn, formatShortWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { SystemHealth } from "@/lib/types";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
-const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
-  {
-    label: "Warga",
-    items: [
-      { href: "/", label: "Cek Kondisi", icon: LifeBuoy },
-      { href: "/ringkasan", label: "Ringkasan AI", icon: Sparkles },
-      { href: "/alerts", label: "Peringatan warga", icon: BellRing },
-    ],
-  },
-  {
-    label: "Konsol",
-    items: [
-      { href: "/konsol", label: "Ringkasan teknis", icon: LayoutDashboard },
-      { href: "/ocean", label: "Pemantauan laut", icon: Waves },
-      { href: "/satellite", label: "Satelit", icon: Satellite },
-      { href: "/ai", label: "Risiko AI teknis", icon: BrainCircuit },
-      { href: "/sources", label: "Sumber data", icon: Database },
-    ],
-  },
+const WARGA_NAV: NavItem[] = [
+  { href: "/", label: "Cek Kondisi", icon: LifeBuoy },
+  { href: "/ringkasan", label: "Kabar Laut", icon: Sparkles },
+  { href: "/belajar", label: "Belajar", icon: BookOpen },
+  { href: "/alerts", label: "Peringatan warga", icon: BellRing },
 ];
 
-const NAV: NavItem[] = NAV_GROUPS.flatMap((group) => group.items);
+const KONSOL_NAV: NavItem[] = [
+  { href: "/konsol", label: "Ringkasan teknis", icon: LayoutDashboard },
+  { href: "/ocean", label: "Pemantauan laut", icon: Waves },
+  { href: "/satellite", label: "Satelit", icon: Satellite },
+  { href: "/ai", label: "Risiko AI teknis", icon: BrainCircuit },
+  { href: "/sources", label: "Sumber data", icon: Database },
+];
+
+const NAV: NavItem[] = [...WARGA_NAV, ...KONSOL_NAV];
+const CONSOLE_PREFIXES = ["/konsol", "/ocean", "/satellite", "/ai", "/sources"];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -65,7 +63,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           minute: "2-digit",
           second: "2-digit",
           hour12: false,
-          timeZone: "UTC",
+          timeZone: "Asia/Jakarta",
         }).format(new Date()),
       );
     };
@@ -77,6 +75,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const current = NAV.find((item) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
   );
+  const isConsole = CONSOLE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  const visibleNav = isConsole ? KONSOL_NAV : WARGA_NAV;
   const healthy = health.data?.status === "ok";
 
   return (
@@ -124,39 +126,56 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="border-t border-white/[0.07] px-2 pt-5">
-          {NAV_GROUPS.map((group, index) => (
-            <div key={group.label} className={index ? "mt-5" : undefined}>
-              <p className="px-2 text-[10px] font-medium text-white/35">{group.label}</p>
-              <nav className="mt-2 space-y-0.5">
-                {group.items.map((item) => {
-                  const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
-                        active
-                          ? "bg-white/[0.07] text-white"
-                          : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
-                      )}
-                    >
-                      {active ? (
-                        <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
-                      ) : null}
-                      <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
-                      <span className="truncate">{item.label}</span>
-                      {item.href === "/alerts" ? (
-                        <span className="ml-auto font-mono text-[10px] text-white/35">
-                          {health.data?.counts.alerts_open ?? 0}
-                        </span>
-                      ) : null}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          ))}
+          <p className="px-2 text-[10px] font-medium text-white/35">
+            {isConsole ? "Konsol" : "Warga"}
+          </p>
+          <nav className="mt-2 space-y-0.5">
+            {visibleNav.map((item) => {
+              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
+                    active
+                      ? "bg-white/[0.07] text-white"
+                      : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
+                  )}
+                >
+                  {active ? (
+                    <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
+                  ) : null}
+                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
+                  <span className="truncate">{item.label}</span>
+                  {item.href === "/alerts" ? (
+                    <span className="ml-auto font-mono text-[10px] text-white/35">
+                      {health.data?.counts.alerts_open ?? 0}
+                    </span>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {isConsole ? (
+            <Link
+              href="/"
+              className="mt-4 flex items-center gap-2 rounded-[8px] px-2.5 py-2 text-[10.5px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Kembali ke halaman warga
+            </Link>
+          ) : (
+            <Link
+              href="/konsol"
+              className="mt-4 flex items-center justify-between gap-2 rounded-[8px] border border-white/10 px-2.5 py-2 text-[10.5px] font-medium text-white/55 transition-colors hover:border-white/20 hover:text-white"
+            >
+              <span className="flex items-center gap-2">
+                <KeyRound className="h-3.5 w-3.5" aria-hidden /> Mode Admin
+              </span>
+              <span className="text-[9px] text-white/30">demo</span>
+            </Link>
+          )}
         </div>
 
         <div className="mt-6 px-4">
@@ -222,7 +241,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
                 Umpan langsung
               </span>
-              <span className="font-mono text-[10.5px] text-muted">{clock} UTC</span>
+              <span className="font-mono text-[10.5px] text-muted">{clock} WIB</span>
             </div>
           </div>
         </header>
@@ -237,7 +256,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {health.data ? (
             <p className="mt-1 font-mono text-[9.5px] text-muted/80">
               API v{health.data.version} · {health.data.counts.buoy_observations} pembacaan · ref{" "}
-              {formatShortUtc(health.data.generated_at)} UTC
+              {formatShortWib(health.data.generated_at)} WIB
             </p>
           ) : null}
         </footer>

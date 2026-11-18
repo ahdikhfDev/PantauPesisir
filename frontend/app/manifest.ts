@@ -38,9 +38,9 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       { name: "Cek Kondisi", short_name: "Cek", url: "/" },
+      { name: "Kabar Laut", short_name: "Kabar", url: "/ringkasan" },
+      { name: "Belajar", short_name: "Belajar", url: "/belajar" },
       { name: "Peringatan warga", short_name: "Peringatan", url: "/alerts" },
-      { name: "Ringkasan teknis", short_name: "Konsol", url: "/konsol" },
-      { name: "Pemantauan laut", short_name: "Laut", url: "/ocean" },
     ],
   };
 }

@@ -16,10 +16,11 @@ from datetime import datetime, timedelta, timezone
 from math import exp, pi, sin, sqrt
 
 import numpy as np
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from app.core.config import settings
 from app.db.session import SessionLocal
+from app.models.alert import Alert
 from app.models.observation import BuoyObservation, Simulation
 from app.models.zone import BuoyDevice, CoastalZone
 
@@ -432,8 +433,14 @@ def run_manual_scenario(
     buoy_code: str | None = None,
     count: int = 12,
     interval_seconds: int = 60,
+    resolve_alerts: bool = False,
 ) -> None:
-    """Background worker for a manual scenario run (deterministic, persisted)."""
+    """Background worker for a manual scenario run (deterministic, persisted).
+
+    ``resolve_alerts`` closes open alerts for the zone once the replay lands. A replay
+    replaces the readings inside its window, so earlier alerts describe data that no
+    longer exists. Scheduled refreshes leave it off so alerts keep their own lifecycle.
+    """
     from app.schemas.buoy import BuoyObservationIn
     from app.services.ingestion import ingest_observation
 
@@ -524,10 +531,27 @@ def run_manual_scenario(
                     if outcome.observation is not None and not outcome.duplicate:
                         written += 1
             simulation.observations_count = written
+            resolved = 0
+            if resolve_alerts:
+                resolved = (
+                    db.execute(
+                        update(Alert)
+                        .where(
+                            Alert.zone_id == zone.id,
+                            Alert.status.in_(("open", "acknowledged")),
+                        )
+                        .values(
+                            status="resolved",
+                            resolved_at=datetime.now(timezone.utc).replace(microsecond=0),
+                        )
+                    ).rowcount
+                    or 0
+                )
             simulation.status = "completed"
             simulation.notes = (simulation.notes or "") + (
                 f" | menghasilkan {written} observasi pada {len(buoys)} buoy; "
                 f"menggantikan {replaced} pembacaan sebelumnya di dalam jendela replay."
+                + (f" | menutup {resolved} pemberitahuan lama untuk zona ini." if resolved else "")
             )
         except Exception as exc:  # noqa: BLE001 - job status must reflect failure
             db.rollback()

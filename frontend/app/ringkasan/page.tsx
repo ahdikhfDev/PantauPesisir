@@ -13,7 +13,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ACTIVITIES, type ActivityKey } from "@/lib/coastal";
 import { cn, fixed, formatAge } from "@/lib/format";
@@ -67,17 +67,32 @@ const LEVEL_STYLE = {
 export default function RingkasanPage() {
   const [zone, setZone] = useState("JKT-BAY");
   const [activity, setActivity] = useState<ActivityKey>("boat");
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
   const [data, setData] = useState<Ringkasan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const forceNext = useRef(false);
+  const loaded = useRef(false);
+
+  const reload = (force = false) => {
+    if (force) forceNext.current = true;
+    setReloadKey((value) => value + 1);
+  };
+
+  // Data buoy bisa berubah tanpa interaksi; ringkasan ikut menyegarkan diri.
+  useEffect(() => {
+    const id = window.setInterval(() => setReloadKey((value) => value + 1), 60000);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
-    setLoading(true);
+    const force = forceNext.current;
+    forceNext.current = false;
+    if (!loaded.current) setLoading(true);
     setError(null);
-    const refresh = refreshKey > 0 ? "&refresh=1" : "";
+    const refresh = force ? "&refresh=1" : "";
     fetch(`/api/ringkasan?zone=${zone}&activity=${activity}${refresh}`, {
       signal: controller.signal,
       cache: "no-store",
@@ -87,7 +102,10 @@ export default function RingkasanPage() {
         return (await response.json()) as Ringkasan;
       })
       .then((payload) => {
-        if (active) setData(payload);
+        if (active) {
+          setData(payload);
+          loaded.current = true;
+        }
       })
       .catch((err: unknown) => {
         if (!active || (err as Error).name === "AbortError") return;
@@ -100,7 +118,7 @@ export default function RingkasanPage() {
       active = false;
       controller.abort();
     };
-  }, [zone, activity, refreshKey]);
+  }, [zone, activity, reloadKey]);
 
   const level = data?.level ?? "tenang";
   const style = LEVEL_STYLE[level];
@@ -111,13 +129,12 @@ export default function RingkasanPage() {
     <>
       <section className="mb-6 flex flex-col gap-4 border-b border-line pb-5">
         <div className="max-w-3xl">
-          <span className="eyebrow">Ringkasan AI</span>
+          <span className="eyebrow">Kabar Laut</span>
           <h1 className="font-display mt-2 text-[26px] font-semibold leading-[1.06] tracking-[-0.04em] sm:text-[32px]">
-            Kondisi laut, <span className="text-sea">dalam bahasa manusia.</span>
+            Kabar laut <span className="text-sea">hari ini.</span>
           </h1>
           <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted">
-            Data buoy dan hasil analisis dirangkum menjadi dua kalimat yang mudah dibaca. Status dan angka
-            tetap dihitung sistem; AI hanya membantu menjelaskannya.
+            Ombak, angin, dan peringatan — dijelaskan tanpa istilah rumit.
           </p>
         </div>
       </section>
@@ -177,11 +194,6 @@ export default function RingkasanPage() {
               </div>
             </div>
             <span className="flex shrink-0 items-center gap-2">
-              {data ? (
-                <span className="rounded-full bg-white/70 px-2.5 py-1 text-[9.5px] font-medium text-muted">
-                  {data.source === "ai" ? "Dijelaskan AI" : "Ringkasan otomatis"}
-                </span>
-              ) : null}
               <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-[10.5px] text-muted">
                 <Clock className="h-3 w-3" aria-hidden />
                 {data?.metrics.age_seconds != null
@@ -246,13 +258,12 @@ export default function RingkasanPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/70 bg-white/45 px-5 py-3">
           <p className="max-w-md text-[9.5px] leading-relaxed text-muted">
-            Ringkasan mengikuti data terakhir dan aturan batas aman per aktivitas. Untuk prakiraan resmi,
-            cek juga BMKG.
+            Untuk prakiraan resmi, cek juga BMKG sebelum berangkat.
           </p>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setRefreshKey((value) => value + 1)}
+              onClick={() => reload(true)}
               disabled={loading}
               className="btn btn-ghost btn-sm"
             >
@@ -268,12 +279,11 @@ export default function RingkasanPage() {
 
       <section className="mt-5 grid gap-4 lg:grid-cols-[1.35fr_1fr]">
         <div className="card p-5">
-          <h2 className="text-[14px] font-semibold">Bagaimana ringkasan ini dibuat?</h2>
+          <h2 className="text-[14px] font-semibold">Dari mana angka ini?</h2>
           <ol className="mt-3 space-y-3">
             {[
-              ["Data buoy", "Ombak, angin, periode, dan tekanan dibaca dari buoy lalu diperiksa kewajarannya."],
-              ["Analisis sistem", "Aturan batas aman per aktivitas dan peringatan aktif menentukan status."],
-              ["Dirangkum", "AI menulis ulang hasilnya menjadi dua kalimat; angkanya tidak diubah."],
+              ["Data buoy", "Ombak, angin, periode, dan tekanan dibaca dari perangkat di laut."],
+              ["Analisis sistem", "Batas aman per aktivitas dan peringatan aktif menentukan statusnya."],
             ].map(([title, copy], index) => (
               <li key={title} className="flex gap-3">
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-sea-soft text-[10px] font-semibold text-sea">

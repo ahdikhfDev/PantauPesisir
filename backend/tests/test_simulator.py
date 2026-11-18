@@ -45,6 +45,50 @@ def test_manual_scenario_generates_coherent_labeled_series(client, auth):
     assert len({item["observed_at"] for item in generated}) == len(generated)
 
 
+def test_manual_replay_closes_alerts_it_supersedes(client, auth):
+    from sqlalchemy import select
+
+    from app.db.session import SessionLocal
+    from app.models.alert import Alert
+    from app.models.zone import CoastalZone
+
+    with SessionLocal() as db:
+        zone = db.scalar(select(CoastalZone).where(CoastalZone.zone_code == "JKT-BAY"))
+        alert = Alert(
+            zone_id=zone.id,
+            severity="high",
+            title="Kondisi pesisir risiko tinggi — Teluk Jakarta",
+            description="Pemberitahuan uji yang merujuk jendela sebelum replay.",
+            status="open",
+            source="analytics",
+        )
+        db.add(alert)
+        db.commit()
+        alert_id = str(alert.id)
+
+    response = client.post(
+        f"{API}/simulator/scenarios",
+        headers=auth,
+        json={
+            "zone_code": "JKT-BAY",
+            "scenario": "normal",
+            "mode": "manual",
+            "interval_seconds": 300,
+            "observations": 4,
+            "random_seed": 99,
+        },
+    )
+    assert response.status_code == 202, response.text
+    final = wait_for_simulation(client, auth, response.json()["job"]["id"])
+    assert final["status"] == "completed", final
+    assert "menutup" in (final["notes"] or "")
+
+    listed = client.get(
+        f"{API}/alerts", params={"status": "open", "zone_code": "JKT-BAY"}
+    ).json()
+    assert alert_id not in {item["id"] for item in listed["items"]}
+
+
 def test_generator_is_deterministic_and_physically_bounded():
     end_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
 

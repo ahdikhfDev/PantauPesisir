@@ -16,7 +16,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  ApiKeyField,
   CaveatNote,
   EmptyState,
   ErrorState,
@@ -27,10 +26,9 @@ import {
   SourceBadge,
   StatusPill,
 } from "@/components/ui";
-import { ApiError, apiSend } from "@/lib/api";
-import { cn, fixed, formatShortUtc, formatUtc, percent } from "@/lib/format";
+import { ApiError, DEMO_API_KEY, apiSend } from "@/lib/api";
+import { cn, fixed, formatShortWib, formatWib, percent } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
-import { useApiKey } from "@/lib/use-api-key";
 import type { ModelInfo, Prediction, Zone } from "@/lib/types";
 
 const WINDOWS = [30, 60, 120, 240];
@@ -50,7 +48,7 @@ interface MetricsShape {
 }
 
 export default function AiPage() {
-  const [apiKey, setApiKey] = useApiKey();
+  const apiKey = DEMO_API_KEY;
   const [zoneCode, setZoneCode] = useState("JKT-BAY");
   const [windowMinutes, setWindowMinutes] = useState(60);
   const [createAlert, setCreateAlert] = useState(true);
@@ -302,7 +300,9 @@ export default function AiPage() {
               </span>
             </label>
 
-            <ApiKeyField value={apiKey} onChange={setApiKey} className="mt-3" />
+            <p className="mt-4 flex items-center gap-1.5 text-[10px] text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — analisis dapat dijalankan.
+            </p>
 
             <button type="button" onClick={run} disabled={busy} className="btn btn-primary mt-4 w-full">
               {busy ? <InlineSpinner label="Memberi skor jendela…" /> : <Play className="h-4 w-4" aria-hidden />}
@@ -351,7 +351,7 @@ export default function AiPage() {
                 ) : null}
               </div>
               <span className="font-mono text-[9.5px] text-muted">
-                analisis {prediction.id.slice(0, 8)} · {formatUtc(prediction.created_at)}
+                analisis {prediction.id.slice(0, 8)} · {formatWib(prediction.created_at)}
               </span>
             </div>
 
@@ -413,8 +413,8 @@ export default function AiPage() {
 
                 <dl className="mt-5 divide-y divide-line border-t border-line pt-2">
                   <KeyValue label="Versi model" value={<span className="font-mono text-[10px]">{prediction.model_version}</span>} />
-                  <KeyValue label="Awal jendela" value={formatShortUtc(prediction.observation_window_start)} />
-                  <KeyValue label="Akhir jendela" value={formatShortUtc(prediction.observation_window_end)} />
+                  <KeyValue label="Awal jendela" value={formatShortWib(prediction.observation_window_start)} />
+                  <KeyValue label="Akhir jendela" value={formatShortWib(prediction.observation_window_end)} />
                   <KeyValue label="Observasi" value={prediction.input_observation_count} />
                   <KeyValue
                     label="Sampling median"
@@ -555,7 +555,7 @@ export default function AiPage() {
                   <span className="chip">{item.zone_code}</span>
                   <RiskBadge level={item.risk_level} />
                 </div>
-                <p className="mt-3 text-[12px] font-semibold">{formatShortUtc(item.created_at)} UTC</p>
+                <p className="mt-3 text-[12px] font-semibold">{formatShortWib(item.created_at)} WIB</p>
                 <div className="mt-2 flex items-center justify-between text-[10.5px] text-muted">
                   <span className="metric">anomali {fixed(item.anomaly_score, 2)}</span>
                   <span className="metric">risiko {fixed(item.risk_score, 0)}</span>

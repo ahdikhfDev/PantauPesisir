@@ -13,7 +13,7 @@ import {
   SourceBadge,
   StatusPill,
 } from "@/components/ui";
-import { cn, compass, enumLabel, fixed, formatAge, formatShortUtc, formatUtc } from "@/lib/format";
+import { cn, compass, enumLabel, fixed, formatAge, formatShortWib, formatWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { HistoryResponse, LatestResponse, Zone } from "@/lib/types";
 
@@ -158,10 +158,10 @@ export default function OceanPage() {
               {zone?.zone_name ?? zoneCode}
             </span>
             <span className="text-muted">
-              Observasi terakhir <strong className="font-semibold text-ink">{formatUtc(observation?.observed_at)}</strong>
+              Observasi terakhir <strong className="font-semibold text-ink">{formatWib(observation?.observed_at)}</strong>
             </span>
             <span className="text-muted">
-              Diterima <strong className="font-semibold text-ink">{formatUtc(observation?.received_at)}</strong>
+              Diterima <strong className="font-semibold text-ink">{formatWib(observation?.received_at)}</strong>
             </span>
             <span className="text-muted">
               Usia <strong className="font-semibold text-ink">{formatAge(observation?.data_age_seconds)}</strong>
@@ -263,7 +263,7 @@ export default function OceanPage() {
               <table className="w-full min-w-[580px] border-collapse text-left">
                 <thead className="sticky top-0 z-10 bg-paper/95 backdrop-blur">
                   <tr className="text-[10px] font-medium text-muted">
-                    <th className="px-5 py-2.5">Teramati (UTC)</th>
+                    <th className="px-5 py-2.5">Teramati (WIB)</th>
                     <th className="px-3 py-2.5">Tinggi (m)</th>
                     <th className="px-3 py-2.5">Periode (s)</th>
                     <th className="px-3 py-2.5">Angin</th>
@@ -274,7 +274,7 @@ export default function OceanPage() {
                 <tbody>
                   {(history.data?.items ?? []).slice(0, 14).map((item) => (
                     <tr key={item.id} className="table-row text-[12px]">
-                      <td className="px-5 py-3 font-mono text-[11px] text-ink-soft">{formatShortUtc(item.observed_at)}</td>
+                      <td className="px-5 py-3 font-mono text-[11px] text-ink-soft">{formatShortWib(item.observed_at)}</td>
                       <td className="metric px-3 py-3 font-semibold">{fixed(item.parameters.wave_height_m, 2)}</td>
                       <td className="metric px-3 py-3">{fixed(item.parameters.wave_period_s, 1)}</td>
                       <td className="metric px-3 py-3">{fixed(item.parameters.wind_speed_mps, 1)} m/s</td>
@@ -306,9 +306,9 @@ export default function OceanPage() {
             </p>
             <dl className="mt-4 divide-y divide-line">
               <KeyValue label="ID observasi" value={<span className="font-mono text-[10px]">{observation?.id.slice(0, 8) ?? "—"}</span>} />
-              <KeyValue label="Waktu teramati" value={formatUtc(observation?.observed_at)} />
-              <KeyValue label="Waktu diterima" value={formatUtc(observation?.received_at)} />
-              <KeyValue label="Waktu diproses" value={formatUtc(observation?.processed_at)} />
+              <KeyValue label="Waktu teramati" value={formatWib(observation?.observed_at)} />
+              <KeyValue label="Waktu diterima" value={formatWib(observation?.received_at)} />
+              <KeyValue label="Waktu diproses" value={formatWib(observation?.processed_at)} />
               <KeyValue label="Jenis sumber" value={observation?.source_type ?? "—"} />
               <KeyValue label="Sesi" value={<span className="font-mono text-[10px]">{observation?.simulation_id?.slice(0, 8) ?? "—"}</span>} />
               <KeyValue label="Validasi" value={observation?.validation_status ?? "—"} />

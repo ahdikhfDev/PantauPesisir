@@ -6,7 +6,7 @@ import L from "leaflet";
 import { useMemo } from "react";
 import { CircleMarker, GeoJSON, MapContainer, Popup, TileLayer } from "react-leaflet";
 
-import { compass, fixed, formatShortUtc } from "@/lib/format";
+import { compass, fixed, formatShortWib } from "@/lib/format";
 import type { LatestResponse, SatelliteDataset, Zone } from "@/lib/types";
 
 export function ZoneMap({
@@ -111,7 +111,7 @@ export function ZoneMap({
                           </dl>
                         ) : null}
                         {observation ? (
-                          <p className="mt-1.5 text-[9px] text-muted">{formatShortUtc(observation.observed_at)} UTC</p>
+                          <p className="mt-1.5 text-[9px] text-muted">{formatShortWib(observation.observed_at)} WIB</p>
                         ) : null}
                       </div>
                     </Popup>
@@ -140,7 +140,7 @@ export function ZoneMap({
                     <p className="font-semibold">{dataset.collection}</p>
                     <p className="mt-0.5 text-[10px] text-muted">{dataset.product_id}</p>
                     <p className="mt-1 text-[10px]">
-                      Diakuisisi <strong>{formatShortUtc(dataset.acquired_at)} UTC</strong>
+                      Diakuisisi <strong>{formatShortWib(dataset.acquired_at)} WIB</strong>
                     </p>
                     <p className="text-[10px]">Awan {fixed(dataset.cloud_cover_percent, 1)}%</p>
                     <p className="mt-1 text-[9px] leading-snug text-muted">

@@ -2,7 +2,9 @@ export function cn(...values: Array<string | false | null | undefined>): string 
   return values.filter(Boolean).join(" ");
 }
 
-export function formatUtc(value: string | null | undefined): string {
+export const TIME_ZONE = "Asia/Jakarta";
+
+export function formatWib(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -13,12 +15,12 @@ export function formatUtc(value: string | null | undefined): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "UTC",
+    timeZone: TIME_ZONE,
   }).format(date);
-  return `${formatted} UTC`;
+  return `${formatted} WIB`;
 }
 
-export function formatShortUtc(value: string | null | undefined): string {
+export function formatShortWib(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -28,7 +30,7 @@ export function formatShortUtc(value: string | null | undefined): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "UTC",
+    timeZone: TIME_ZONE,
   }).format(date);
 }
 

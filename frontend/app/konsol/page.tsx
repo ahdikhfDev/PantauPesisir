@@ -29,7 +29,7 @@ import {
   SourceBadge,
   StatusPill,
 } from "@/components/ui";
-import { cn, enumLabel, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, enumLabel, fixed, formatAge, formatShortWib, formatWib, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type {
   AlertList,
@@ -243,7 +243,7 @@ export default function OverviewPage() {
             unit="tersimpan"
             note={
               satellite.latest_acquired_at
-                ? `Terbaru ${formatShortUtc(satellite.latest_acquired_at)} UTC`
+                ? `Terbaru ${formatShortWib(satellite.latest_acquired_at)} WIB`
                 : "Belum ada akuisisi tersimpan"
             }
           />
@@ -269,7 +269,7 @@ export default function OverviewPage() {
                 {chartZone === "ALL"
                   ? "Rata-rata semua zona"
                   : zones.find((zone) => zone.zone_code === chartZone)?.zone_name ?? chartZone}{" "}
-                · tinggi gelombang (m) dan angin (m/s) · UTC
+                · tinggi gelombang (m) dan angin (m/s) · WIB
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -419,7 +419,7 @@ export default function OverviewPage() {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <RiskBadge level={prediction.risk_level} />
                   <span className="text-[9.5px] font-medium text-muted">
-                    eksekusi terbaru · {prediction.zone_code} · {formatShortUtc(prediction.created_at)} UTC
+                    eksekusi terbaru · {prediction.zone_code} · {formatShortWib(prediction.created_at)} WIB
                   </span>
                 </div>
 
@@ -556,7 +556,7 @@ export default function OverviewPage() {
                       <div className="flex items-center justify-between gap-3">
                         <SeverityBadge severity={alert.severity} />
                         <span className="font-mono text-[9px] text-muted">
-                          {formatShortUtc(alert.created_at)} UTC
+                          {formatShortWib(alert.created_at)} WIB
                         </span>
                       </div>
                       <p className="mt-1 line-clamp-1 text-[11px] font-medium">{alert.title}</p>
@@ -658,7 +658,7 @@ export default function OverviewPage() {
               [
                 "Pembaruan terakhir",
                 overview.data?.simulator.last_tick_at
-                  ? formatShortUtc(overview.data.simulator.last_tick_at)
+                  ? formatShortWib(overview.data.simulator.last_tick_at)
                   : "—",
               ],
             ].map(([label, value]) => (
@@ -691,7 +691,7 @@ export default function OverviewPage() {
         <SourceBadge kind="simulated" />
         <SourceBadge kind="satellite" />
         <SourceBadge kind="model" />
-        <span className="ml-auto font-mono">diperbarui {formatUtc(overview.data?.generated_at)}</span>
+        <span className="ml-auto font-mono">diperbarui {formatWib(overview.data?.generated_at)}</span>
       </div>
     </>
   );

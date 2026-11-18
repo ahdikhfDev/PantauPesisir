@@ -3,11 +3,11 @@
 import { Activity, CircleStop, Play, Radar, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { ApiKeyField, CaveatNote, InlineSpinner, StatusPill } from "@/components/ui";
-import { ApiError, apiSend } from "@/lib/api";
-import { cn, enumLabel, formatUtc } from "@/lib/format";
+import { CaveatNote, InlineSpinner, StatusPill } from "@/components/ui";
+import { ACTIVITIES } from "@/lib/coastal";
+import { ApiError, DEMO_API_KEY, apiSend } from "@/lib/api";
+import { cn, enumLabel, formatWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
-import { useApiKey } from "@/lib/use-api-key";
 import type { SimulationJob, SimulatorStatus, Zone } from "@/lib/types";
 
 const SCENARIOS = [
@@ -27,7 +27,7 @@ export function SimulatorPanel({
   onZoneChange: (zoneCode: string) => void;
   onCompleted: () => void;
 }) {
-  const [apiKey, setApiKey] = useApiKey();
+  const apiKey = DEMO_API_KEY;
   const [scenario, setScenario] = useState<"normal" | "warning" | "extreme">("warning");
   const [mode, setMode] = useState<"manual" | "auto">("manual");
   const [interval, setIntervalSeconds] = useState(300);
@@ -52,7 +52,19 @@ export function SimulatorPanel({
             ? `${job.data.observations_count} observasi tersimpan untuk ${job.data.zone_code}.`
             : `Batch gagal: ${job.data.notes ?? "lihat log server"}.`,
         );
-        if (job.data.status === "completed") onCompleted();
+        if (job.data.status === "completed") {
+          onCompleted();
+          // Panaskan ringkasan warga untuk zona ini supaya Kabar Laut langsung siap
+          // dibuka setelah operator mengirim batch.
+          const zoneCode = job.data.zone_code;
+          if (zoneCode) {
+            for (const item of ACTIVITIES) {
+              void fetch(`/api/ringkasan?zone=${encodeURIComponent(zoneCode)}&activity=${item.key}`, {
+                cache: "no-store",
+              }).catch(() => undefined);
+            }
+          }
+        }
         void status.refresh();
       }
     }
@@ -229,7 +241,9 @@ export function SimulatorPanel({
           </div>
         </div>
 
-        <ApiKeyField value={apiKey} onChange={setApiKey} className="mt-4" />
+        <p className="mt-4 flex items-center gap-1.5 text-[10px] text-muted">
+          <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — kontrol operator aktif.
+        </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" onClick={submit} disabled={busy} className="btn btn-primary btn-sm">
@@ -325,7 +339,7 @@ export function SimulatorPanel({
         ) : null}
 
         {status.data?.last_tick_at ? (
-          <p className="mt-3 text-[10px] text-muted">Tick otomatis terakhir {formatUtc(status.data.last_tick_at)}</p>
+          <p className="mt-3 text-[10px] text-muted">Tick otomatis terakhir {formatWib(status.data.last_tick_at)}</p>
         ) : null}
 
         <div className="mt-4">

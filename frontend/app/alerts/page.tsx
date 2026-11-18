@@ -4,7 +4,7 @@ import { BellRing, ChevronDown, ChevronUp, Clock, ShieldCheck } from "lucide-rea
 import { useState } from "react";
 
 import { EmptyState, ErrorState, PageHero, SeverityBadge, StatusPill } from "@/components/ui";
-import { cn, formatUtc } from "@/lib/format";
+import { cn, formatWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { AlertList, Zone } from "@/lib/types";
 
@@ -165,7 +165,7 @@ export default function AlertsPage() {
                       <span className="chip">{alert.zone_name ?? alert.zone_code}</span>
                       <span className="flex items-center gap-1 font-mono text-[9.5px] text-muted">
                         <Clock className="h-3 w-3" aria-hidden />
-                        {formatUtc(alert.created_at)}
+                        {formatWib(alert.created_at)}
                       </span>
                     </div>
 

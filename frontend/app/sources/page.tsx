@@ -15,7 +15,7 @@ import Link from "next/link";
 
 import { CaveatNote, ErrorState, PageHero, SourceBadge, StatusPill } from "@/components/ui";
 import { API_BASE_URL } from "@/lib/api";
-import { cn, enumLabel, fixed, formatAge, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { cn, enumLabel, fixed, formatAge, formatShortWib, formatWib, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { DataSourcesResponse, SatelliteProviderInfo, SystemHealth } from "@/lib/types";
 
@@ -118,7 +118,7 @@ export default function SourcesPage() {
             rows={[
               ["Mode", health.data?.simulator.running ? "loop otomatis" : "hanya manual"],
               ["Interval", `${health.data?.simulator.interval_seconds ?? 60}s`],
-              ["Pembaruan terakhir", health.data?.simulator.last_tick_at ? formatShortUtc(health.data.simulator.last_tick_at) : "—"],
+              ["Pembaruan terakhir", health.data?.simulator.last_tick_at ? formatShortWib(health.data.simulator.last_tick_at) : "—"],
             ]}
           />
           <HealthCard
@@ -130,7 +130,7 @@ export default function SourcesPage() {
               [
                 "Akuisisi terbaru",
                 typeof provider.data?.summary.latest_acquired_at === "string"
-                  ? formatShortUtc(provider.data.summary.latest_acquired_at)
+                  ? formatShortWib(provider.data.summary.latest_acquired_at)
                   : "—",
               ],
             ]}
@@ -197,7 +197,7 @@ export default function SourcesPage() {
                         <StatusPill tone={statusTone(source.status)}>{enumLabel(source.status)}</StatusPill>
                       </td>
                       <td className="px-3 py-3 font-mono text-[10px] text-ink-soft">
-                        {formatUtc(source.last_observed_at)}
+                        {formatWib(source.last_observed_at)}
                       </td>
                       <td className="px-3 py-3 text-muted">{formatAge(source.age_seconds)}</td>
                       <td className="max-w-[280px] px-5 py-3 text-[10.5px] leading-relaxed text-muted">
@@ -327,8 +327,9 @@ export default function SourcesPage() {
           <div className="border-b border-line px-5 py-4">
             <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Permukaan API publik</h2>
             <p className="mt-0.5 text-[11px] text-muted">
-              Jalur dasar <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · UTC ISO 8601.
-              Ikon kunci menandai operasi yang memerlukan <span className="font-mono">X-API-Key</span>.
+              Jalur dasar <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · ISO 8601 (UTC).
+              Waktu pada tampilan disajikan dalam WIB. Ikon kunci menandai operasi yang memerlukan{" "}
+              <span className="font-mono">X-API-Key</span>.
             </p>
           </div>
           <div className="overflow-x-auto">
@@ -412,7 +413,7 @@ export default function SourcesPage() {
               <StatusPill tone={health.data?.demo_mode ? "warn" : "ok"}>
                 Kunci operator {health.data?.demo_mode ? "aktif" : "nonaktif"}
               </StatusPill>
-              <span className="chip">Model terbaru {model?.trained_at ? formatUtc(model.trained_at) : "—"}</span>
+              <span className="chip">Model terbaru {model?.trained_at ? formatWib(model.trained_at) : "—"}</span>
             </div>
           </div>
         </div>
@@ -426,8 +427,8 @@ export default function SourcesPage() {
 
         <p className="text-[10px] leading-relaxed text-muted">
           Laju yang ditampilkan berasal dari basis data saat ini. Kesegaran yang dihitung memakai waktu
-          server dalam UTC.
-          {sources.data ? ` Cuplikan ${formatUtc(sources.data.generated_at)}.` : ""}
+          server dalam UTC, lalu ditampilkan dalam WIB.
+          {sources.data ? ` Cuplikan ${formatWib(sources.data.generated_at)}.` : ""}
         </p>
       </div>
     </>

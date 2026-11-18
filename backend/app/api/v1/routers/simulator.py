@@ -88,6 +88,7 @@ async def start_scenario(
         buoy_code=payload.buoy_code,
         count=payload.observations,
         interval_seconds=payload.interval_seconds,
+        resolve_alerts=True,
     )
     return SimulationJobCreated(job=simulation_out(simulation, zone), acceptance_note=ACCEPTANCE_NOTE)
 

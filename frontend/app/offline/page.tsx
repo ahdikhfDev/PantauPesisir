@@ -17,8 +17,7 @@ export default function OfflinePage() {
         </p>
         <ul className="mt-4 space-y-1.5 text-[11.5px] text-muted">
           <li>
-            · Cek Kondisi, Peringatan warga, Ringkasan teknis, Satelit, Risiko AI, dan Sumber data
-            tersedia offline.
+            · Cek Kondisi, Kabar Laut, Belajar, Peringatan warga, dan konsol teknis tersedia offline.
           </li>
           <li>· Analisis baru, sinkronisasi satelit, dan perubahan peringatan memerlukan jaringan.</li>
         </ul>

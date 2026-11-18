@@ -29,7 +29,7 @@ function timeLabel(value: unknown): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "UTC",
+    timeZone: "Asia/Jakarta",
   }).format(new Date(Number(value as number | string)));
 }
 
@@ -91,7 +91,7 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
               fontFamily: "var(--font-sans)",
               boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
             }}
-            labelFormatter={(label) => `${timeLabel(label)} UTC`}
+            labelFormatter={(label) => `${timeLabel(label)} WIB`}
             formatter={(value, name) => [
               `${fixed(Number(value), name === "Tinggi gelombang" ? 2 : 1)} ${name === "Tinggi gelombang" ? "m" : "m/s"}`,
               name,

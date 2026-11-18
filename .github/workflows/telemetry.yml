@@ -35,3 +35,15 @@ jobs:
           zones = ", ".join(f"{item['zone_code']}:{item['status']}" for item in payload["zones"])
           print(f"backfill {payload['generated_at']} -> {zones}")
           PY
+
+      # Ringkasan warga dibuat dari data terbaru. Memanaskannya setelah backfill
+      # membuat halaman Kabar Laut terbuka cepat saat diperiksa orang lain.
+      - name: Panaskan ringkasan warga
+        env:
+          WEB_BASE: https://pantaupesisir.vercel.app
+        run: |
+          set -euo pipefail
+          for zone in JKT-BAY SMR-UTC MKS-STR; do
+            curl --fail --silent --show-error --max-time 90 \
+              "$WEB_BASE/api/ringkasan?zone=$zone&activity=boat" -o /dev/null || true
+          done

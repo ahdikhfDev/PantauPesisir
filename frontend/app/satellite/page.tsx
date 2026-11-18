@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 
 import {
-  ApiKeyField,
   CaveatNote,
   EmptyState,
   ErrorState,
@@ -14,10 +13,9 @@ import {
   SourceBadge,
   StatusPill,
 } from "@/components/ui";
-import { API_BASE_URL, ApiError, apiSend, apiUrl } from "@/lib/api";
-import { cn, enumLabel, fixed, formatShortUtc, formatUtc, statusTone } from "@/lib/format";
+import { API_BASE_URL, ApiError, DEMO_API_KEY, apiSend, apiUrl } from "@/lib/api";
+import { cn, enumLabel, fixed, formatShortWib, formatWib, statusTone } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
-import { useApiKey } from "@/lib/use-api-key";
 import type {
   LatestResponse,
   SatelliteDataset,
@@ -35,7 +33,7 @@ const today = () => new Date();
 const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
 
 export default function SatellitePage() {
-  const [apiKey, setApiKey] = useApiKey();
+  const apiKey = DEMO_API_KEY;
   const [zoneCode, setZoneCode] = useState("JKT-BAY");
   const [dateFrom, setDateFrom] = useState(daysAgo(30));
   const [dateTo, setDateTo] = useState(today().toISOString().slice(0, 10));
@@ -165,7 +163,7 @@ export default function SatellitePage() {
             value={`${datasets.data?.length ?? 0} akuisisi`}
             note={
               datasets.data?.[0]
-                ? `Terbaru ${formatShortUtc(datasets.data[0].acquired_at)} UTC`
+                ? `Terbaru ${formatShortWib(datasets.data[0].acquired_at)} WIB`
                 : "Jalankan sinkronisasi untuk mengisi"
             }
           />
@@ -300,7 +298,9 @@ export default function SatellitePage() {
                   />
                 </div>
               </div>
-              <ApiKeyField value={apiKey} onChange={setApiKey} />
+              <p className="flex items-center gap-1.5 text-[10px] text-muted">
+                <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — sinkronisasi aktif.
+              </p>
               <button type="button" className="btn btn-primary btn-sm" onClick={submit} disabled={busy}>
                 {busy ? <InlineSpinner label="Mengantrekan…" /> : <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
                 Kueri Copernicus STAC
@@ -409,7 +409,7 @@ export default function SatellitePage() {
 
                       <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10.5px]">
                         <dt className="text-muted">Diakuisisi</dt>
-                        <dd className="text-right font-semibold">{formatUtc(dataset.acquired_at)}</dd>
+                        <dd className="text-right font-semibold">{formatWib(dataset.acquired_at)}</dd>
                         <dt className="text-muted">Tutupan awan</dt>
                         <dd className="text-right font-semibold">{fixed(dataset.cloud_cover_percent, 1)}%</dd>
                         <dt className="text-muted">Resolusi</dt>

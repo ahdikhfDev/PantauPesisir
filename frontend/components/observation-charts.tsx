@@ -25,7 +25,7 @@ function timeLabel(value: unknown): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: "UTC",
+    timeZone: "Asia/Jakarta",
   }).format(new Date(Number(value as number | string)));
 }
 
@@ -40,7 +40,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
-        timeZone: "UTC",
+        timeZone: "Asia/Jakarta",
       }).format(new Date(item.observed_at)),
       height: item.parameters.wave_height_m,
       wind: item.parameters.wind_speed_mps,
@@ -64,7 +64,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
           <div>
             <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Kondisi laut pada jendela</h2>
             <p className="mt-1 text-[11px] text-muted">
-              Tinggi gelombang signifikan (m) dan kecepatan angin (m/s) · telemetri buoy · UTC
+              Tinggi gelombang signifikan (m) dan kecepatan angin (m/s) · telemetri buoy · WIB
             </p>
           </div>
           <div className="flex items-center gap-3 text-[10px] font-semibold ">
@@ -101,7 +101,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: false,
-                    timeZone: "UTC",
+                    timeZone: "Asia/Jakarta",
                   }).format(new Date(value))
                 }
               />
@@ -130,7 +130,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                   fontFamily: "var(--font-sans)",
                   boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
                 }}
-                labelFormatter={(label) => `${timeLabel(label)} UTC`}
+                labelFormatter={(label) => `${timeLabel(label)} WIB`}
                 formatter={(value, name) => [
                   `${fixed(Number(value), 2)} ${name === "Tinggi gelombang" ? "m" : "m/s"}`,
                   name,
@@ -201,7 +201,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                   fontSize: 11,
                   fontFamily: "var(--font-sans)",
                 }}
-                labelFormatter={(label) => `${timeLabel(label)} UTC`}
+                labelFormatter={(label) => `${timeLabel(label)} WIB`}
                 formatter={(value, name) => [
                   `${fixed(Number(value), 1)} ${name === "Tekanan udara" ? "hPa" : "s"}`,
                   name,

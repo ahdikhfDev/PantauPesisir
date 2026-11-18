@@ -189,9 +189,9 @@ export async function GET(request: Request) {
     const cached = cache.get(cacheKey);
     const forcedRecently = Date.now() - (forcedAt.get(cacheKey) ?? 0) < FORCE_COOLDOWN_MS;
     if (cached && Date.now() - cached.at < CACHE_TTL_MS && (!force || forcedRecently)) {
-      return NextResponse.json(cached.payload, {
-        headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
-      });
+      // Cache hanya di server: respons tidak boleh di-cache CDN, karena data buoy
+      // bisa berubah kapan saja dan kunci cache sudah memuat waktu observasi.
+      return NextResponse.json(cached.payload, { headers: { "Cache-Control": "no-store" } });
     }
     if (force) forcedAt.set(cacheKey, Date.now());
 
@@ -237,11 +237,7 @@ export async function GET(request: Request) {
       for (const [key] of oldest) cache.delete(key);
     }
 
-    return NextResponse.json(payload, {
-      headers: {
-        "Cache-Control": force ? "no-store" : "public, s-maxage=300, stale-while-revalidate=600",
-      },
-    });
+    return NextResponse.json(payload, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return NextResponse.json(
       { error: "ringkasan_unavailable", detail: (error as Error).message },
