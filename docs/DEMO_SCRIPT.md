@@ -11,7 +11,7 @@ records, prototype decision support.
 - [ ] Satellite catalogue populated (run one sync before recording).
 - [ ] One analysis exists so the AI page is not empty.
 - [ ] Browser zoom 100%, 1440×900, dark-mode off.
-- [ ] Demo key `cews-demo-2026` already stored in the tab, or ready to paste.
+- [ ] Demo key `pantaupesisir-demo-2026` already stored in the tab, or ready to paste.
 - [ ] Close unrelated tabs/notifications.
 
 ## 0:00–0:25 — Team and problem
@@ -20,7 +20,7 @@ records, prototype decision support.
 
 > "We are [team name] from [school]. Coastal communities in Indonesia make daily decisions on
 > incomplete information: a fisher checks the sky, not a data feed. Official warnings exist, but the
-> gap between raw observations and an understandable, traceable signal is real. CEWS is our
+> gap between raw observations and an understandable, traceable signal is real. PantauPesisir is our
 > prototype for closing that gap — honestly."
 
 Point at the header chips (**Simulated feed**, **Prototype**) and the metric cards.
@@ -107,4 +107,4 @@ Point at the header chips (**Simulated feed**, **Prototype**) and the metric car
 | Analysis returns 422 | Generate a scenario first, or widen the window |
 | Model returns 503 | Restart backend; artifact path is in `/system/health` |
 | Charts empty | Check the zone has rows in the chosen window; switch to 24 h |
-| Demo key rejected | Paste `cews-demo-2026` in the operator key field |
+| Demo key rejected | Paste `pantaupesisir-demo-2026` in the operator key field |

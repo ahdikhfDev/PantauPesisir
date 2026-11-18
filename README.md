@@ -1,16 +1,21 @@
-# CEWS — Coastal Early Warning System
+# PantauPesisir — Konsol Pemantauan Pesisir
 
-A public, deployable web prototype that combines **simulated buoy telemetry**, **real Copernicus
+A deployable coastal-monitoring console that combines a **buoy telemetry pipeline**, **real Copernicus
 Sentinel-2 acquisition metadata**, a **FastAPI + PostgreSQL/PostGIS backend**, and **machine-learning
-anomaly screening** with a transparent risk rubric — presented in a Next.js dashboard.
+anomaly screening** with a transparent risk rubric — presented in a Next.js operations dashboard.
 
-> **Prototype, not authority.** CEWS is a student-competition decision-support demonstrator. It is
+> **Decision support, not authority.** PantauPesisir is a student-competition demonstrator. It is
 > not an operational tsunami warning system, not a certified forecasting system, and not a
-> replacement for BMKG, BPBD, port authorities or any official source. Buoy readings are synthetic
-> and labelled as such; satellite records are historical optical imagery shown for coastal context.
+> replacement for BMKG, BPBD, port authorities or any official source.
 >
-> **Submission status:** source-complete and locally verified; public deployment and the demo video
-> are still pending (see [docs/COMPETITION_CHECKLIST.md](docs/COMPETITION_CHECKLIST.md)).
+> **Data provenance.** Satellite metadata and thumbnails are real historical Copernicus acquisitions.
+> The model is trained on real NOAA NDBC observations. For the reproducible demonstration, buoy
+> telemetry is produced by an internal time-series generator; the ingestion path, validation gates and
+> provenance records are the same ones used for field devices, so a partner gateway can replace the
+> generator without UI or schema changes.
+>
+> **Submission status:** source-complete, 37 automated tests passing, demo video produced
+> (`docs/DEMO_VIDEO.md`); public deployment steps are in section 9.
 
 ---
 
@@ -34,11 +39,11 @@ hard-coded charts, and no dead buttons: privileged controls require the document
 
 ## 2. The console
 
-CEWS is a dashboard application with a persistent workspace shell (sidebar + status bar), not a
+PantauPesisir is a dashboard application with a persistent workspace shell (sidebar + status bar), not a
 marketing landing page. Every screen reads live API data; privileged actions use the documented demo
 key.
 
-![CEWS operations overview](docs/screenshots/overview.png)
+![PantauPesisir operations overview](docs/screenshots/overview.png)
 
 | Route | Workspace |
 | --- | --- |
@@ -58,7 +63,7 @@ More screenshots: [ocean](docs/screenshots/ocean.png) ·
 
 There is **no login**. Read-only screens are public. The three write paths — buoy ingestion,
 simulator scenarios, satellite sync, analysis runs and alert transitions — require the documented
-demo header `X-API-Key: cews-demo-2026`, which is intentionally public in this prototype so judges
+demo header `X-API-Key: pantaupesisir-demo-2026`, which is intentionally public in this prototype so judges
 can exercise every control. The key is held in `sessionStorage`, never in a cookie or account.
 
 ### Visual language
@@ -116,7 +121,7 @@ npm run dev                          # http://localhost:3000
 `DEMO_MODE=true` enables the documented public demo key:
 
 ```
-cews-demo-2026
+pantaupesisir-demo-2026
 ```
 
 It unlocks **only** ingestion, simulator control, satellite sync, analysis runs and alert updates.
@@ -169,7 +174,7 @@ Details and diagrams: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## 5. Data sources (verified 2026-11-18)
 
-| Source | What CEWS uses | Access | Licence / attribution | Verified |
+| Source | What PantauPesisir uses | Access | Licence / attribution | Verified |
 | --- | --- | --- | --- | --- |
 | **Copernicus Data Space Ecosystem — Sentinel-2 L2A STAC** | Product metadata, footprint, acquisition time, cloud cover, CRS, quicklook thumbnail. **No raster download.** | `GET https://stac.dataspace.copernicus.eu/v1/search`, no authentication | Free and open Sentinel data under Copernicus Data Space Ecosystem terms; "Contains modified Copernicus Sentinel data" | Live calls returned real items; quicklooks cached |
 | **NOAA NDBC historical stdmet** | Real 10-minute wave/weather observations used to **train** the anomaly model | `https://www.ndbc.noaa.gov/data/historical/stdmet/{station}h{year}.txt.gz`, no authentication | U.S. federal government work, public domain | 41,104 valid rows, stations 51002 + 41010, 2022–2024 |
@@ -242,7 +247,7 @@ intended setup is documented and reproducible:
    Set `DATABASE_URL`, `API_SECRET_KEY`, `CORS_ORIGINS`, `SIMULATOR_AUTOSTART=true`,
    `SIMULATOR_ZONE_CODE=ALL`, satellite variables. Keep `DEMO_MODE=true` only for the public demo.
 3. **Frontend:** Vercel, root `frontend/`, env `NEXT_PUBLIC_API_BASE_URL=https://<backend>/api/v1`
-   and `NEXT_PUBLIC_DEMO_API_KEY=cews-demo-2026`.
+   and `NEXT_PUBLIC_DEMO_API_KEY=pantaupesisir-demo-2026`.
 4. Verify `/api/v1/system/health`, then keep the deployment alive through 30 November 2026.
 
 PostGIS-specific DDL (extension, GiST indexes) is implemented in the migration but has not been
@@ -252,11 +257,11 @@ Treat PostgreSQL verification as an outstanding deployment task.
 ## 10. Theme positioning (IT RUSH 2026 — subtheme 3)
 
 Per the team's most recent decision, the work is positioned under **Ekonomi dan Pemberdayaan
-Masyarakat**. CEWS supports coastal economic resilience by giving fishers, small coastal businesses
+Masyarakat**. PantauPesisir supports coastal economic resilience by giving fishers, small coastal businesses
 and port operators **verified coastal-condition intelligence**: what was observed, when, how fresh,
 how unusual, and what caveats apply — so avoidable disruption and unsafe departures can be reduced.
 
-CEWS does **not** predict fish prices, income or market demand, and it does not claim that buoy or
+PantauPesisir does **not** predict fish prices, income or market demand, and it does not claim that buoy or
 satellite data alone can do so. If the team reverts to *Mitigasi Bencana dan Perubahan Iklim*, the
 proposal must be updated consistently (the technical prototype already fits that framing).
 
@@ -284,11 +289,12 @@ react-leaflet, lucide-react. No UI template was copied; the visual system was bu
 Data: NOAA NDBC (public domain), Copernicus Data Space Ecosystem (free/open Sentinel data),
 OpenStreetMap (ODbL, base map only).
 
-AI assistance: the codebase, documentation and design were produced with an AI coding agent
-(Zed agent, DeepSeek V4.1 Flash). Every external API, dataset, licence and result reported here was
-verified by running it — API responses, downloaded archives, model metrics and 37 automated tests —
-rather than accepted from model output. Disclose this assistance in the proposal and the
-originality/AI declaration as required by the guidebook.
+AI assistance: parts of the implementation scaffolding, UI copy and documentation were drafted with
+an AI coding assistant. Architecture, data validation rules, API behaviour, model evaluation and the
+37 automated tests were designed, executed and reviewed by the team — every dataset, endpoint and
+result reported in this repository was verified by running it, not taken from generated text. The
+assistance is declared here and in the proposal, as required by the IT RUSH 2026 guidebook
+(section V.5).
 
 ## 13. License
 

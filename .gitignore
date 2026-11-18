@@ -39,3 +39,7 @@ next-env.d.ts
 Thumbs.db
 .idea/
 .vscode/
+
+# --- local run artefacts ---
+*.log
+/backend/data/

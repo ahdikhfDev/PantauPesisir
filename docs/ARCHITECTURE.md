@@ -1,6 +1,6 @@
 # Architecture
 
-CEWS is a modular monolith: one FastAPI backend, one Next.js frontend, one relational database
+PantauPesisir is a modular monolith: one FastAPI backend, one Next.js frontend, one relational database
 (PostgreSQL/PostGIS in production, SQLite for the demo) and one model artifact. There are no
 microservices.
 

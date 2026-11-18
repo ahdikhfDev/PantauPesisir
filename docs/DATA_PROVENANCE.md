@@ -8,7 +8,7 @@ acquisition date.
 
 | Badge | `source_type` / layer | Meaning | Never means |
 | --- | --- | --- | --- |
-| **Simulated** | `source_type="simulated"` on `buoy_observations` | Coherent synthetic reading from the CEWS buoy simulator, linked to a `simulations` row | A real buoy measurement |
+| **Simulated** | `source_type="simulated"` on `buoy_observations` | Coherent synthetic reading from the PantauPesisir buoy simulator, linked to a `simulations` row | A real buoy measurement |
 | **Satellite · historical** | `satellite_datasets` | Real Copernicus Sentinel-2 catalogue record retrieved from CDSE STAC, with acquisition time and quicklook | Live imagery, wave height, bathymetry |
 | **Historical dataset** | training archive | Real NOAA NDBC rows used offline to fit the model | Input to a live prediction |
 | **Model output** | `ai_predictions` | Isolation Forest score + rubric + generated explanation | An observation or a probability of disaster |

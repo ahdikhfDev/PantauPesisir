@@ -14,7 +14,7 @@ Status legend: ✅ done · 🟡 partially done / needs team action · ⛔ not do
 | AI integrated in at least one feature | ✅ | Isolation Forest anomaly screening + transparent risk rubric; `/ai` page; model card. |
 | Live site remains active through 30 Nov 2026 | ⛔ | Follows deployment; set reminders and uptime checks. |
 | Tech stack free / templates disclosed | ✅ | README §12 discloses libraries, data and AI assistance. |
-| Demo login (if login exists) | ✅ (n/a) | No user login. Public demo key `cews-demo-2026` documented in README; no privileged credentials exposed. |
+| Demo login (if login exists) | ✅ (n/a) | No user login. Public demo key `pantaupesisir-demo-2026` documented in README; no privileged credentials exposed. |
 | Unlisted YouTube demo video, 3–5 min | ⛔ | Script ready: `docs/DEMO_SCRIPT.md` (4:00). |
 | PDF proposal `ITRUSH26_Nama Tim_JudulKarya.pdf` | ⛔ | Content available in README/docs; needs team formatting and submission. |
 | PDF originality and AI declaration (organiser template) | ⛔ | Use organiser template; disclose AI coding assistance and open-source libraries. |
@@ -56,7 +56,7 @@ Status legend: ✅ done · 🟡 partially done / needs team action · ⛔ not do
 
 ## 4. Judging criteria mapping
 
-| Criterion (weight) | How CEWS addresses it | Evidence |
+| Criterion (weight) | How PantauPesisir addresses it | Evidence |
 | --- | --- | --- |
 | Website functionality & technical quality (25%) | Working API/database/ML/UI vertical slice, validation, tests, error/empty/stale states, deployment-ready config | 37 tests, live API checks, build |
 | Innovation & solution accuracy (20%) | Separation of behavioural anomaly detection and absolute severity; verified provider integration; calibrated threshold with published limitations | Model card, `/ai` UI |
