@@ -8,6 +8,7 @@ import {
   LifeBuoy,
   Menu,
   Satellite,
+  Sparkles,
   Waves,
   X,
 } from "lucide-react";
@@ -28,6 +29,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
     label: "Warga",
     items: [
       { href: "/", label: "Cek Kondisi", icon: LifeBuoy },
+      { href: "/ringkasan", label: "Ringkasan AI", icon: Sparkles },
       { href: "/alerts", label: "Peringatan warga", icon: BellRing },
     ],
   },
@@ -37,7 +39,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
       { href: "/konsol", label: "Ringkasan teknis", icon: LayoutDashboard },
       { href: "/ocean", label: "Pemantauan laut", icon: Waves },
       { href: "/satellite", label: "Satelit", icon: Satellite },
-      { href: "/ai", label: "Risiko AI", icon: BrainCircuit },
+      { href: "/ai", label: "Risiko AI teknis", icon: BrainCircuit },
       { href: "/sources", label: "Sumber data", icon: Database },
     ],
   },

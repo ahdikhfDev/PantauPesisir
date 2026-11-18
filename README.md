@@ -36,7 +36,7 @@ provenance, model anomaly detection, dan status sumber data.
 | Penyelarasan waktu | Jendela asosiasi 30 menit yang dapat dikonfigurasi; dataset yang tidak cocok tetap disimpan | ✅ pengujian |
 | Deteksi anomali | Isolation Forest scikit-learn yang dilatih pada 41,104 observasi NOAA NDBC nyata | ✅ artefak reprodusibel |
 | Penilaian risiko | `rubrik_risiko_v1` transparan atas gelombang/angin/tekanan/periode absolut | ✅ pengujian |
-| Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data | ✅ live |
+| Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data; ringkasan bahasa warga di `/ringkasan` | ✅ live |
 | Peringatan | Siklus hidup tersimpan open → acknowledged → resolved, deduplikasi, dilindungi API key | ✅ pengujian + live |
 | Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
 | Dasbor | 6 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
@@ -67,6 +67,7 @@ penilaian teknis: KPI, grafik, satelit, analitik, dan status sumber.
 | Rute | Ruang kerja |
 | --- | --- |
 | **`/` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), dan tautan ke detail teknis |
+| **`/ringkasan` Ringkasan AI** | Ringkasan 2 kalimat per pantai dan aktivitas dalam bahasa sehari-hari; status dan angka tetap dihitung sistem, AI hanya menulis ulang, dengan fallback template bila penyedia AI tidak tersedia |
 | **`/konsol` Ringkasan teknis** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |
 | **`/ocean`** | Telemetri tujuh parameter, grafik gelombang/angin dan tekanan/periode, tabel pembacaan, panel provenans lengkap, kontrol simulator |
 | **`/satellite`** | Peta Leaflet (poligon zona, buoy, footprint Sentinel-2), formulir sinkronisasi STAC nyata, galeri akuisisi dengan quicklook, tutupan awan, CRS dan atribusi |
@@ -74,7 +75,8 @@ penilaian teknis: KPI, grafik, satelit, analitik, dan status sumber.
 | **`/alerts`** | Alur kerja peringatan yang dapat difilter dengan pengakuan dan penyelesaian |
 | **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
-Tangkapan layar lainnya: [konsol](docs/screenshots/konsol.png) ·
+Tangkapan layar lainnya: [ringkasan AI](docs/screenshots/ringkasan.png) ·
+[konsol](docs/screenshots/konsol.png) ·
 [ocean](docs/screenshots/ocean.png) ·
 [satellite](docs/screenshots/satellite.png) · [AI](docs/screenshots/ai.png) ·
 [alerts](docs/screenshots/alerts.png) · [sources](docs/screenshots/sources.png) ·
@@ -251,7 +253,7 @@ backend/
   ml/             features, calibration, rubric, artifacts (joblib + metrics)
   tests/          37 pytest tests
 frontend/
-  app/            Overview, Ocean, Satellite, AI, Alerts, Sources
+  app/            Cek Kondisi, Ringkasan AI, Konsol, Ocean, Satellite, AI, Alerts, Sources
   components/     header/footer, charts, map, simulator, UI primitives
   lib/            API client, types, hooks, formatting
 docs/             architecture, API, data catalog, provenance, model card, schema, tests, demo, checklist
@@ -282,11 +284,15 @@ Langkah penerapan:
    pooler Supabase dengan `postgresql+psycopg://` dan `?sslmode=require`), `DEMO_API_KEY`,
    `API_SECRET_KEY`, `CORS_ORIGINS`, `FRESHNESS_WINDOW_SECONDS`.
 2. Set `NEXT_PUBLIC_API_BASE_URL=https://pantaupesisir-api.vercel.app/api/v1` pada project
-   frontend, lalu redeploy.
+   frontend, lalu redeploy. Untuk ringkasan AI, tambahkan `AI_API_KEY` (server-only),
+   `AI_BASE_URL` (default `https://api.thirtystore.com/v1`), dan `AI_MODEL`
+   (default `thirty/deepseek-v4.1-flash-1017`).
 3. Verifikasi `/api/v1/system/health` → `dialect: postgresql`, `status: ok`.
 
 Catatan operasional:
 
+- Ringkasan AI di-cache 10 menit per kombinasi zona/aktivitas/data dan otomatis kembali ke template
+  jika penyedia AI tidak menjawab. Jangan pernah memakai awalan `NEXT_PUBLIC_` untuk `AI_API_KEY`.
 - Serverless melakukan cold start (beberapa detik); lakukan satu pemanasan sebelum penjurian.
 - Cache pratinjau satelit disimpan di `/tmp/satellite` dan hilang saat instance didaur ulang
   (metadata tetap tersimpan di basis data).
@@ -328,11 +334,17 @@ Data: NOAA NDBC (domain publik), Copernicus Data Space Ecosystem (data Sentinel 
 OpenStreetMap (ODbL, hanya peta dasar).
 
 Bantuan AI: sebagian perancah implementasi, teks UI dan dokumentasi disusun dengan asisten pengodean
-AI. Arsitektur, aturan validasi data, perilaku API, evaluasi model dan 37 pengujian otomatis
+AI. Arsitektur, aturan validasi data, perilaku API, evaluasi model dan 40 pengujian otomatis
 dirancang, dijalankan dan ditinjau oleh tim — setiap dataset, endpoint dan hasil yang dilaporkan dalam
 repositori ini diverifikasi dengan menjalankannya, bukan diambil dari teks yang dihasilkan. Bantuan
 ini dideklarasikan di sini dan dalam proposal, sesuai persyaratan panduan IT RUSH 2026
 (bagian V.5).
+
+Ringkasan AI di halaman warga menggunakan penyedia model bahasa pihak ketiga (DeepSeek melalui API
+kompatibel OpenAI). Kunci disimpan sebagai variabel server (`AI_API_KEY`) dan tidak pernah dikirim
+ke browser. Model hanya menulis ulang angka dan status yang sudah dihitung sistem; status
+aman/hati-hati/tunda tetap deterministik, keluaran di-cache, dan ada fallback template jika penyedia
+tidak tersedia.
 
 ## 13. Lisensi
 
