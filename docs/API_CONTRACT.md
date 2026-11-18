@@ -171,8 +171,13 @@ jumlah yang diganti dicatat pada catatan job. Ini menjaga linimasa buoy tetap ko
 ```
 
 Parameter query `GET /buoy/history`: `zone_code`, `buoy_code`, `observed_from`, `observed_to`,
-`source_type`, `validation_status`, `page` (≥1), `page_size` (1–500, default 100). Response:
-`{ items, page, page_size, total, has_next }`.
+`source_type`, `validation_status`, `page` (≥1), `page_size` (1–500, default 100), dan
+`max_points` (2–2000, opsional). Response: `{ items, page, page_size, total, has_next }`.
+
+`max_points` dipakai untuk grafik tren: alih-alih memaginasi ribuan baris, server memindai maksimum
+5.000 baris terbaru di dalam jendela lalu mengambil sampel merata sebanyak `max_points`. Sampel tidak
+menjamin setiap lonjakan ikut terbawa, dan `total` tetap berisi jumlah baris sebenarnya. Respons
+sampel selalu `page=1`, `has_next=false`, dan `page_size` = jumlah item yang dikembalikan.
 
 ## 5. Satelit
 

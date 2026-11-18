@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { fixed } from "@/lib/format";
+import { fixed, formatShortWib } from "@/lib/format";
 
 const AXIS = { stroke: "#6d7a7c", fontSize: 10, fontFamily: "var(--font-mono)" };
 const GRID = "#e5e1d6";
@@ -27,6 +27,14 @@ function timeLabel(value: unknown): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(Number(value as number | string)));
+}
+
+function dayLabel(value: unknown): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "2-digit",
+    month: "short",
     timeZone: "Asia/Jakarta",
   }).format(new Date(Number(value as number | string)));
 }
@@ -62,6 +70,13 @@ export function WaveHistoryChart({
 
   const peak = Math.max(...data.map((point) => point.height), limit);
   const top = Math.max(Math.ceil((peak + 0.35) * 2) / 2, limit + 0.5);
+  // A seven-day window needs date ticks; a one-day window needs clock ticks.
+  const multiDay = (data[data.length - 1].time - data[0].time) / 3_600_000 > 30;
+  const tickText = multiDay ? dayLabel : timeLabel;
+  const tooltipText = (value: unknown) =>
+    multiDay
+      ? `${formatShortWib(new Date(Number(value)).toISOString())} WIB`
+      : `${timeLabel(value)} WIB`;
 
   return (
     <div style={{ height }} className="w-full">
@@ -82,8 +97,8 @@ export function WaveHistoryChart({
             tick={AXIS}
             tickLine={false}
             axisLine={{ stroke: GRID }}
-            minTickGap={44}
-            tickFormatter={timeLabel}
+            minTickGap={multiDay ? 96 : 44}
+            tickFormatter={tickText}
           />
           <YAxis
             domain={[0, top]}
@@ -102,7 +117,7 @@ export function WaveHistoryChart({
               fontFamily: "var(--font-sans)",
               boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
             }}
-            labelFormatter={(label) => `${timeLabel(label)} WIB`}
+            labelFormatter={(label) => tooltipText(label)}
             formatter={(value) => [`${fixed(Number(value), 2)} m`, "Tinggi ombak"]}
           />
           <ReferenceLine

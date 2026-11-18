@@ -54,6 +54,22 @@ def test_history_filters_and_pagination(client):
     assert invalid.json()["error"] == "validation_error"
 
 
+def test_history_can_be_sampled_for_charts(client):
+    response = client.get(
+        f"{API}/buoy/history",
+        params={"zone_code": "JKT-BAY", "max_points": 5},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert 2 <= len(body["items"]) <= 5
+    assert body["total"] > len(body["items"])
+    assert body["has_next"] is False
+    assert body["items"] == sorted(body["items"], key=lambda item: item["observed_at"], reverse=True)
+
+    too_small = client.get(f"{API}/buoy/history", params={"max_points": 1})
+    assert too_small.status_code == 422
+
+
 def test_data_sources_and_overview(client):
     sources = client.get(f"{API}/system/data-sources")
     assert sources.status_code == 200

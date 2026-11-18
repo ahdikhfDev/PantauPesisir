@@ -18,6 +18,8 @@ from app.services.serializers import observation_out
 router = APIRouter(prefix="/buoy", tags=["buoy"])
 
 STALE_AFTER_SECONDS = settings.freshness_window_seconds
+# Upper bound on rows scanned when a caller asks for a downsampled series.
+HISTORY_SAMPLE_SCAN = 5000
 
 
 @router.get("/latest", response_model=BuoyLatestResponse, summary="Latest valid observation per buoy")
@@ -70,8 +72,21 @@ def observation_history(
     validation_status: str | None = Query(default=None, pattern="^(valid|invalid|quarantined)$"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=100, ge=1, le=500),
+    max_points: int | None = Query(
+        default=None,
+        ge=2,
+        le=2000,
+        description="Return at most this many evenly sampled points for charting",
+    ),
     db: Session = Depends(get_db),
 ) -> BuoyHistoryResponse:
+    """Stored observations, newest first.
+
+    ``max_points`` exists for trend charts: a seven-day window can hold thousands of
+    rows, so the caller asks for a bounded, evenly spaced sample instead of paging.
+    It samples across the window (it does not keep every spike) and reports the true
+    ``total`` so the caller can still say how many readings exist.
+    """
     filters = []
     if zone_code:
         filters.append(CoastalZone.zone_code == zone_code.upper())
@@ -93,6 +108,30 @@ def observation_history(
         .where(*filters)
     )
     total = int(db.scalar(count_stmt) or 0)
+
+    if max_points:
+        # Scan a bounded slice of the newest rows, then sample it evenly.
+        sample_stmt = (
+            select(BuoyObservation, BuoyDevice, CoastalZone)
+            .join(BuoyDevice, BuoyObservation.buoy_id == BuoyDevice.id)
+            .join(CoastalZone, BuoyDevice.zone_id == CoastalZone.id)
+            .where(*filters)
+            .order_by(BuoyObservation.observed_at.desc())
+            .limit(HISTORY_SAMPLE_SCAN)
+        )
+        sampled = db.execute(sample_stmt).all()
+        if len(sampled) > max_points:
+            step = len(sampled) / max_points
+            sampled = [sampled[min(int(index * step), len(sampled) - 1)] for index in range(max_points)]
+        now = datetime.now(timezone.utc)
+        sampled_items = [observation_out(obs, buoy, zone, now=now) for obs, buoy, zone in sampled]
+        return BuoyHistoryResponse(
+            items=sampled_items,
+            page=1,
+            page_size=len(sampled_items),
+            total=total,
+            has_next=False,
+        )
 
     stmt = (
         select(BuoyObservation, BuoyDevice, CoastalZone)

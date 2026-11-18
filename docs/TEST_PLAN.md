@@ -6,7 +6,7 @@ scikit-learn 1.9.1 · pandas 3.1.1 · Node 26.13.0 · Next.js 15.5.29
 ```bash
 cd backend
 python -m pytest -q
-# 43 passed, 1 warning (Starlette TestClient deprecation)
+# 44 passed, 1 warning (Starlette TestClient deprecation)
 ```
 
 Suite dijalankan terhadap database SQLite sementara yang terisolasi dengan zona ter-seed dan
@@ -56,6 +56,7 @@ satelit diuji dengan `httpx.MockTransport` dan jalur job/orchestration diuji den
 | 37 | Rubrik monoton + transparan | `test_ml.py` | rendah < sedang < tinggi, komponen berjumlah | LULUS |
 | 38 | Batch "Normal" tetap di bawah batas warga | `test_simulator.py` | gelombang < 1.5 m dan angin < 8 m/s (batas perahu kecil) | LULUS |
 | 39 | Batch manual menyematkan skenario zona | `test_simulator.py` | `zone_scenarios[zona]` = skenario batch, umpan otomatis tidak menimpa | LULUS |
+| 40 | Riwayat bisa disampel untuk grafik | `test_system.py` | `max_points` mengembalikan ≤ N titik merata, `total` tetap nyata, nilai <2 ditolak 422 | LULUS |
 
 ## 2. Verifikasi manual / langsung
 
