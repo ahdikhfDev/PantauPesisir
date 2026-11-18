@@ -54,6 +54,7 @@ class Settings(BaseSettings):
     satellite_max_cloud_cover_percent: float = 40.0
     satellite_timeout_seconds: float = 25.0
     satellite_max_products_per_sync: int = 4
+    satellite_sync_budget_seconds: int = 30
     satellite_cache_dir: str = str(REPO_ROOT / "data" / "satellite")
     satellite_client_id: str = ""
     satellite_client_secret: str = ""

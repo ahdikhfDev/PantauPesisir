@@ -172,7 +172,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
       </div>
       <p className="mt-2 text-[12px] leading-relaxed text-muted">{message}</p>
       <p className="mt-1 text-[10.5px] text-muted">
-        Pastikan backend FastAPI berjalan dan `NEXT_PUBLIC_API_BASE_URL` mengarah ke sana.
+        Koneksi ke server mungkin sedang lambat. Coba lagi dalam beberapa detik.
       </p>
       {onRetry ? (
         <button type="button" onClick={onRetry} className="btn btn-ghost btn-sm mt-3">

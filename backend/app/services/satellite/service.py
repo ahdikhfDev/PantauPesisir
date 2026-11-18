@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -91,8 +92,18 @@ def create_job(db: Session, payload: SatelliteSyncIn, zone: CoastalZone) -> Sate
 
 
 def run_job(job_id: uuid.UUID) -> None:
-    """Background worker. Always leaves a persisted terminal status."""
+    """Run a queued job exactly once, even across serverless instances."""
     with SessionLocal() as db:
+        now = datetime.now(timezone.utc)
+        claimed = db.execute(
+            update(SatelliteJob)
+            .where(SatelliteJob.id == job_id, SatelliteJob.status == "queued")
+            .values(status="running", started_at=now)
+        ).rowcount
+        db.commit()
+        if not claimed:
+            return
+
         job = db.get(SatelliteJob, job_id)
         if job is None:
             logger.error("satellite job %s vanished", job_id)
@@ -104,10 +115,6 @@ def run_job(job_id: uuid.UUID) -> None:
             job.completed_at = datetime.now(timezone.utc)
             db.commit()
             return
-
-        job.status = "running"
-        job.started_at = datetime.now(timezone.utc)
-        db.commit()
 
         query = job.query_parameters or {}
         try:
@@ -123,12 +130,16 @@ def run_job(job_id: uuid.UUID) -> None:
             job.datasets_found = len(products)
             warnings: list[str] = []
             stored = 0
+            deadline = time.monotonic() + settings.satellite_sync_budget_seconds
             for product in products:
-                try:
-                    thumbnail = _download_thumbnail(provider, product)
-                except SatelliteProviderError as exc:
-                    thumbnail = None
-                    warnings.append(f"{product.product_id}: thumbnail unavailable ({exc.kind})")
+                thumbnail = None
+                if time.monotonic() < deadline:
+                    try:
+                        thumbnail = _download_thumbnail(provider, product)
+                    except SatelliteProviderError as exc:
+                        warnings.append(f"{product.product_id}: thumbnail unavailable ({exc.kind})")
+                else:
+                    warnings.append(f"{product.product_id}: thumbnail ditunda (batas waktu)")
                 created = upsert_product(db, zone, product, thumbnail)
                 if created:
                     stored += 1

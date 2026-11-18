@@ -70,6 +70,14 @@ def satellite_job(job_id: uuid.UUID, db: Session = Depends(get_db)) -> Satellite
     job = db.get(SatelliteJob, job_id)
     if job is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Satellite job not found")
+    if job.status == "queued":
+        # Serverless hosts may drop background tasks after the response, so the
+        # first status poll claims and runs the job synchronously.
+        run_job(job.id)
+        db.expire_all()
+        job = db.get(SatelliteJob, job_id)
+        if job is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Satellite job not found")
     return SatelliteJobOut.model_validate(job)
 
 

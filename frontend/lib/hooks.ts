@@ -12,7 +12,7 @@ export interface ApiState<T> {
   setData: (value: T | null) => void;
 }
 
-export function useApi<T>(path: string | null, pollMs?: number): ApiState<T> {
+export function useApi<T>(path: string | null, pollMs?: number, timeoutMs?: number): ApiState<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(Boolean(path));
@@ -35,20 +35,24 @@ export function useApi<T>(path: string | null, pollMs?: number): ApiState<T> {
     const run = async (showSpinner: boolean) => {
       if (showSpinner) setLoading(true);
       try {
-        const result = await apiGet<T>(path);
+        const result = await apiGet<T>(path, timeoutMs);
         if (!cancelled && mounted.current) {
           setData(result);
           setError(null);
         }
       } catch (err) {
         if (!cancelled && mounted.current) {
-          const message =
+          const raw =
             err instanceof ApiError
               ? err.detail
               : err instanceof Error
                 ? err.message
                 : "Tidak dapat menjangkau API PantauPesisir";
-          setError(message);
+          setError(
+            /timed out|aborted|timeout/i.test(raw)
+              ? "Server belum merespons. Coba lagi dalam beberapa detik."
+              : raw,
+          );
         }
       } finally {
         if (!cancelled && mounted.current) setLoading(false);

@@ -48,11 +48,11 @@ export default function SatellitePage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [layers, setLayers] = useState({ zones: true, buoys: true, footprints: true });
 
-  const provider = useApi<SatelliteProviderInfo>("/satellite/provider", 60000);
-  const zones = useApi<Zone[]>("/coastal/zones");
-  const latest = useApi<LatestResponse>("/buoy/latest", 30000);
-  const datasets = useApi<SatelliteDataset[]>("/satellite/datasets?limit=60", 30000);
-  const job = useApi<SatelliteJob>(jobId ? `/satellite/jobs/${jobId}` : null, 2000);
+  const provider = useApi<SatelliteProviderInfo>("/satellite/provider", 60000, 30000);
+  const zones = useApi<Zone[]>("/coastal/zones", undefined, 30000);
+  const latest = useApi<LatestResponse>("/buoy/latest", 30000, 30000);
+  const datasets = useApi<SatelliteDataset[]>("/satellite/datasets?limit=60", 30000, 30000);
+  const job = useApi<SatelliteJob>(jobId ? `/satellite/jobs/${jobId}` : null, 2000, 30000);
   const handledJob = useRef<string | null>(null);
 
   useEffect(() => {
@@ -92,11 +92,18 @@ export default function SatellitePage() {
           max_products: maxProducts,
         },
         apiKey,
+        60000,
       );
       setJobId(response.job.id);
       setNotice(response.acceptance_note);
     } catch (err) {
-      setError(err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Sinkronisasi gagal");
+      const raw =
+        err instanceof ApiError ? err.detail : err instanceof Error ? err.message : "Sinkronisasi gagal";
+      setError(
+        /timed out|aborted|timeout/i.test(raw)
+          ? "Server belum merespons. Coba lagi dalam beberapa detik."
+          : raw,
+      );
     } finally {
       setBusy(false);
     }
