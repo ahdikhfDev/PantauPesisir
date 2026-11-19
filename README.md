@@ -318,17 +318,22 @@ Catatan operasional:
   pengembangan lokal.
 - Jaga deployment tetap aktif hingga pengumuman pemenang 30 November 2026.
 
-## 10. Posisi tema (IT RUSH 2026 — subtema 3)
+## 10. Posisi tema (IT RUSH 2026 — subtema 4)
 
-Sesuai keputusan terbaru tim, karya ini diposisikan di bawah **Ekonomi dan Pemberdayaan
-Masyarakat**. PantauPesisir mendukung ketahanan ekonomi pesisir dengan memberi nelayan, usaha pesisir kecil
-dan operator pelabuhan **kecerdasan kondisi pesisir yang terverifikasi**: apa yang diamati, kapan, seberapa
-segar, seberapa tidak biasa, dan keterbatasan apa yang berlaku — sehingga gangguan yang dapat dihindari
-dan keberangkatan yang tidak aman dapat dikurangi.
+Karya ini diajukan pada **subtema 4: Mitigasi Bencana dan Perubahan Iklim**.
 
-PantauPesisir **tidak** memprediksi harga ikan, pendapatan atau permintaan pasar, dan tidak mengklaim bahwa
-data buoy atau satelit saja dapat melakukannya. Jika tim kembali ke *Mitigasi Bencana dan Perubahan Iklim*,
-proposal harus diperbarui secara konsisten (implementasi teknis sudah sesuai dengan kerangka tersebut).
+Alasannya mengikuti apa yang benar-benar dibangun. PantauPesisir mengubah pembacaan oseanografi menjadi
+peringatan dini tingkat lokal: deteksi anomali terhadap perilaku normal laut, ambang per aktivitas, dan
+peringatan yang berakhir otomatis. Inti produknya adalah pengurangan risiko, bukan analisis pasar.
+
+Batas klaimnya tetap tegas. Sistem ini mendukung keputusan, bukan menerbitkan peringatan resmi. Skor
+anomali bukan peluang bencana, dan citra satelit bukan pengukur tinggi gelombang. Untuk prakiraan resmi,
+BMKG tetap acuannya. Mitigasi yang ditawarkan bersifat preventif di tingkat pengguna: warga, nelayan, dan
+operator pelabuhan menunda aktivitas berisiko sebelum kondisi memburuk.
+
+Dampak ekonominya nyata tetapi tidak diklaim sebagai tujuan utama: menghindari keberangkatan yang tidak
+aman dan gangguan operasi yang dapat dicegah adalah bentuk pengurangan kerugian bencana, bukan prediksi
+harga atau pendapatan.
 
 ## 11. Catatan teknis dan rencana lanjutan
 

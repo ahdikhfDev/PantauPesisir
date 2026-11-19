@@ -60,19 +60,18 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 | --- | --- | --- |
 | Fungsionalitas situs web & kualitas teknis (25%) | Irisan vertikal API/basis data/ML/UI yang berfungsi, validasi, uji, status error/kosong/basi, konfigurasi siap penerapan | 44 uji, pemeriksaan API live, build |
 | Inovasi & ketepatan solusi (20%) | Pemisahan deteksi anomali perilaku dan tingkat keparahan absolut; integrasi penyedia terverifikasi; ambang terkalibrasi dengan keterbatasan yang dipublikasikan | Model card, UI `/ai` |
-| Relevansi tema & dampak (15%) | Subtema 3: intelijen kondisi pesisir terverifikasi bagi nelayan, usaha kecil, operator pelabuhan | README §10, teks rekomendasi |
+| Relevansi tema & dampak (15%) | Subtema 4, mitigasi bencana dan perubahan iklim: peringatan dini lokal dari deteksi anomali, ambang per aktivitas, peringatan berbatas waktu | README §10, halaman `/ai`, `/alerts` |
 | Desain UI/UX (15%) | Desain responsif yang dirancang khusus, badge sumber data yang konsisten, satuan di mana-mana, kaveat yang jujur | 6 laman, tangkapan layar di `docs/screenshots/` |
 | Kualitas kode sumber (15%) | Monolit modular, skema bertipe, keputusan terdokumentasi, geometri terdialek, uji adversarial | struktur repositori, docs |
 | Dokumentasi (10%) | Semua dokumen wajib tersedia dengan sumber terverifikasi dan hasil bertanggal | `docs/` |
 
 ## 5. Kesenjangan yang diketahui sebelum pengumpulan
 
-1. **Terapkan** backend + frontend + PostGIS terkelola; verifikasi migrasi PostgreSQL/indeks GiST.
-2. **Inisialisasi git** dan commit secara bertahap yang bermakna; publikasikan repositori secara publik.
-3. **Rekam** video demo dan unggah sebagai tidak publik.
-4. **Tulis dan ekspor** proposal PDF dengan nama berkas yang disyaratkan, serta lengkapi pernyataan
-   AI/orisinalitas.
-5. **Pemeriksaan lintas peramban/mobile** (hanya Chromium headless yang tersedia selama pengembangan).
-6. **Rotasi secret** untuk produksi dan setel `DEMO_MODE=false` jika akun operator nyata ditambahkan.
-7. **Konfirmasi subtema** dengan tim. Jika subtema 1 (mitigasi bencana) dipilih, tulis ulang posisi
-   proposal secara konsisten; implementasi mendukung kedua kerangka tersebut.
+1. **Rekam** video demo 3-5 menit dan unggah sebagai Unlisted di YouTube. Naskah di `docs/DEMO_SCRIPT.md`.
+2. **Lengkapi identitas** pada `docs/PROPOSAL_PantauPesisir.docx` dan `docs/PERNYATAAN_PantauPesisir.docx`,
+   lalu ekspor ke PDF dengan nama `ITRUSH26_Nama Tim_JudulKarya.pdf`.
+3. **Pemeriksaan lintas peramban/mobile** (hanya Chromium headless yang tersedia selama pengembangan).
+4. **Rotasi secret** yang pernah dibagikan lewat kanal tidak aman, dan setel `DEMO_MODE=false` jika
+   akun operator nyata ditambahkan.
+5. **Matikan domain lama** `pantaupesisir.vercel.app` bila itu deployment tim, agar penilai tidak
+   membuka versi yang salah.
