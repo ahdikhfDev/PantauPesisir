@@ -64,3 +64,6 @@ Thumbs.db
 /f_*.png
 /frame_intro.png
 /frontend/scripts/capture.js
+/frontend/scripts/capture-docs.js
+/frontend/scripts/stitch-mobile.py
+/docs/refresh_docx_shots.py
