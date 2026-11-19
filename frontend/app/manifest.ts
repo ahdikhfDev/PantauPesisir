@@ -14,7 +14,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display_override: ["standalone", "minimal-ui"],
     orientation: "any",
     background_color: "#ffffff",
-    theme_color: "#d01f16",
+    theme_color: "#1a3a38",
     categories: ["weather", "utilities", "productivity"],
     icons: [
       {
@@ -37,7 +37,7 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     shortcuts: [
-      { name: "Cek Kondisi", short_name: "Cek", url: "/" },
+      { name: "Cek Kondisi", short_name: "Cek", url: "/cek" },
       { name: "Kabar Laut", short_name: "Kabar", url: "/ringkasan" },
       { name: "Belajar", short_name: "Belajar", url: "/belajar" },
       { name: "Peringatan warga", short_name: "Peringatan", url: "/alerts" },

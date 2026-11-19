@@ -49,29 +49,29 @@ def wave_path(size: float, y: float, amp: float, thickness: float) -> str:
     return "M" + "L".join(f"{x:.1f} {y:.1f}" for x, y in pts) + "Z"
 
 
-def wave_svg(y: float, amp: float, thickness: float) -> str:
-    """One wave band as four cubic curves: crest, right end, trough, left end."""
+def wave_points_svg(y: float, amp: float, thickness: float) -> str:
+    """The same polygon the PNG uses, emitted as an SVG path.
+
+    Both outputs read from this one function so the favicon and the wordmark
+    cannot describe different shapes.
+    """
     s = 512
     width = s * 0.74
     x0 = (s - width) / 2
-    x1 = x0 + width
-    t = thickness / 2
-    mid = (x0 + x1) / 2
-    top = y - amp
-    bot = y + amp
-    return (
-        f"M{x0:.0f} {y:.0f}"
-        f"C{x0 + width * 0.16:.0f} {top * 0.55 + y * 0.45:.0f} {mid - width * 0.2:.0f} {top:.0f} {mid:.0f} {top:.0f}"
-        f"C{mid + width * 0.2:.0f} {top:.0f} {x1 - width * 0.16:.0f} {top * 0.55 + y * 0.45:.0f} {x1:.0f} {y:.0f}"
-        f"L{x1:.0f} {y + t * 2:.0f}"
-        f"C{x1 - width * 0.16:.0f} {top * 0.55 + y * 0.45 + t * 2:.0f} {mid + width * 0.2:.0f} {bot + t * 2:.0f} {mid:.0f} {bot + t * 2:.0f}"
-        f"C{mid - width * 0.2:.0f} {bot + t * 2:.0f} {x0 + width * 0.16:.0f} {top * 0.55 + y * 0.45 + t * 2:.0f} {x0:.0f} {y + t * 2:.0f}Z"
-    )
+    top, bottom = [], []
+    for i in range(201):
+        t = i / 200
+        x = x0 + width * t
+        curve = y + amp * math.sin(2 * math.pi * t - math.pi / 2)
+        top.append((x, curve - thickness / 2))
+        bottom.append((x, curve + thickness / 2))
+    pts = top + bottom[::-1]
+    return "M" + "L".join(f"{x:.1f} {yy:.1f}" for x, yy in pts) + "Z"
 
 
 def svg() -> str:
-    waves = wave_svg(216, 56, 44)
-    waves2 = wave_svg(302, 48, 44)
+    waves = wave_points_svg(512 * 0.52, 512 * 0.060, 512 * 0.088)
+    waves2 = wave_points_svg(512 * 0.68, 512 * 0.052, 512 * 0.088)
     lines = [
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PantauPesisir">',
         '  <rect width="512" height="512" rx="113" fill="#1a3a38"/>',
