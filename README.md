@@ -8,21 +8,20 @@
   <a href="https://pantaupesisir-api.vercel.app/docs"><strong>Dokumentasi API</strong></a>
 </p>
 
-name: "PantauPesisir — Cek Kondisi Laut",
-
 PantauPesisir membantu **warga pesisir dan pengunjung pantai** memutuskan apakah aman untuk ke laut:
-beranda memberi jawaban sederhana — aman, hati-hati, atau tunda — dari telemetri buoy, metadata
-satelit Copernicus, dan analitik risiko. Untuk pengguna lanjutan, konsol teknis menyediakan grafik,
-provenance, model anomaly detection, dan status sumber data.
+beranda memperlihatkan contoh putusan sederhana (aman, hati-hati, atau tunda), dan halaman **Cek
+kondisi** menghitung putusan itu dari telemetri buoy, metadata satelit Copernicus, dan analitik risiko.
+Untuk pengguna lanjutan, konsol teknis menyediakan grafik, provenance, model anomaly detection, dan
+status sumber data.
 
 > **Provenans data.** Metadata satelit dan thumbnail adalah akuisisi historis Copernicus yang nyata.
 > Model dilatih pada observasi NOAA NDBC yang nyata. Telemetri buoy mengalir melalui jalur ingesti,
 > gerbang validasi, dan catatan provenans yang sama dengan perangkat lapangan, sehingga gateway mitra
 > dapat terhubung tanpa perubahan UI atau skema.
 >
-> **Status pengumpulan:** kode sumber lengkap, 40 pengujian otomatis lulus, aplikasi live di
-> <https://pantaupesisir.vercel.app>, video demo telah dibuat (`docs/DEMO_VIDEO.md`); langkah
-> deployment ada di bagian 9.
+> **Status pengumpulan:** kode sumber lengkap, 44 pengujian otomatis lulus, aplikasi live di
+> <https://pantaupesisir.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
+> untuk video demo ada di `docs/DEMO_SCRIPT.md`.
 
 ---
 
@@ -39,7 +38,7 @@ provenance, model anomaly detection, dan status sumber data.
 | Penjelasan AI | Faktor penyumbang, jendela, versi model, keterbatasan, kualitas data; Kabar Laut di `/ringkasan` | ✅ live |
 | Peringatan | Pemberitahuan aktif tanpa login, deduplikasi, dan berakhir otomatis setelah 6 jam | ✅ pengujian + live |
 | Degradasi | Metadata satelit di-cache dengan tanggal akuisisi asli; status kegagalan penyedia yang eksplisit | ✅ pengujian |
-| Dasbor | 8 halaman responsif yang hanya membaca dari API | ✅ diperiksa di browser |
+| Dasbor | 10 rute aplikasi plus halaman `/offline`, semuanya responsif dan hanya membaca dari API | ✅ diperiksa di browser |
 | PWA | Manifest + ikon 192/512/maskable, service worker (app-shell + cache runtime), halaman offline, pintasan aplikasi | ✅ build + endpoint |
 
 Semua yang terlihat di UI terhubung ke backend. Tidak ada metrik placeholder, tidak ada grafik
@@ -62,7 +61,9 @@ PantauPesisir punya dua lapisan. **Beranda `/`** ditujukan untuk warga pesisir d
 pilih lokasi dan aktivitas, lalu dapatkan jawaban sederhana — aman, hati-hati, atau tunda — beserta
 alasannya dalam bahasa sehari-hari. Halaman **Belajar** menjelaskan istilah laut dan membiarkan
 pengguna mencoba slider ombak/angin. **Konsol `/konsol`** ditujukan untuk pengguna lanjutan dan
-penilaian teknis, dibuka lewat tombol **Mode Admin (demo)** di sidebar warga.
+penilaian teknis, dibuka lewat tombol **Mode operator** di header. Navigasi warga berisi Cek kondisi,
+Kabar laut, Belajar, dan Peringatan; konsol memakai navigasi terpisah (Ringkasan, Pemantauan laut,
+Satelit, Analisis AI, Sumber & sistem) beserta tombol **Mode warga** untuk kembali.
 
 ![Beranda PantauPesisir](docs/screenshots/beranda.png)
 
@@ -72,11 +73,11 @@ endpoint publik, tanpa akun.
 
 | Rute | Ruang kerja |
 | --- | --- |
-| **`/` Beranda** | Halaman publik: penjelasan singkat produk, tiga kelompok pengguna beserta batas ombaknya, cara kerja tiga langkah, catatan provenans data, dan ajakan membuka alat pemeriksaan |
+| **`/` Beranda** | Halaman publik dengan frame sendiri: penjelasan singkat produk, tiga kelompok pengguna beserta batas ombaknya, cara kerja empat langkah, catatan provenans data, dan ajakan membuka alat pemeriksaan |
 | **`/cek` Cek Kondisi** | Pilih pantai/lokasi dan rencana aktivitas (perahu kecil, wisata pantai, kapal/pelabuhan); hasil berupa status **Aman / Hati-hati / Tunda**, alasan singkat (ombak, angin, peringatan aktif), grafik ombak 24 jam dengan garis batas aman aktivitas, peta tiga pantai yang dipantau (klik untuk memilih), tombol bagikan WhatsApp, dan tautan ke detail teknis |
-| **`/ringkasan` Kabar Laut** | Dua kalimat bahasa sehari-hari per pantai dan aktivitas, dibuat dari data dan status sistem; tersedia fallback template bila penyedia bahasa tidak tersedia |
+| **`/ringkasan` Kabar Laut** | Dua kalimat bahasa sehari-hari untuk pantai dan aktivitas yang dipilih, dibuat dari data dan status sistem; tersedia fallback template bila penyedia bahasa tidak tersedia |
 | **`/belajar` Belajar** | Kamus istilah laut (ombak, periode, angin, tekanan, peringatan) dan eksperimen slider ombak/angin per aktivitas |
-| **`/konsol` Ringkasan teknis** | Baris KPI (titik buoy, rata-rata gelombang, peringatan terbuka, rekaman satelit, model), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |
+| **`/konsol` Ringkasan teknis** | Baris KPI (situs buoy, rata-rata tinggi gelombang, peringatan terbuka, rekaman Sentinel-2, rasio penandaan jendela normal), grafik keadaan laut dengan cakupan per zona/rata-rata, daftar status zona, snapshot AI dengan faktor penyumbang, antrean peringatan, kesegaran sumber dan status gateway telemetri |
 | **`/ocean`** | Telemetri tujuh parameter, grafik gelombang/angin dan tekanan/periode, tabel pembacaan, panel provenans lengkap, kontrol simulator |
 | **`/satellite`** | Peta Leaflet (poligon zona, buoy, footprint Sentinel-2), formulir sinkronisasi STAC nyata, galeri akuisisi dengan quicklook, tutupan awan, CRS dan atribusi |
 | **`/ai`** | Kartu model, formulir eksekusi, indeks anomali pada skala ambang terkalibrasi, skor risiko, faktor penyumbang, rekomendasi, keterbatasan dan riwayat analisis |
@@ -102,12 +103,18 @@ setelah 6 jam. Kunci disimpan di `sessionStorage`, tidak pernah di cookie atau a
 
 ### Bahasa visual
 
-Satu sistem, diterapkan secara konsisten: permukaan kertas hangat (`#f4f2ec`), chrome tinta laut
-dalam (`#123f46`), satu **merah sinyal** (`#d93a2b`) yang dikhususkan untuk risiko dan
-perhatian — tidak pernah untuk dekorasi. Tipografi memakai Manrope untuk antarmuka, Space Grotesk
-untuk judul tampilan, JetBrains Mono untuk setiap angka agar kolom sejajar. Provenans data selalu
-diberi label teks (`Telemetri buoy`, `Satelit · historis`, `Keluaran model`), tidak pernah warna saja.
-Gerak dibatasi pada reveal singkat saat pemuatan dan dinonaktifkan pada `prefers-reduced-motion`.
+Satu sistem, diterapkan secara konsisten: **merah di atas putih**. Merah merek `#d01f16`
+(`--color-ground`, dengan `--color-ground-deep` `#a5140d` untuk keadaan tekan) dipakai pada wordmark,
+aksi utama, penanda navigasi aktif, dan label eyebrow; ground halaman putih `#ffffff` dengan panel
+`#f7f5f5` dan garis rambut `#e7e3e3`. Teks memakai tinta `#0e1b26`. Status memakai tiga warna
+terpisah: merah sinyal `#c9200f` untuk tunda dan risiko tinggi, amber `#a34a06` untuk waspada, dan
+teal `#0d6f63` untuk aman. Tipografi memakai IBM Plex Sans untuk antarmuka, Barlow Condensed untuk
+judul dan verdict, IBM Plex Mono untuk setiap angka agar kolom sejajar. Kartu berbingkai garis rambut
+di atas putih, CTA berbentuk pill merah, tombol sekunder berbingkai pill, navigasi desktop berupa
+underline merah pada item aktif, dan bottom-nav mobile memakai tab `rounded-2xl`. Provenans data
+selalu diberi label teks (`Telemetri buoy`, `Satelit · historis`, `Keluaran model`), tidak pernah
+warna saja. Gerak dibatasi pada reveal singkat saat pemuatan dan dinonaktifkan pada
+`prefers-reduced-motion`.
 
 ## 3. Mulai cepat
 
@@ -169,7 +176,7 @@ sesungguhnya; kunci demo bukan kredensial produksi istimewa.
 ```bash
 cd backend
 python -m pytest -q
-# 37 passed (SQLite, isolated temp database, seeded fixtures)
+# 44 passed (SQLite, isolated temp database, seeded fixtures)
 ```
 
 Bangun ulang model dan periksa kewajarannya:
@@ -263,11 +270,11 @@ backend/
   scripts/        fetch_training_data.py · train_model.py · bootstrap_demo.py · check_model_behavior.py
   alembic/        initial migration (PostGIS extension + GiST indexes on PostgreSQL)
   ml/             features, calibration, rubric, artifacts (joblib + metrics)
-  tests/          37 pytest tests
+  tests/          44 pytest tests
 frontend/
-  app/            Cek Kondisi, Kabar Laut, Belajar, Konsol, Ocean, Satellite, AI, Alerts, Sources
-  components/     header/footer, charts, map, simulator, UI primitives
-  lib/            API client, types, hooks, formatting
+  app/            beranda, Cek Kondisi, Kabar Laut, Belajar, Peringatan, Konsol, Ocean, Satellite, AI, Sources, Offline, api/ringkasan
+  components/     shell (nav + bottom-nav), dashboard, warga, charts, zone-map, simulator, UI primitives
+  lib/            API client, coastal thresholds, types, hooks, formatting
 docs/             architecture, API, data catalog, provenance, model card, schema, tests, demo, checklist
 data/             local SQLite database, cached quicklooks, raw downloads (gitignored)
 ```
@@ -347,7 +354,7 @@ Data: NOAA NDBC (domain publik), Copernicus Data Space Ecosystem (data Sentinel 
 OpenStreetMap (ODbL, hanya peta dasar).
 
 Bantuan AI: sebagian perancah implementasi, teks UI dan dokumentasi disusun dengan asisten pengodean
-AI. Arsitektur, aturan validasi data, perilaku API, evaluasi model dan 40 pengujian otomatis
+AI. Arsitektur, aturan validasi data, perilaku API, evaluasi model dan 44 pengujian otomatis
 dirancang, dijalankan dan ditinjau oleh tim — setiap dataset, endpoint dan hasil yang dilaporkan dalam
 repositori ini diverifikasi dengan menjalankannya, bukan diambil dari teks yang dihasilkan. Bantuan
 ini dideklarasikan di sini dan dalam proposal, sesuai persyaratan panduan IT RUSH 2026

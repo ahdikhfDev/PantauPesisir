@@ -58,7 +58,7 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 
 | Kriteria (bobot) | Cara PantauPesisir menjawabnya | Bukti |
 | --- | --- | --- |
-| Fungsionalitas situs web & kualitas teknis (25%) | Irisan vertikal API/basis data/ML/UI yang berfungsi, validasi, uji, status error/kosong/basi, konfigurasi siap penerapan | 37 uji, pemeriksaan API live, build |
+| Fungsionalitas situs web & kualitas teknis (25%) | Irisan vertikal API/basis data/ML/UI yang berfungsi, validasi, uji, status error/kosong/basi, konfigurasi siap penerapan | 44 uji, pemeriksaan API live, build |
 | Inovasi & ketepatan solusi (20%) | Pemisahan deteksi anomali perilaku dan tingkat keparahan absolut; integrasi penyedia terverifikasi; ambang terkalibrasi dengan keterbatasan yang dipublikasikan | Model card, UI `/ai` |
 | Relevansi tema & dampak (15%) | Subtema 3: intelijen kondisi pesisir terverifikasi bagi nelayan, usaha kecil, operator pelabuhan | README §10, teks rekomendasi |
 | Desain UI/UX (15%) | Desain responsif yang dirancang khusus, badge sumber data yang konsisten, satuan di mana-mana, kaveat yang jujur | 6 laman, tangkapan layar di `docs/screenshots/` |

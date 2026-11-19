@@ -45,7 +45,7 @@ backend/            FastAPI + SQLAlchemy + Alembic
   app/api/v1/routers/   zones, buoy, alerts, analytics, satellite, simulator, system, ingestion
   app/services/         simulator, ingestion, analytics, alert_lifecycle, satellite
   app/ml/               features, inference (Isolation Forest .npz), rubric
-  tests/                41 uji pytest
+  tests/                44 uji pytest
 frontend/           Next.js App Router (TypeScript, Tailwind)
   app/                  rute warga + konsol + /api/ringkasan
   components/           shell (navigasi), charts, simulator-panel, ui
@@ -145,7 +145,7 @@ cd backend && pytest -q
 cd frontend && npx tsc --noEmit && npm run build
 ```
 
-Status terakhir: **41 uji lulus**, `tsc` bersih, `next build` sukses.
+Status terakhir: **44 uji lulus**, `tsc` bersih, `next build` sukses.
 
 ---
 
