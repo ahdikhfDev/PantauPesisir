@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pantaupesisir-three.vercel.app"><strong>Aplikasi live</strong></a>
+  <a href="https://pantaupesisir.vercel.app"><strong>Aplikasi live</strong></a>
   ·
   <a href="https://pantaupesisir-api-lovat.vercel.app/api/v1/docs"><strong>Dokumentasi API</strong></a>
 </p>
@@ -20,7 +20,7 @@ status sumber data.
 > dapat terhubung tanpa perubahan UI atau skema.
 >
 > **Status pengumpulan:** kode sumber lengkap, 44 pengujian otomatis lulus, aplikasi live di
-> <https://pantaupesisir-three.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
+> <https://pantaupesisir.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
 > untuk video demo ada di `docs/DEMO_SCRIPT.md`.
 
 ---
@@ -285,7 +285,7 @@ Status per 18 November 2026:
 
 | Komponen | Status |
 | --- | --- |
-| Frontend | **Live** di <https://pantaupesisir-three.vercel.app> (Vercel, root `frontend/`) |
+| Frontend | **Live** di <https://pantaupesisir.vercel.app> (Vercel, root `frontend/`) |
 | API | **Live** di <https://pantaupesisir-api-lovat.vercel.app> (Vercel Python, root `backend/`, entri `api/index.py`) |
 | Basis data | **Live** di Supabase PostgreSQL 17 + PostGIS 3.3.7 (11 tabel + `alembic_version`) |
 

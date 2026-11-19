@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: Kirim batch telemetri ke API
         env:
-          API_BASE: https://pantaupesisir-api.vercel.app
-          API_KEY: pantaupesisir-demo-2026
+          API_BASE: https://pantaupesisir-api-lovat.vercel.app
+          API_KEY: pantaupesisir-operator-2026
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --max-time 120 \

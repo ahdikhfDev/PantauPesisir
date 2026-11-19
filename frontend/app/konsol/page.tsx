@@ -204,7 +204,7 @@ export default function OverviewPage() {
           Sumber: telemetri buoy tervalidasi · Citra satelit historis Copernicus · Keluaran model
           analitik
         </p>
-        <Link href="/sources" className="shrink-0 text-ink ink-underline hover:text-signal">
+        <Link href="/sources" className="shrink-0 text-ink ink-underline hover:text-ground">
           Rantai data
         </Link>
       </div>

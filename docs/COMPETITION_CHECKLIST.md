@@ -9,7 +9,7 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 
 | Persyaratan | Status | Bukti / tindakan |
 | --- | --- | --- |
-| Aplikasi web, publik dan telah diterapkan | ✅ | <https://pantaupesisir-three.vercel.app> (frontend) dan <https://pantaupesisir-api-lovat.vercel.app/api/v1> (API). Basis data Supabase PostgreSQL 17 + PostGIS 3.3.7. |
+| Aplikasi web, publik dan telah diterapkan | ✅ | <https://pantaupesisir.vercel.app> (frontend) dan <https://pantaupesisir-api-lovat.vercel.app/api/v1> (API). Basis data Supabase PostgreSQL 17 + PostGIS 3.3.7. |
 | Repositori GitHub/GitLab publik | ✅ | <https://github.com/ahdikhfDev/Ahdi-Syamil-Lomba> |
 | AI terintegrasi pada setidaknya satu fitur | ✅ | Penyaringan anomali Isolation Forest + rubrik risiko transparan; laman `/ai`; model card. |
 | Situs aktif tetap tersedia hingga 30 Nov 2026 | 🟡 | Sudah aktif. Perlu pemeriksaan berkala sampai 30 November 2026. |

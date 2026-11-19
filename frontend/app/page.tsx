@@ -106,9 +106,9 @@ function Wordmark() {
  */
 async function Board() {
   const [zones, latest, alerts] = await Promise.all([
-    apiGet<Zone[]>("/coastal/zones", 8000).catch(() => [] as Zone[]),
-    apiGet<LatestResponse>("/buoy/latest", 8000).catch(() => null),
-    apiGet<AlertList>("/alerts?status=open", 8000).catch(() => null),
+    apiGet<Zone[]>("/coastal/zones", 20000).catch(() => [] as Zone[]),
+    apiGet<LatestResponse>("/buoy/latest", 20000).catch(() => null),
+    apiGet<AlertList>("/alerts?status=open", 20000).catch(() => null),
   ]);
 
   const zone = zones[0] ?? null;
@@ -306,7 +306,7 @@ export default function LandingPage() {
                 },
               ].map((item) => (
                 <div key={item.title}>
-                  <p className="metric text-[32px] leading-none font-semibold text-signal">{item.stat}</p>
+                  <p className="metric text-[32px] leading-none font-semibold text-ground">{item.stat}</p>
                   <h3 className="mt-2.5 text-[18px] text-ink">{item.title}</h3>
                   <p className="mt-1.5 text-[14.5px] leading-[1.6] text-ink-soft">{item.body}</p>
                 </div>

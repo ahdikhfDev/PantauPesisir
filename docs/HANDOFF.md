@@ -15,7 +15,7 @@ Sudah ter-deploy dan dipakai untuk lomba:
 
 | Komponen | URL |
 | --- | --- |
-| Frontend (Next.js) | https://pantaupesisir-three.vercel.app |
+| Frontend (Next.js) | https://pantaupesisir.vercel.app |
 | API (FastAPI di Vercel) | https://pantaupesisir-api-lovat.vercel.app/api/v1 |
 | Basis data | Supabase PostgreSQL + PostGIS (pooler port 6543) |
 

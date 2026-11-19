@@ -98,7 +98,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </a>
 
       {/* Status rail. Red is the brand; it greys out when the server is gone. */}
-      <div className={cn("h-[3px] w-full", down ? "bg-line-strong" : "bg-signal")} aria-hidden />
+      <div className={cn("h-[3px] w-full", down ? "bg-line-strong" : "bg-ground")} aria-hidden />
 
       <header>
         <div className="container-x flex h-[58px] items-center justify-between gap-4">
@@ -143,12 +143,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "relative flex h-11 items-center gap-2 px-3.5 text-[14px] transition-colors",
                   active
-                    ? "font-semibold text-ink after:absolute after:inset-x-3 after:-bottom-px after:h-[2px] after:bg-signal"
+                    ? "font-semibold text-ink after:absolute after:inset-x-3 after:-bottom-px after:h-[2px] after:bg-ground"
                     : "text-ink-soft hover:text-ink",
                 )}
               >
                 <item.icon
-                  className={cn("h-[15px] w-[15px]", active ? "text-signal" : "text-muted")}
+                  className={cn("h-[15px] w-[15px]", active ? "text-ground" : "text-muted")}
                   strokeWidth={2}
                   aria-hidden
                 />
@@ -200,7 +200,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "mx-0.5 my-2 flex h-[52px] flex-col items-center justify-center gap-[5px] rounded-2xl px-1 pb-1 text-[12.5px] leading-none transition-colors",
-                    active ? "bg-signal-soft font-semibold text-signal" : "text-muted",
+                    active ? "bg-ground/8 font-semibold text-ground" : "text-muted",
                   )}
                 >
                   <item.icon className="h-[19px] w-[19px]" strokeWidth={active ? 2.2 : 1.8} aria-hidden />

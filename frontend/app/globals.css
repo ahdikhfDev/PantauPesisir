@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 /*
-  A coastal safety console. The identity is red on white — red is the brand, the
-  action, and the alarm, all one red, because a warning tool that looks like a
-  warning tool is doing its job. Severity never rests on colour alone: every
-  state also carries a word and an icon.
+  A coastal safety console. The identity is deep green on white, taken from the
+  brand mark: green carries the brand, the action, and the calm-water register.
+  Red is reserved for the one thing it must never be confused with — the stop
+  verdict. Severity never rests on colour alone: every state also carries a word
+  and an icon.
 */
 
 @theme {
-  /* The brand red. Wordmark, primary actions, active nav, eyebrow labels. */
-  --color-ground: #d01f16;
-  --color-ground-deep: #a5140d;
+  /* The brand green, sampled from the logo field. Wordmark, primary actions,
+     active nav, eyebrow labels, signal rails. */
+  --color-ground: #1a3a38;
+  --color-ground-deep: #102726;
 
   --color-paper: #ffffff;
   --color-surface: #f7f5f5;
@@ -31,10 +33,10 @@
   --color-amber: #a34a06;
   --color-amber-soft: rgba(163, 74, 6, 0.09);
 
-  /* Clear. A teal, because "no hazard" should read as settled water, not as
-     another shade of alarm. */
-  --color-ok: #0d6f63;
-  --color-ok-soft: rgba(13, 111, 99, 0.1);
+  /* Clear. A brighter teal than the brand field, so "aman" reads as its own
+     register rather than as a tint of the chrome. */
+  --color-ok: #0f7b6c;
+  --color-ok-soft: rgba(15, 123, 108, 0.1);
 
   /* Secondary voice for series and labels. Dark enough to pass as body text
      (5.2:1 on white), because most of its uses are words, not fills. */
@@ -124,18 +126,18 @@
   }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.1em] text-signal uppercase;
+    @apply inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.1em] text-ground uppercase;
   }
 
   .eyebrow::before {
     content: "";
-    @apply block h-[2px] w-4 bg-signal;
+    @apply block h-[2px] w-4 bg-ground;
   }
 
   /* The same label without the rule, for places already inside a bordered card
      where a second leading mark would just be clutter. */
   .eyebrow-plain {
-    @apply text-[12px] font-semibold tracking-[0.1em] text-signal uppercase;
+    @apply text-[12px] font-semibold tracking-[0.1em] text-ground uppercase;
   }
 
   /* The sign face. One per screen, at the size a driver reads from a distance. */
