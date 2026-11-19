@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://pantaupesisir.vercel.app"><strong>Aplikasi live</strong></a>
+  <a href="https://pantaupesisir-three.vercel.app"><strong>Aplikasi live</strong></a>
   ·
-  <a href="https://pantaupesisir-api.vercel.app/docs"><strong>Dokumentasi API</strong></a>
+  <a href="https://pantaupesisir-api-lovat.vercel.app/api/v1/docs"><strong>Dokumentasi API</strong></a>
 </p>
 
 PantauPesisir membantu **warga pesisir dan pengunjung pantai** memutuskan apakah aman untuk ke laut:
@@ -20,7 +20,7 @@ status sumber data.
 > dapat terhubung tanpa perubahan UI atau skema.
 >
 > **Status pengumpulan:** kode sumber lengkap, 44 pengujian otomatis lulus, aplikasi live di
-> <https://pantaupesisir.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
+> <https://pantaupesisir-three.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
 > untuk video demo ada di `docs/DEMO_SCRIPT.md`.
 
 ---
@@ -285,8 +285,8 @@ Status per 18 November 2026:
 
 | Komponen | Status |
 | --- | --- |
-| Frontend | **Live** di <https://pantaupesisir.vercel.app> (Vercel, root `frontend/`) |
-| API | **Live** di <https://pantaupesisir-api.vercel.app> (Vercel Python, root `backend/`, entri `api/index.py`) |
+| Frontend | **Live** di <https://pantaupesisir-three.vercel.app> (Vercel, root `frontend/`) |
+| API | **Live** di <https://pantaupesisir-api-lovat.vercel.app> (Vercel Python, root `backend/`, entri `api/index.py`) |
 | Basis data | **Live** di Supabase PostgreSQL 17 + PostGIS 3.3.7 (11 tabel + `alembic_version`) |
 
 API berjalan sebagai Vercel Function. Agar muat pada batas 250 MB per fungsi, Isolation Forest
@@ -302,7 +302,7 @@ Langkah penerapan:
 1. Deploy API dari `backend/`: `vercel deploy --prod`. Variabel wajib: `DATABASE_URL` (Session
    pooler Supabase dengan `postgresql+psycopg://` dan `?sslmode=require`), `DEMO_API_KEY`,
    `API_SECRET_KEY`, `CORS_ORIGINS`, `FRESHNESS_WINDOW_SECONDS`.
-2. Set `NEXT_PUBLIC_API_BASE_URL=https://pantaupesisir-api.vercel.app/api/v1` pada project
+2. Set `NEXT_PUBLIC_API_BASE_URL=https://pantaupesisir-api-lovat.vercel.app/api/v1` pada project
    frontend, lalu redeploy. Untuk ringkasan AI, tambahkan `AI_API_KEY` (server-only),
    `AI_BASE_URL` (default `https://api.thirtystore.com/v1`), dan `AI_MODEL`
    (default `thirty/deepseek-v4.1-flash-1017`).

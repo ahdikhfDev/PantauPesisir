@@ -9,12 +9,12 @@ import {
   Ship,
   ShieldCheck,
   TriangleAlert,
-  Waves,
   XCircle,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Logo } from "@/components/logo";
 import { apiGet } from "@/lib/api";
 import { assessConditions, type Level } from "@/lib/coastal";
 import { cn, formatAge } from "@/lib/format";
@@ -90,9 +90,7 @@ const TRUST = [
 function Wordmark() {
   return (
     <Link href="/" className="flex items-center gap-2.5 text-ink">
-      <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-signal text-white">
-        <Waves className="h-[19px] w-[19px]" strokeWidth={2} aria-hidden />
-      </span>
+      <Logo size={36} />
       <span className="font-display text-[24px] leading-none font-semibold tracking-[-0.01em]">
         PantauPesisir
       </span>
@@ -498,9 +496,7 @@ export default function LandingPage() {
         <div className="container-x grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <Link href="/" className="flex items-center gap-2.5 text-ink">
-              <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-signal text-white">
-                <Waves className="h-[19px] w-[19px]" strokeWidth={2} aria-hidden />
-              </span>
+              <Logo size={36} />
               <span className="font-display text-[24px] leading-none font-semibold tracking-[-0.01em]">
                 PantauPesisir
               </span>

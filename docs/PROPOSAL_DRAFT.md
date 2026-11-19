@@ -5,7 +5,7 @@
 
 Tim: **[NAMA TIM]**
 Anggota: **[ANGGOTA 1]**, **[ANGGOTA 2]**
-Situs: <https://pantaupesisir.vercel.app> · API: <https://pantaupesisir-api.vercel.app/api/v1>
+Situs: <https://pantaupesisir-three.vercel.app> · API: <https://pantaupesisir-api-lovat.vercel.app/api/v1>
 Repositori: <https://github.com/ahdikhfDev/Ahdi-Syamil-Lomba>
 
 > Catatan penyusun: draf ini disusun dari isi repositori (README, `docs/`) per 18 November 2026.
@@ -463,7 +463,7 @@ gratis/terbuka), OpenStreetMap (ODbL, hanya peta dasar).
 7. Dokumentasi internal proyek: `README.md`; `docs/ARCHITECTURE.md`; `docs/AI_MODEL_CARD.md`;
    `docs/DATA_CATALOG.md`; `docs/DATA_PROVENANCE.md`; `docs/DATABASE_SCHEMA.md`;
    `docs/API_CONTRACT.md`; `docs/TEST_PLAN.md`; `docs/DEMO_SCRIPT.md`.
-8. Karya: PantauPesisir. <https://pantaupesisir.vercel.app> ·
+8. Karya: PantauPesisir. <https://pantaupesisir-three.vercel.app> ·
    <https://github.com/ahdikhfDev/Ahdi-Syamil-Lomba>
 
 ---

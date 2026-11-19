@@ -9,15 +9,15 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 
 | Persyaratan | Status | Bukti / tindakan |
 | --- | --- | --- |
-| Aplikasi web, publik dan telah diterapkan | ⛔ | Kode sumber lengkap; terapkan `frontend/` + `backend/` + PostGIS (langkah di README §9). Memerlukan kredensial tim. |
-| Repositori GitHub/GitLab publik | ⛔ | Repositori lokal belum diinisialisasi. Jalankan `git init`, tambahkan commit secara bertahap, publikasikan. Jangan menulis ulang riwayat. |
+| Aplikasi web, publik dan telah diterapkan | ✅ | <https://pantaupesisir-three.vercel.app> (frontend) dan <https://pantaupesisir-api-lovat.vercel.app/api/v1> (API). Basis data Supabase PostgreSQL 17 + PostGIS 3.3.7. |
+| Repositori GitHub/GitLab publik | ✅ | <https://github.com/ahdikhfDev/Ahdi-Syamil-Lomba> |
 | AI terintegrasi pada setidaknya satu fitur | ✅ | Penyaringan anomali Isolation Forest + rubrik risiko transparan; laman `/ai`; model card. |
-| Situs aktif tetap tersedia hingga 30 Nov 2026 | ⛔ | Menyusul penerapan; atur pengingat dan pemeriksaan uptime. |
+| Situs aktif tetap tersedia hingga 30 Nov 2026 | 🟡 | Sudah aktif. Perlu pemeriksaan berkala sampai 30 November 2026. |
 | Tech stack gratis / templat diungkapkan | ✅ | README §12 mengungkapkan pustaka, data, dan bantuan AI. |
-| Login demo (jika login tersedia) | ✅ (n/a) | Tidak ada login pengguna. Kunci demo publik `pantaupesisir-demo-2026` didokumentasikan di README; tidak ada kredensial istimewa yang terekspos. |
+| Login demo (jika login tersedia) | ✅ (n/a) | Tidak ada login pengguna. Kunci demo publik `pantaupesisir-operator-2026` hanya membuka kendali simulator dan analisis, didokumentasikan di README; tidak ada kredensial istimewa yang terekspos. |
 | Video demo YouTube tidak publik, 3–5 menit | ⛔ | Naskah siap: `docs/DEMO_SCRIPT.md` (4:00). |
-| Proposal PDF `ITRUSH26_Nama Tim_JudulKarya.pdf` | ⛔ | Konten tersedia di README/docs; perlu pemformatan dan pengumpulan oleh tim. |
-| Pernyataan orisinalitas dan AI dalam PDF (templat penyelenggara) | ⛔ | Gunakan templat penyelenggara; ungkapkan bantuan pengodean AI dan pustaka open-source. |
+| Proposal PDF `ITRUSH26_Nama Tim_JudulKarya.pdf` | 🟡 | `docs/PROPOSAL_PantauPesisir.docx` sudah mengikuti templat resmi (BAB I-IV + Daftar Pustaka, 14 rujukan). Sisa: isi `[NAMA TIM]`, `[NIM]`, `[LOGO WEBSITE]`, lalu ekspor ke PDF dengan nama berkas yang benar. |
+| Pernyataan orisinalitas dan AI dalam PDF (templat penyelenggara) | 🟡 | `docs/PERNYATAAN_PantauPesisir.docx` sudah memakai templat resmi dengan opsi "Menggunakan AI" tercentang dan empat baris pengungkapan. Sisa: isi identitas tim, materai, ekspor PDF. |
 | Dokumen pendaftaran / bukti peserta | ⛔ | Tanggung jawab tim; tidak ditangani di repositori ini. |
 
 ## 2. Kriteria penerimaan fungsional
@@ -33,7 +33,7 @@ Legenda status: ✅ selesai · 🟡 selesai sebagian / perlu tindakan tim · ⛔
 | 7 | Analisis risiko jelas dan dapat ditelusuri | ✅ | Kaveat, versi rubrik, kata-kata rekomendasi |
 | 8 | Frontend menampilkan data backend, bukan nilai hard-coded | ✅ | Semua laman mengambil `/api/v1` |
 | 9 | Kegagalan penyedia tidak mengganggu pemantauan buoy | ✅ | Uji fallback + baris status |
-| 10 | Situs web publik dan repositori publik tersedia | ⛔ | Penerapan + publikasi repo masih tertunda |
+| 10 | Situs web publik dan repositori publik tersedia | ✅ | Frontend, API, dan repositori publik sudah live |
 | 11 | README, katalog data, model card, penyiapan lengkap | ✅ | README + `docs/*` |
 | 12 | Tidak ada klaim peringatan operasional yang keliru | ✅ | Teks, kaveat, dan model card |
 

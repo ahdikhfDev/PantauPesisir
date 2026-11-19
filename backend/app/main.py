@@ -65,8 +65,10 @@ app = FastAPI(
         "risk rubric."
     ),
     lifespan=lifespan,
-    docs_url="/docs",
-    redoc_url="/redoc",
+    # Served under the API prefix: the Vercel entrypoint only forwards paths that
+    # start with /api/, so a root-level /docs would fall through to a 404.
+    docs_url=f"{settings.api_v1_prefix}/docs",
+    redoc_url=f"{settings.api_v1_prefix}/redoc",
     openapi_url=f"{settings.api_v1_prefix}/openapi.json",
 )
 

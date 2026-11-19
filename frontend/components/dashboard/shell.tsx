@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 
 import type { LucideIcon } from "lucide-react";
 
+import { Logo } from "@/components/logo";
 import { cn, formatShortWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { SystemHealth } from "@/lib/types";
@@ -44,9 +45,7 @@ const CONSOLE_PREFIXES = ["/konsol", "/ocean", "/satellite", "/ai", "/sources"];
 function Wordmark({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2.5" aria-label="PantauPesisir, beranda">
-      <span className="grid h-8 w-8 place-items-center rounded-[9px] bg-signal text-white">
-        <Waves className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
-      </span>
+      <Logo size={32} />
       <span className="font-display text-[21px] leading-none font-semibold tracking-[-0.01em]">
         {compact ? "PP" : "PantauPesisir"}
       </span>
