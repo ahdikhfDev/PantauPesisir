@@ -46,3 +46,21 @@ Thumbs.db
 
 # --- deployment tooling ---
 .vercel/
+
+# --- competition deliverables: kept locally, never published ---
+/docs/PROPOSAL_*
+/docs/PERNYATAAN_*
+/docs/COMPETITION_CHECKLIST.md
+/docs/DEMO_SCRIPT.md
+/docs/VIDEO_SCRIPT.md
+/docs/HANDOFF.md
+/docs/screenshots/
+/docs/brand/
+/docs/figures/
+/docs/make_proposal_figures.py
+/video/
+/_voices.json
+/voice_*.wav
+/f_*.png
+/frame_intro.png
+/frontend/scripts/capture.js

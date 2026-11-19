@@ -359,12 +359,12 @@ curl "http://localhost:8000/api/v1/buoy/latest"
 # Privileged analysis
 curl -X POST "http://localhost:8000/api/v1/analytics/run" \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: pantaupesisir-demo-2026" \
+  -H "X-API-Key: pantaupesisir-operator-2026" \
   -d '{"zone_code":"JKT-BAY","window_minutes":60}'
 
 # Real Copernicus sync
 curl -X POST "http://localhost:8000/api/v1/satellite/sync" \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: pantaupesisir-demo-2026" \
+  -H "X-API-Key: pantaupesisir-operator-2026" \
   -d '{"zone_code":"JKT-BAY","date_from":"2026-10-19","date_to":"2026-11-18","max_cloud_cover_percent":40}'
 ```

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/brand/logo.png" alt="PantauPesisir" width="460">
+  <img src="frontend/public/brand/logo.svg" alt="PantauPesisir" width="460">
 </p>
 
 <p align="center">
@@ -20,8 +20,8 @@ status sumber data.
 > dapat terhubung tanpa perubahan UI atau skema.
 >
 > **Status pengumpulan:** kode sumber lengkap, 44 pengujian otomatis lulus, aplikasi live di
-> <https://pantaupesisir.vercel.app>; langkah deployment ada di bagian 9. Skrip dan daftar fitur
-> untuk video demo ada di `docs/DEMO_SCRIPT.md`.
+> <https://pantaupesisir.vercel.app>; langkah deployment ada di bagian 9. Alur klik untuk demo
+> ada di [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
@@ -65,8 +65,6 @@ penilaian teknis, dibuka lewat tombol **Mode operator** di header. Navigasi warg
 Kabar laut, Belajar, dan Peringatan; konsol memakai navigasi terpisah (Ringkasan, Pemantauan laut,
 Satelit, Analisis AI, Sumber & sistem) beserta tombol **Mode warga** untuk kembali.
 
-![Beranda PantauPesisir](docs/screenshots/beranda.png)
-
 Masuk ke alat pemeriksaan lewat tombol **Cek kondisi**. Halaman warga memuat status, grafik ombak
 dengan garis batas aman aktivitas, peta tiga pantai, dan tombol bagikan WhatsApp — semuanya dari
 endpoint publik, tanpa akun.
@@ -84,20 +82,14 @@ endpoint publik, tanpa akun.
 | **`/alerts`** | Daftar pemberitahuan aktif (read-only) dengan filter keparahan dan pantai; berakhir otomatis setelah 6 jam |
 | **`/sources`** | Kesehatan database/model/simulator/penyedia, kesegaran sumber, gerbang validasi, lineage dan permukaan API publik |
 
-Tangkapan layar lainnya: [cek kondisi](docs/screenshots/cek.png) ·
-[kabar laut](docs/screenshots/ringkasan.png) ·
-[belajar](docs/screenshots/belajar.png) ·
-[konsol](docs/screenshots/konsol.png) ·
-[ocean](docs/screenshots/ocean.png) ·
-[satellite](docs/screenshots/satellite.png) · [AI](docs/screenshots/ai.png) ·
-[alerts](docs/screenshots/alerts.png) · [sources](docs/screenshots/sources.png) ·
-[mobile](docs/screenshots/mobile.png).
+Aplikasi live menampilkan setiap halaman di atas dengan data sungguhan:
+<https://pantaupesisir.vercel.app>.
 
 ### Model akses
 
 Tidak ada **login**. Layar hanya-baca bersifat publik. Jalur tulis — ingesti buoy, skenario
 simulator, sinkronisasi satelit, dan eksekusi analisis — memerlukan header `X-API-Key` yang
-didokumentasikan (`pantaupesisir-demo-2026`) agar setiap kontrol dapat diuji dari antarmuka.
+didokumentasikan (`pantaupesisir-operator-2026`) agar setiap kontrol dapat diuji dari antarmuka.
 Pemberitahuan warga tidak memiliki aksi akui/selesai: tanpa akun, pemberitahuan berakhir sendiri
 setelah 6 jam. Kunci disimpan di `sessionStorage`, tidak pernah di cookie atau akun.
 
@@ -162,7 +154,7 @@ npm run dev                          # http://localhost:3000
 `DEMO_MODE=true` mengaktifkan kunci demo publik yang didokumentasikan:
 
 ```
-pantaupesisir-demo-2026
+pantaupesisir-operator-2026
 ```
 
 Kunci ini **hanya** membuka ingesti, kontrol simulator, sinkronisasi satelit, dan eksekusi analisis.
@@ -275,7 +267,7 @@ frontend/
   app/            beranda, Cek Kondisi, Kabar Laut, Belajar, Peringatan, Konsol, Ocean, Satellite, AI, Sources, Offline, api/ringkasan
   components/     shell (nav + bottom-nav), dashboard, warga, charts, zone-map, simulator, UI primitives
   lib/            API client, coastal thresholds, types, hooks, formatting
-docs/             architecture, API, data catalog, provenance, model card, schema, tests, demo, checklist
+docs/             architecture, API, data catalog, provenance, model card, schema, tests
 data/             local SQLite database, cached quicklooks, raw downloads (gitignored)
 ```
 
