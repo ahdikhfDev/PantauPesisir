@@ -91,8 +91,8 @@ export default function BelajarPage() {
       <section className="card p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-2 border-b border-line pb-3">
           <SlidersHorizontal className="h-4 w-4 text-ink" aria-hidden />
-          <h2 className="text-[19px]">Eksperimen kecil</h2>
-          <span className="ml-auto text-[13px] text-muted">angka contoh, bukan data langsung</span>
+          <h2 className="text-[19px]">Coba sendiri</h2>
+          <span className="ml-auto text-[13px] text-muted">nilai yang kamu atur sendiri</span>
         </div>
 
         <div className="mt-4 grid items-start gap-5 lg:grid-cols-2">

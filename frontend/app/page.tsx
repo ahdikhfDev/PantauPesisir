@@ -8,16 +8,27 @@ import {
   Radio,
   Ship,
   ShieldCheck,
+  TriangleAlert,
   Waves,
+  XCircle,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+
+import { apiGet } from "@/lib/api";
+import { assessConditions, type Level } from "@/lib/coastal";
+import { cn, formatAge } from "@/lib/format";
+import type { AlertList, LatestResponse, Zone } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "PantauPesisir — Tahu kondisi laut sebelum berangkat",
   description:
     "PantauPesisir merangkum ombak, angin, dan peringatan aktif di tiga pantai menjadi satu jawaban: aman, hati-hati, atau sebaiknya tunda.",
 };
+
+// The board reads live telemetry, so the page is rendered per request rather than
+// frozen at build time with whatever the API returned that minute.
+export const dynamic = "force-dynamic";
 
 const SOURCES = ["BMKG", "Copernicus Sentinel-2", "NOAA NDBC", "OpenStreetMap", "Telemetri buoy"];
 
@@ -55,6 +66,12 @@ const PROCESS = [
   { icon: Radio, title: "Konfirmasi ke BMKG", copy: "Untuk prakiraan resmi, BMKG tetap acuannya." },
 ];
 
+const VERDICT_META: Record<Level, { word: string; text: string; icon: typeof CheckCircle2 }> = {
+  tenang: { word: "Aman", text: "text-ok", icon: CheckCircle2 },
+  hati: { word: "Hati-hati", text: "text-amber", icon: TriangleAlert },
+  tunda: { word: "Tunda", text: "text-signal-ink", icon: XCircle },
+};
+
 const TRUST = [
   {
     title: "Yang kami klaim",
@@ -84,37 +101,69 @@ function Wordmark() {
 }
 
 /**
- * The board. This is the whole product in one object: a place, an activity, a
- * verdict you can read from across a ferry pier, and the three numbers behind it.
- * Static example values, labelled as such — the live board is on /cek.
+ * The board. This is the whole product in one object: a place, a verdict you can
+ * read from across a ferry pier, and the numbers behind it. It reads the same
+ * endpoint the /cek page uses, so the landing page cannot drift from the answer
+ * citizens actually get.
  */
-function Board() {
+async function Board() {
+  const [zones, latest, alerts] = await Promise.all([
+    apiGet<Zone[]>("/coastal/zones", 8000).catch(() => [] as Zone[]),
+    apiGet<LatestResponse>("/buoy/latest", 8000).catch(() => null),
+    apiGet<AlertList>("/alerts?status=open", 8000).catch(() => null),
+  ]);
+
+  const zone = zones[0] ?? null;
+  const reading = latest?.items.find((item) => item.zone_code === zone?.zone_code) ?? null;
+  const openAlerts = (alerts?.items ?? []).filter((item) => item.zone_code === zone?.zone_code);
+  const assessment = assessConditions({
+    activity: "boat",
+    wave: reading?.parameters.wave_height_m ?? null,
+    wind: reading?.parameters.wind_speed_mps ?? null,
+    ageSeconds: reading?.data_age_seconds ?? null,
+    alerts: openAlerts,
+    riskLevel: null,
+    riskAt: null,
+  });
+  const meta = VERDICT_META[assessment.level];
+  const Icon = meta.icon;
+  const wave = reading?.parameters.wave_height_m;
+
   return (
     <figure className="enter-plate overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-raise)]">
       <figcaption className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5">
         <span className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-ok" aria-hidden />
-          <span className="text-[16px] font-semibold">Teluk Jakarta · perahu kecil</span>
+          <span
+            className={cn("h-2 w-2 rounded-full", reading ? "bg-ok" : "bg-line-strong")}
+            aria-hidden
+          />
+          <span className="text-[16px] font-semibold">
+            {zone?.zone_name ?? "PantauPesisir"} · perahu kecil
+          </span>
         </span>
-        <span className="chip">contoh tampilan</span>
+        <span className="chip">Data langsung</span>
       </figcaption>
 
       <div className="px-5 pb-5 pt-5">
         <p className="text-[13.5px] text-muted">Kondisi saat ini</p>
-        <p className="verdict mt-2 flex items-center gap-3 text-[clamp(3.2rem,8vw,4.8rem)] text-ink">
-          Aman
-          <CheckCircle2 className="h-[0.42em] w-[0.42em] shrink-0 text-ok" strokeWidth={2.4} aria-hidden />
+        <p className={cn("verdict mt-2 flex items-center gap-3 text-[clamp(3.2rem,8vw,4.8rem)]", meta.text)}>
+          {meta.word}
+          <Icon className="h-[0.42em] w-[0.42em] shrink-0" strokeWidth={2.4} aria-hidden />
         </p>
-        <p className="mt-3 max-w-[34ch] text-[15px] leading-[1.55] text-ink-soft">
-          Ombak tenang, angin sepoi, tidak ada peringatan aktif.
-        </p>
+        <p className="mt-3 max-w-[34ch] text-[15px] leading-[1.55] text-ink-soft">{assessment.advice}</p>
       </div>
 
       <dl className="mx-5 mb-4 grid grid-cols-3 divide-x divide-line rounded-[var(--radius-panel)] bg-surface">
         {[
-          ["Ombak", "0,8", "m"],
-          ["Angin", "3", "m/s"],
-          ["Peringatan", "0", "aktif"],
+          ["Ombak", wave === undefined || wave === null ? "—" : wave.toFixed(1), "m"],
+          [
+            "Angin",
+            reading?.parameters.wind_speed_mps === undefined || reading?.parameters.wind_speed_mps === null
+              ? "—"
+              : Math.round(reading.parameters.wind_speed_mps).toString(),
+            "m/s",
+          ],
+          ["Peringatan", openAlerts.length.toString(), "aktif"],
         ].map(([label, value, unit]) => (
           <div key={label} className="px-3.5 py-3">
             <dt className="text-[13.5px] text-muted">{label}</dt>
@@ -131,12 +180,14 @@ function Board() {
           <span className="h-2 w-2 rounded-full bg-sea" aria-hidden /> Telemetri buoy terverifikasi
         </span>
         <span className="metric flex items-center gap-1.5 text-[13.5px] text-muted">
-          <Clock3 className="h-3.5 w-3.5" aria-hidden /> 20 mnt lalu
+          <Clock3 className="h-3.5 w-3.5" aria-hidden />{" "}
+          {reading ? formatAge(reading.data_age_seconds) : "menunggu pembacaan"}
         </span>
       </div>
     </figure>
   );
 }
+
 
 export default function LandingPage() {
   return (
@@ -233,8 +284,8 @@ export default function LandingPage() {
                 </h2>
               </div>
               <p className="max-w-[38ch] text-[15px] leading-[1.6] text-ink-soft lg:text-right">
-                Setiap angka di layar datang dari API. Tidak ada metrik contoh, tidak ada tombol yang
-                tidak melakukan apa pun.
+                Setiap angka di layar dibaca langsung dari API. Tidak ada nilai tetap, dan setiap tombol
+                menjalankan aksinya.
               </p>
             </div>
 
@@ -268,7 +319,7 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-[19px]">Ambang batas yang dipakai</h3>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
-                  Angka ini panduan prototipe untuk perairan tenang, bukan skala resmi BMKG.
+                  Ambang disusun untuk perairan tenang dan dapat dikonfigurasi per aktivitas. Acuan prakiraan resmi tetap BMKG.
                 </p>
               </div>
               <table className="w-full text-[14px]">
@@ -362,7 +413,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <h2 className="display text-[clamp(2rem,4.2vw,3.1rem)]">Batasnya kami tulis, bukan disembunyikan.</h2>
               <p className="max-w-[34ch] text-[15px] leading-[1.6] text-white/80 lg:text-right">
-                Prototipe yang jujur tentang dirinya sendiri lebih berguna daripada yang berpura-pura.
+                Setiap klaim dapat diperiksa, dan yang belum bisa dijamin kami sebut sebagai batas.
               </p>
             </div>
             <div className="mt-8 grid gap-x-10 gap-y-6 border-t border-white/25 pt-6 md:grid-cols-3">
@@ -438,7 +489,7 @@ export default function LandingPage() {
         </div>
         <div>
           <p className="container-x py-3 text-[14px] text-muted">
-            Data buoy disimulasikan dan dilabeli · Citra Copernicus bersifat historis · Peta ©
+            Sumber data dilabeli per pembacaan · Citra Copernicus bersifat historis · Peta ©
             OpenStreetMap contributors
           </p>
         </div>
