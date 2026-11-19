@@ -222,7 +222,7 @@ export default function RingkasanPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <p className="max-w-md text-[12.5px] leading-relaxed text-muted">
-            Untuk prakiraan resmi, cek BMKG sebelum berangkat.
+            Ringkasan diperbarui setiap kali pembacaan baru masuk.
           </p>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => reload(true)} disabled={loading} className="btn btn-ghost btn-sm">

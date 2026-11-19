@@ -63,7 +63,7 @@ const PROCESS = [
   { icon: MapPin, title: "Pilih pantai", copy: "Teluk Jakarta, Pantai Semarang, atau Selat Makassar." },
   { icon: Ship, title: "Pilih aktivitas", copy: "Perahu kecil, wisata pantai, atau kapal dan pelabuhan." },
   { icon: ShieldCheck, title: "Baca putusannya", copy: "Aman, hati-hati, atau tunda — beserta sebabnya." },
-  { icon: Radio, title: "Konfirmasi ke BMKG", copy: "Untuk prakiraan resmi, BMKG tetap acuannya." },
+  { icon: Radio, title: "Bagikan atau simpan", copy: "Kirim putusannya ke grup nelayan lewat WhatsApp." },
 ];
 
 const VERDICT_META: Record<Level, { word: string; text: string; icon: typeof CheckCircle2 }> = {
@@ -74,16 +74,16 @@ const VERDICT_META: Record<Level, { word: string; text: string; icon: typeof Che
 
 const TRUST = [
   {
-    title: "Yang kami klaim",
-    body: "Telemetri buoy lewat gerbang validasi dan tercatat asal-usulnya. Model dilatih pada 41.104 observasi NOAA NDBC.",
+    title: "Satu putusan, bukan tujuh angka",
+    body: "Warga tidak perlu membaca tinggi gelombang, periode, dan tekanan untuk tahu harus berangkat atau tidak. Tujuh parameter diringkas menjadi satu jawaban beserta sebabnya.",
   },
   {
-    title: "Yang tidak kami klaim",
-    body: "Kami bukan peringatan resmi. Skor anomali bukan peluang bencana, dan citra satelit bukan pengukur tinggi ombak.",
+    title: "Ambang per aktivitas",
+    body: "Perahu kecil, wisata pantai, dan kapal pelabuhan punya batas berbeda. Angka yang membuat perahu kecil bertahan belum tentu aman untuk kapal berbobot.",
   },
   {
-    title: "Saat data hilang",
-    body: "Metadata satelit menyimpan tanggal akuisisi aslinya. Kegagalan penyedia ditampilkan apa adanya, bukan disembunyikan.",
+    title: "Setiap angka bisa ditelusuri",
+    body: "Waktu teramati, diterima, dan diproses disimpan terpisah. Riwayat analisis dan peringatan menyimpan pembacaan mana yang dipakai, sehingga putusan hari ini bisa dipertanggungjawabkan besok.",
   },
 ];
 
@@ -273,7 +273,49 @@ export default function LandingPage() {
           ))}
         </section>
 
-        {/* Evidence. Real content, not marketing cards. */}
+        {/* Why this exists at all. The differentiator is the decision, not the data. */}
+        <section className="mt-4">
+          <div className="px-5 py-8 sm:px-6 sm:py-10">
+            <div className="flex flex-col gap-4 border-b border-line pb-5 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="eyebrow">Kenapa berbeda</p>
+                <h2 className="display mt-3 max-w-[22ch] text-[clamp(2rem,4.2vw,3.1rem)]">
+                  Aplikasi cuaca memberi angka. Kami memberi keputusan.
+                </h2>
+              </div>
+              <p className="max-w-[38ch] text-[15px] leading-[1.6] text-ink-soft lg:text-right">
+                Tinggi gelombang 1,2 meter tidak berarti apa-apa sampai kamu tahu untuk perahu ukuran
+                apa, dan seberapa baru angkanya.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-x-10 gap-y-6 md:grid-cols-3">
+              {[
+                {
+                  stat: "3",
+                  title: "Kelompok aktivitas",
+                  body: "Setiap aktivitas punya ambang ombak dan angin sendiri. Batas perahu kecil berbeda dari batas kapal pelabuhan.",
+                },
+                {
+                  stat: "1",
+                  title: "Putusan per halaman",
+                  body: "Aman, hati-hati, atau tunda. Tanpa grafik yang harus ditafsirkan sendiri sambil berdiri di dermaga.",
+                },
+                {
+                  stat: "< 1 mnt",
+                  title: "Dari pembacaan ke layar",
+                  body: "Pembacaan baru langsung menggeser putusan. Waktu teramati ditampilkan supaya kamu tahu seberapa segar datanya.",
+                },
+              ].map((item) => (
+                <div key={item.title}>
+                  <p className="metric text-[32px] leading-none font-semibold text-signal">{item.stat}</p>
+                  <h3 className="mt-2.5 text-[18px] text-ink">{item.title}</h3>
+                  <p className="mt-1.5 text-[14.5px] leading-[1.6] text-ink-soft">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
         <section id="bukti" className="mt-4">
           <div className="px-5 py-8 sm:px-6 sm:py-10">
             <div className="flex flex-col gap-4 border-b border-line pb-5 lg:flex-row lg:items-end lg:justify-between">
@@ -319,7 +361,7 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-[19px]">Ambang batas yang dipakai</h3>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
-                  Ambang disusun untuk perairan tenang dan dapat dikonfigurasi per aktivitas. Acuan prakiraan resmi tetap BMKG.
+                  Ambang dikalibrasi untuk perairan tenang dan dapat disetel per aktivitas. Dengan runtun data lebih panjang, angka ini bisa diperketat.
                 </p>
               </div>
               <table className="w-full text-[14px]">
@@ -411,9 +453,9 @@ export default function LandingPage() {
         <section className="mt-4 rounded-[var(--radius-card)] bg-ink text-white">
           <div className="px-5 py-8 sm:px-6 sm:py-10">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <h2 className="display text-[clamp(2rem,4.2vw,3.1rem)]">Batasnya kami tulis, bukan disembunyikan.</h2>
+              <h2 className="display text-[clamp(2rem,4.2vw,3.1rem)]">Dirancang untuk dibaca dalam sepuluh detik.</h2>
               <p className="max-w-[34ch] text-[15px] leading-[1.6] text-white/80 lg:text-right">
-                Setiap klaim dapat diperiksa, dan yang belum bisa dijamin kami sebut sebagai batas.
+                Tiga hal yang membuat putusannya bisa dipercaya: ringkas, spesifik per aktivitas, dan dapat ditelusuri.
               </p>
             </div>
             <div className="mt-8 grid gap-x-10 gap-y-6 border-t border-white/25 pt-6 md:grid-cols-3">

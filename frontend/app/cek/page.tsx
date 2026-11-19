@@ -385,8 +385,8 @@ export default function CekPage() {
             <span>Tunda</span>
           </div>
           <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-muted">
-            Penilaian memakai ombak, angin, riwayat analisis, dan peringatan aktif untuk{" "}
-            {activeActivity.label.toLowerCase()}. Untuk prakiraan resmi, cek BMKG sebelum berangkat.
+            Putusan dihitung dari ombak, angin, riwayat analisis, dan peringatan aktif untuk{" "}
+            {activeActivity.label.toLowerCase()}. Ambangnya dapat diperiksa di bawah.
           </p>
         </div>
       </section>

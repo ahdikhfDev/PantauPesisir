@@ -202,7 +202,7 @@ export default function AlertsPage() {
           <BellRing className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
           <p>
             <strong className="text-ink">Pemberitahuan berakhir otomatis.</strong> Setiap pemberitahuan
-            berlaku 6 jam sejak dibuat, lalu tidak lagi ditampilkan. Untuk prakiraan resmi, cek juga BMKG.
+            berlaku 6 jam sejak dibuat, lalu berhenti tampil tanpa perlu ditutup manual.
           </p>
         </div>
       </div>
