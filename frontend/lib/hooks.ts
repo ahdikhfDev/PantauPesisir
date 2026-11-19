@@ -48,10 +48,14 @@ export function useApi<T>(path: string | null, pollMs?: number, timeoutMs?: numb
               : err instanceof Error
                 ? err.message
                 : "Tidak dapat menjangkau API PantauPesisir";
+          // Network-level failures surface as browser strings. Say what happened
+          // in the product's own words instead of printing them at the user.
           setError(
             /timed out|aborted|timeout/i.test(raw)
               ? "Server belum merespons. Coba lagi dalam beberapa detik."
-              : raw,
+              : /failed to fetch|networkerror|load failed|fetch failed/i.test(raw)
+                ? "Server PantauPesisir tidak dapat dijangkau. Periksa koneksi, lalu coba lagi."
+                : raw,
           );
         }
       } finally {

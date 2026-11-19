@@ -1,29 +1,33 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Manrope, Space_Grotesk } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
 import { DashboardShell } from "@/components/dashboard/shell";
 import { ServiceWorkerRegistrar } from "@/components/pwa-register";
 
 import "./globals.css";
 
-const manrope = Manrope({
+// Three faces, three jobs. Barlow Condensed is the painted sign face: it only
+// appears on the verdict and page names, always large. Plex Sans carries prose
+// and UI. Plex Mono marks measurements, codes, and timestamps so a number is
+// never mistaken for a sentence.
+const sign = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-sign",
+  display: "swap",
+});
+
+const plex = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-manrope",
+  variable: "--font-plex",
   display: "swap",
 });
 
-const space = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "600"],
-  variable: "--font-space",
-  display: "swap",
-});
-
-const jetbrains = JetBrains_Mono({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-jetbrains",
+  variable: "--font-plex-mono",
   display: "swap",
 });
 
@@ -45,10 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0c2c31" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c2c31" },
-  ],
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -56,11 +57,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${manrope.variable} ${space.variable} ${jetbrains.variable}`}>
+    <html lang="id" className={`${sign.variable} ${plex.variable} ${plexMono.variable}`}>
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-ink focus:px-4 focus:py-2 focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:border focus:border-ink focus:bg-paper focus:px-4 focus:py-2 focus:text-ink"
         >
           Lewati ke konten
         </a>

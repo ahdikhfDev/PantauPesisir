@@ -15,7 +15,7 @@ os.environ.update(
         "ENVIRONMENT": "test",
         "DEMO_MODE": "true",
         "API_SECRET_KEY": "test-secret-key",
-        "DEMO_API_KEY": "cews-demo-2026",
+        "DEMO_API_KEY": "pantaupesisir-operator-2026",
         "SIMULATOR_AUTOSTART": "false",
         "SEED_DEMO_OBSERVATIONS": "true",
         "SEED_BACKFILL_HOURS": "2",

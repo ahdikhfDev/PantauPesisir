@@ -70,17 +70,17 @@ export function ZoneMap({
                 style={
                   simple
                     ? {
-                        color: active ? "#e11d2e" : "#123f46",
+                        color: active ? "#c9200f" : "#5f6f7c",
                         weight: active ? 1.8 : 1,
                         dashArray: active ? undefined : "2 4",
-                        fillColor: active ? "#e11d2e" : "#123f46",
+                        fillColor: active ? "#c9200f" : "#5f6f7c",
                         fillOpacity: active ? 0.07 : 0.03,
                       }
                     : {
-                        color: "#e11d2e",
+                        color: "#c9200f",
                         weight: 1.4,
                         dashArray: "6 4",
-                        fillColor: "#e11d2e",
+                        fillColor: "#c9200f",
                         fillOpacity: 0.04,
                       }
                 }
@@ -90,7 +90,7 @@ export function ZoneMap({
               >
                 {simple ? (
                   <Popup>
-                    <div className="text-[12px]">
+                    <div className="text-[13.5px]">
                       <p className="font-semibold">{zone.zone_name}</p>
                       {observation ? (
                         <>
@@ -98,21 +98,21 @@ export function ZoneMap({
                             Ombak {fixed(observation.parameters.wave_height_m, 1)} m ·{" "}
                             {waveWords(observation.parameters.wave_height_m)}
                           </p>
-                          <p className="mt-0.5 text-[10px] text-muted">
+                          <p className="mt-0.5 text-[14px] text-muted">
                             Diperbarui {formatShortWib(observation.observed_at)} WIB
                           </p>
                         </>
                       ) : (
-                        <p className="mt-1 text-[10px] text-muted">Belum ada pembacaan terbaru.</p>
+                        <p className="mt-1 text-[14px] text-muted">Belum ada pembacaan terbaru.</p>
                       )}
                     </div>
                   </Popup>
                 ) : (
                   <Popup>
-                    <div className="text-[12px]">
+                    <div className="text-[13.5px]">
                       <p className="font-semibold">{zone.zone_name}</p>
-                      <p className="font-mono text-[10px] text-muted">{zone.zone_code}</p>
-                      <p className="mt-1 max-w-[220px] text-[10px] leading-snug text-muted">
+                      <p className="font-mono text-[14px] text-muted">{zone.zone_code}</p>
+                      <p className="mt-1 max-w-[220px] text-[14px] leading-snug text-muted">
                         {zone.boundary_note}
                       </p>
                     </div>
@@ -137,16 +137,16 @@ export function ZoneMap({
                     pathOptions={
                       simple
                         ? {
-                            color: "#fbfaf7",
+                            color: "#0e1b26",
                             weight: 1.5,
                             fillColor:
-                              activeZoneCode === zone.zone_code ? "#e11d2e" : "#123f46",
+                              activeZoneCode === zone.zone_code ? "#c9200f" : "#5f6f7c",
                             fillOpacity: 0.9,
                           }
                         : {
-                            color: "#0c2c31",
+                            color: "#33454f",
                             weight: 2,
-                            fillColor: "#e11d2e",
+                            fillColor: "#c9200f",
                             fillOpacity: 0.95,
                           }
                     }
@@ -156,7 +156,7 @@ export function ZoneMap({
                   >
                     {simple ? (
                       <Popup>
-                        <div className="text-[12px]">
+                        <div className="text-[13.5px]">
                           <p className="font-semibold">{zone.zone_name}</p>
                           {observation ? (
                             <p className="mt-1">
@@ -168,11 +168,11 @@ export function ZoneMap({
                       </Popup>
                     ) : (
                       <Popup>
-                        <div className="text-[12px]">
+                        <div className="text-[13.5px]">
                           <p className="font-semibold">{buoy.buoy_code}</p>
-                          <p className="text-[10px] text-muted">{zone.zone_name} · pemantauan</p>
+                          <p className="text-[14px] text-muted">{zone.zone_name} · pemantauan</p>
                           {observation ? (
-                            <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                            <dl className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 text-[14px]">
                               <dt className="text-muted">Gelombang</dt>
                               <dd className="font-mono">
                                 {fixed(observation.parameters.wave_height_m, 2)} m
@@ -197,7 +197,7 @@ export function ZoneMap({
                             </dl>
                           ) : null}
                           {observation ? (
-                            <p className="mt-1.5 text-[9px] text-muted">
+                            <p className="mt-1.5 text-[13.5px] text-muted">
                               {formatShortWib(observation.observed_at)} WIB
                             </p>
                           ) : null}
@@ -218,21 +218,21 @@ export function ZoneMap({
                 key={`footprint-${dataset.id}`}
                 data={dataset.footprint as never}
                 style={{
-                  color: "#123f46",
+                  color: "#5f6f7c",
                   weight: 1,
-                  fillColor: "#123f46",
+                  fillColor: "#5f6f7c",
                   fillOpacity: 0.09,
                 }}
               >
                 <Popup>
-                  <div className="text-[11px]">
+                  <div className="text-[14px]">
                     <p className="font-semibold">{dataset.collection}</p>
-                    <p className="mt-0.5 text-[10px] text-muted">{dataset.product_id}</p>
-                    <p className="mt-1 text-[10px]">
+                    <p className="mt-0.5 text-[14px] text-muted">{dataset.product_id}</p>
+                    <p className="mt-1 text-[14px]">
                       Diakuisisi <strong>{formatShortWib(dataset.acquired_at)} WIB</strong>
                     </p>
-                    <p className="text-[10px]">Awan {fixed(dataset.cloud_cover_percent, 1)}%</p>
-                    <p className="mt-1 text-[9px] leading-snug text-muted">
+                    <p className="text-[14px]">Awan {fixed(dataset.cloud_cover_percent, 1)}%</p>
+                    <p className="mt-1 text-[13.5px] leading-snug text-muted">
                       Akuisisi Copernicus historis. Hanya sebagai konteks optik.
                     </p>
                   </div>

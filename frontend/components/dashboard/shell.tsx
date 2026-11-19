@@ -1,20 +1,16 @@
 "use client";
 
 import {
-  ArrowLeft,
+  Anchor,
   BellRing,
   BookOpen,
   BrainCircuit,
   Compass,
   Database,
-  KeyRound,
   LayoutDashboard,
   LifeBuoy,
-  Menu,
   Satellite,
-  Sparkles,
   Waves,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,36 +22,42 @@ import { cn, formatShortWib } from "@/lib/format";
 import { useApi } from "@/lib/hooks";
 import type { SystemHealth } from "@/lib/types";
 
-type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavItem = { href: string; label: string; short: string; icon: LucideIcon };
 
 const WARGA_NAV: NavItem[] = [
-  { href: "/", label: "Beranda", icon: Compass },
-  { href: "/cek", label: "Cek Kondisi", icon: LifeBuoy },
-  { href: "/ringkasan", label: "Kabar Laut", icon: Sparkles },
-  { href: "/belajar", label: "Belajar", icon: BookOpen },
-  { href: "/alerts", label: "Peringatan warga", icon: BellRing },
+  { href: "/cek", label: "Cek kondisi", short: "Cek", icon: LifeBuoy },
+  { href: "/ringkasan", label: "Kabar laut", short: "Kabar", icon: Waves },
+  { href: "/belajar", label: "Belajar", short: "Belajar", icon: BookOpen },
+  { href: "/alerts", label: "Peringatan", short: "Awas", icon: BellRing },
 ];
 
 const KONSOL_NAV: NavItem[] = [
-  { href: "/konsol", label: "Ringkasan teknis", icon: LayoutDashboard },
-  { href: "/ocean", label: "Pemantauan laut", icon: Waves },
-  { href: "/satellite", label: "Satelit", icon: Satellite },
-  { href: "/ai", label: "Risiko AI teknis", icon: BrainCircuit },
-  { href: "/sources", label: "Sumber data", icon: Database },
+  { href: "/konsol", label: "Ringkasan", short: "Ringkas", icon: LayoutDashboard },
+  { href: "/ocean", label: "Pemantauan laut", short: "Laut", icon: Waves },
+  { href: "/satellite", label: "Satelit", short: "Satelit", icon: Satellite },
+  { href: "/ai", label: "Analisis AI", short: "AI", icon: BrainCircuit },
+  { href: "/sources", label: "Sumber & sistem", short: "Sumber", icon: Database },
 ];
 
-const NAV: NavItem[] = [...WARGA_NAV, ...KONSOL_NAV];
 const CONSOLE_PREFIXES = ["/konsol", "/ocean", "/satellite", "/ai", "/sources"];
+
+function Wordmark({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link href="/" className="flex items-center gap-2.5" aria-label="PantauPesisir, beranda">
+      <span className="grid h-8 w-8 place-items-center rounded-[9px] bg-signal text-white">
+        <Waves className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+      </span>
+      <span className="font-display text-[21px] leading-none font-semibold tracking-[-0.01em]">
+        {compact ? "PP" : "PantauPesisir"}
+      </span>
+    </Link>
+  );
+}
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [clock, setClock] = useState("--:--:--");
   const health = useApi<SystemHealth>("/system/health", 60000);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     const tick = () => {
@@ -74,200 +76,155 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return () => window.clearInterval(interval);
   }, []);
 
-  const current = NAV.find((item) =>
-    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
-  );
   const isConsole = CONSOLE_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
   const visibleNav = isConsole ? KONSOL_NAV : WARGA_NAV;
-  const healthy = health.data?.status === "ok";
 
-  // The landing page brings its own chrome; the console shell only wraps app screens.
+  // The landing page is a poster, not a page of the book: it owns its own frame.
   if (pathname === "/") {
-    return <div className="min-h-screen bg-paper">{children}</div>;
+    return <div className="min-h-screen">{children}</div>;
   }
 
+  const healthy = health.data?.status === "ok";
+  const down = Boolean(health.error);
+
   return (
-    <div className="min-h-screen bg-paper">
-      {open ? (
-        <button
-          type="button"
-          aria-label="Tutup navigasi"
-          className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      ) : null}
-
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[248px] flex-col overflow-y-auto bg-sea-deep text-white transition-transform duration-200 lg:translate-x-0",
-          open ? "translate-x-0" : "-translate-x-full",
-        )}
+    <div className="min-h-screen">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-ink focus:bg-paper focus:px-4 focus:py-2"
       >
-        <div className="h-[2px] w-full bg-signal" aria-hidden />
+        Lewati ke konten
+      </a>
 
-        <div className="flex items-center justify-between px-4 pb-4 pt-5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <img
-              src="/brand/mark.svg"
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-[9px]"
-              aria-hidden
-            />
-            <span className="leading-none">
-              <span className="font-display block text-[15.5px] font-semibold tracking-[-0.03em]">PantauPesisir</span>
-              <span className="mt-1 block text-[9px] text-white/40">Pesisir & pantai</span>
+      {/* Status rail. Red is the brand; it greys out when the server is gone. */}
+      <div className={cn("h-[3px] w-full", down ? "bg-line-strong" : "bg-signal")} aria-hidden />
+
+      <header>
+        <div className="container-x flex h-[58px] items-center justify-between gap-4">
+          <Wordmark />
+
+          <div className="flex items-center gap-5">
+            <span className="hidden items-baseline gap-2 sm:flex">
+              <span
+                className={cn(
+                  "h-2 w-2 translate-y-px",
+                  down ? "bg-ink" : healthy ? "bg-ok" : "bg-amber live-dot",
+                )}
+                aria-hidden
+              />
+              <span className="text-[14px] text-ink-soft">
+                {down ? "Server tidak terjangkau" : healthy ? "Sistem normal" : "Sebagian terganggu"}
+              </span>
             </span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="grid h-7 w-7 place-items-center rounded-md border border-white/10 text-white/60 lg:hidden"
-            aria-label="Tutup navigasi"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-
-        <div className="border-t border-white/[0.07] px-2 pt-5">
-          <p className="px-2 text-[10px] font-medium text-white/35">
-            {isConsole ? "Konsol" : "Warga"}
-          </p>
-          <nav className="mt-2 space-y-0.5">
-            {visibleNav.map((item) => {
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "relative flex h-9 items-center gap-2.5 rounded-[7px] px-2.5 text-[12px] font-medium transition-colors",
-                    active
-                      ? "bg-white/[0.07] text-white"
-                      : "text-white/50 hover:bg-white/[0.04] hover:text-white/85",
-                  )}
-                >
-                  {active ? (
-                    <span className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 bg-signal" />
-                  ) : null}
-                  <item.icon className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
-                  <span className="truncate">{item.label}</span>
-                  {item.href === "/alerts" ? (
-                    <span className="ml-auto font-mono text-[10px] text-white/35">
-                      {health.data?.counts.alerts_open ?? 0}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {isConsole ? (
+            <span className="metric text-[14px] text-ink-soft" aria-label="Waktu Indonesia Barat">
+              {clock} WIB
+            </span>
             <Link
-              href="/cek"
-              className="mt-4 flex items-center gap-2 rounded-[8px] px-2.5 py-2 text-[10.5px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
+              href={isConsole ? "/cek" : "/konsol"}
+              className="btn btn-ghost btn-sm hidden sm:inline-flex"
             >
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Kembali ke halaman warga
+              {isConsole ? "Mode warga" : "Mode operator"}
             </Link>
-          ) : (
-            <Link
-              href="/konsol"
-              className="mt-4 flex items-center justify-between gap-2 rounded-[8px] border border-white/10 px-2.5 py-2 text-[10.5px] font-medium text-white/55 transition-colors hover:border-white/20 hover:text-white"
-            >
-              <span className="flex items-center gap-2">
-                <KeyRound className="h-3.5 w-3.5" aria-hidden /> Mode Admin
-              </span>
-              <span className="text-[9px] text-white/30">demo</span>
-            </Link>
-          )}
-        </div>
-
-        <div className="mt-6 px-4">
-          <p className="text-[10px] font-medium text-white/35">Sumber data</p>
-          <p className="mt-2 flex items-center gap-1.5 text-[11px] text-white/70">
-            <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-            Data buoy langsung
-          </p>
-          <p className="mt-1.5 text-[10px] leading-relaxed text-white/35">
-            Pembacaan buoy yang sudah diperiksa. Rekaman satelit adalah data historis nyata.
-          </p>
-        </div>
-
-        <div className="mt-auto border-t border-white/[0.07] px-4 py-4">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] font-medium text-white/35">Sistem</span>
-            <span
-              className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                healthy ? "bg-white/60" : health.error ? "bg-signal" : "bg-amber",
-              )}
-              aria-hidden
-            />
           </div>
-          <p className="mt-1.5 text-[11px] font-medium text-white/75">
-            {health.error ? "API tidak terjangkau" : healthy ? "Layanan inti sehat" : "Menurun"}
-          </p>
-          <p className="mt-1 font-mono text-[9.5px] text-white/35">
-            {health.data?.database.dialect ?? "db"} · {health.data?.model.version ?? "model"}
-          </p>
-          <Link href="/sources" className="mt-2 inline-block text-[10px] font-medium text-white/55 hover:text-white">
-            Kesehatan sistem →
-          </Link>
-          <p className="mt-3 text-[9px] leading-relaxed text-white/25">
-            PantauPesisir · konsol pemantauan pesisir Indonesia.
-          </p>
         </div>
-      </aside>
+      </header>
 
-      <div className="lg:pl-[248px]">
-        <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
-          <div className="flex h-14 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <div className="flex min-w-0 items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-line bg-surface text-ink lg:hidden"
-                aria-label="Buka navigasi"
+      {/* Section nav. Underline on the active item, the way the reference marks it. */}
+      <nav aria-label="Navigasi bagian" className="hidden border-b border-line lg:block">
+        <div className="container-x flex items-center gap-1">
+          {visibleNav.map((item) => {
+            const active = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "relative flex h-11 items-center gap-2 px-3.5 text-[14px] transition-colors",
+                  active
+                    ? "font-semibold text-ink after:absolute after:inset-x-3 after:-bottom-px after:h-[2px] after:bg-signal"
+                    : "text-ink-soft hover:text-ink",
+                )}
               >
-                <Menu className="h-4 w-4" />
-              </button>
-              <div className="flex min-w-0 items-baseline gap-2">
-                <span className="hidden text-[10.5px] text-muted sm:inline">PantauPesisir</span>
-                <span className="hidden text-[10.5px] text-line-strong sm:inline">/</span>
-                <span className="truncate text-[13px] font-semibold text-ink">
-                  {current?.label ?? "Konsol"}
-                </span>
-              </div>
-            </div>
+                <item.icon
+                  className={cn("h-[15px] w-[15px]", active ? "text-signal" : "text-muted")}
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                {item.label}
+              </Link>
+            );
+          })}
+          <span className="ml-auto text-[14px] text-muted">
+            {isConsole ? "Konsol operator" : "Untuk warga"}
+          </span>
+        </div>
+      </nav>
 
-            <div className="flex items-center gap-4">
-              <span className="hidden items-center gap-1.5 text-[10px] font-medium text-muted sm:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
-                Umpan langsung
-              </span>
-              <span className="font-mono text-[10.5px] text-muted">{clock} WIB</span>
-            </div>
-          </div>
-        </header>
+      <main className="container-x pb-28 pt-5 lg:pb-14">
+        <div id="main">
+          {children}
+        </div>
+      </main>
 
-        <main className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">{children}</main>
-
-        <footer className="mx-auto w-full max-w-[1500px] px-4 pb-8 text-[10px] leading-relaxed text-muted sm:px-6 lg:px-8">
-          <p>
-            Setiap nilai dilengkapi status sumber; rekaman Copernicus adalah akuisisi historis;
-            keluaran AI berasal dari model analitik.
+      <footer className="mt-2 hidden lg:block">
+        <div className="container-x flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4 text-[14px]">
+          <p className="text-muted">
+            Alat bantu keputusan, bukan peringatan resmi. Untuk prakiraan, cek BMKG.
           </p>
           {health.data ? (
-            <p className="mt-1 font-mono text-[9.5px] text-muted/80">
-              API v{health.data.version} · {health.data.counts.buoy_observations} pembacaan · ref{" "}
+            <p className="metric text-muted">
+              {health.data.counts.buoy_observations} pembacaan · data{" "}
               {formatShortWib(health.data.generated_at)} WIB
             </p>
           ) : null}
-        </footer>
-      </div>
+        </div>
+      </footer>
+
+      {/* Phone: the board becomes a strip you can reach with a thumb. */}
+      <nav
+        aria-label="Navigasi utama"
+        className="fixed inset-x-0 bottom-0 z-40 bg-paper/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_-16px_rgba(23,25,27,0.3)] backdrop-blur lg:hidden"
+      >
+        <ul
+          className="mx-auto grid max-w-lg"
+          style={{ gridTemplateColumns: `repeat(${visibleNav.length + 1}, minmax(0, 1fr))` }}
+        >
+          {visibleNav.map((item) => {
+            const active = pathname.startsWith(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "mx-0.5 my-2 flex h-[52px] flex-col items-center justify-center gap-[5px] rounded-2xl px-1 pb-1 text-[12.5px] leading-none transition-colors",
+                    active ? "bg-signal-soft font-semibold text-signal" : "text-muted",
+                  )}
+                >
+                  <item.icon className="h-[19px] w-[19px]" strokeWidth={active ? 2.2 : 1.8} aria-hidden />
+                  {item.short}
+                </Link>
+              </li>
+            );
+          })}
+          <li>
+            <Link
+              href={isConsole ? "/cek" : "/konsol"}
+              className="mx-0.5 my-2 flex h-[52px] flex-col items-center justify-center gap-[5px] rounded-2xl px-1 pb-1 text-[12.5px] leading-none text-muted transition-colors"
+            >
+              {isConsole ? (
+                <Anchor className="h-[19px] w-[19px]" strokeWidth={1.8} aria-hidden />
+              ) : (
+                <LayoutDashboard className="h-[19px] w-[19px]" strokeWidth={1.8} aria-hidden />
+              )}
+              {isConsole ? "Warga" : "Konsol"}
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }

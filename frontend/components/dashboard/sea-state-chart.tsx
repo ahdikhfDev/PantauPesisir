@@ -15,8 +15,9 @@ import {
 import { EmptyState } from "@/components/ui";
 import { fixed } from "@/lib/format";
 
-const AXIS = { stroke: "#7a7170", fontSize: 10, fontFamily: "var(--font-mono)" };
-const GRID = "#eaddd9";
+const AXIS = { stroke: "#6b6f75", fontSize: 11, fontFamily: "var(--font-mono)" };
+const GRID = "rgba(24,20,20,0.12)";
+const PAPER = "#ffffff";
 
 export interface SeaPoint {
   time: number;
@@ -52,11 +53,11 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
         <ComposedChart data={data} margin={{ top: 8, right: 4, bottom: 0, left: -20 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e11d2e" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#e11d2e" stopOpacity={0} />
+              <stop offset="0%" stopColor="#d01f16" stopOpacity={0.14} />
+              <stop offset="100%" stopColor="#d01f16" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
+          <CartesianGrid stroke={GRID} strokeDasharray="2 4" vertical={false} />
           <XAxis
             dataKey="time"
             type="number"
@@ -64,8 +65,8 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             domain={["dataMin", "dataMax"]}
             tick={AXIS}
             tickLine={false}
-            axisLine={{ stroke: GRID }}
-            minTickGap={36}
+            axisLine={{ stroke: "#0e1b26", strokeOpacity: 0.26 }}
+            minTickGap={42}
             tickFormatter={timeLabel}
           />
           <YAxis
@@ -85,11 +86,13 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
           />
           <Tooltip
             contentStyle={{
-              borderRadius: 12,
-              border: "1px solid #eaddd9",
-              fontSize: 11,
+              borderRadius: 0,
+              border: "1px solid rgba(24,20,20,0.18)",
+              background: PAPER,
+              color: "#0e1b26",
+              fontSize: 12,
               fontFamily: "var(--font-sans)",
-              boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
+              boxShadow: "none",
             }}
             labelFormatter={(label) => `${timeLabel(label)} WIB`}
             formatter={(value, name) => [
@@ -102,11 +105,11 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             type="monotone"
             dataKey="height"
             name="Tinggi gelombang"
-            stroke="#e11d2e"
+            stroke="#d01f16"
             strokeWidth={2}
             fill={`url(#${gradientId})`}
             dot={false}
-            activeDot={{ r: 3 }}
+            activeDot={{ r: 3, fill: "#d01f16", stroke: PAPER }}
             isAnimationActive={false}
           />
           <Line
@@ -114,9 +117,9 @@ export function SeaStateChart({ points, height = 280 }: { points: SeaPoint[]; he
             type="monotone"
             dataKey="wind"
             name="Kecepatan angin"
-            stroke="#123f46"
+            stroke="#5f6f7c"
             strokeWidth={1.5}
-            strokeDasharray="5 4"
+            strokeDasharray="4 3"
             dot={false}
             isAnimationActive={false}
           />

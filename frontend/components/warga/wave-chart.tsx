@@ -14,8 +14,10 @@ import {
 
 import { fixed, formatShortWib } from "@/lib/format";
 
-const AXIS = { stroke: "#7a7170", fontSize: 10, fontFamily: "var(--font-mono)" };
-const GRID = "#eaddd9";
+const AXIS = { stroke: "#6b6f75", fontSize: 11, fontFamily: "var(--font-mono)" };
+const GRID = "rgba(24,20,20,0.12)";
+const PAPER = "#ffffff";
+const SEA = "#d01f16";
 
 export interface WavePoint {
   time: number;
@@ -60,9 +62,9 @@ export function WaveHistoryChart({
 
   if (data.length < 2) {
     return (
-      <div className="grid h-[210px] place-items-center rounded-[10px] border border-dashed border-line-strong px-6 text-center">
-        <p className="text-[12px] leading-relaxed text-muted">
-          Belum cukup pembacaan untuk menggambar 24 jam terakhir.
+      <div className="grid h-[210px] place-items-center border border-dashed border-line-strong px-6 text-center">
+        <p className="text-[13.5px] leading-relaxed text-muted">
+          Belum cukup pembacaan untuk menggambar grafik di rentang ini.
         </p>
       </div>
     );
@@ -84,11 +86,11 @@ export function WaveHistoryChart({
         <ComposedChart data={data} margin={{ top: 12, right: 10, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#123f46" stopOpacity={0.18} />
-              <stop offset="100%" stopColor="#123f46" stopOpacity={0} />
+              <stop offset="0%" stopColor={SEA} stopOpacity={0.16} />
+              <stop offset="100%" stopColor={SEA} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
+          <CartesianGrid stroke={GRID} strokeDasharray="2 4" vertical={false} />
           <XAxis
             dataKey="time"
             type="number"
@@ -96,7 +98,7 @@ export function WaveHistoryChart({
             domain={["dataMin", "dataMax"]}
             tick={AXIS}
             tickLine={false}
-            axisLine={{ stroke: GRID }}
+            axisLine={{ stroke: "#0e1b26", strokeOpacity: 0.26 }}
             minTickGap={multiDay ? 96 : 44}
             tickFormatter={tickText}
           />
@@ -111,31 +113,33 @@ export function WaveHistoryChart({
           />
           <Tooltip
             contentStyle={{
-              borderRadius: 10,
-              border: "1px solid #eaddd9",
-              fontSize: 11,
+              borderRadius: 0,
+              border: "1px solid rgba(24,20,20,0.18)",
+              background: PAPER,
+              color: "#0e1b26",
+              fontSize: 12,
               fontFamily: "var(--font-sans)",
-              boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
+              boxShadow: "none",
             }}
             labelFormatter={(label) => tooltipText(label)}
             formatter={(value) => [`${fixed(Number(value), 2)} m`, "Tinggi ombak"]}
           />
           <ReferenceLine
             y={limit}
-            stroke="#94651a"
-            strokeDasharray="5 4"
-            strokeWidth={1.2}
-            label={{ value: limitLabel, position: "insideTopRight", fill: "#94651a", fontSize: 9 }}
+            stroke="#a34a06"
+            strokeDasharray="4 3"
+            strokeWidth={1.4}
+            label={{ value: limitLabel, position: "insideTopRight", fill: "#a34a06", fontSize: 10 }}
           />
           <Area
             type="monotone"
             dataKey="height"
             name="Tinggi ombak"
-            stroke="#123f46"
+            stroke={SEA}
             strokeWidth={2}
             fill={`url(#${gradientId})`}
             dot={false}
-            activeDot={{ r: 3 }}
+            activeDot={{ r: 3, fill: SEA, stroke: PAPER }}
             isAnimationActive={false}
           />
         </ComposedChart>

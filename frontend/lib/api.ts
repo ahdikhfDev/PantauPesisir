@@ -3,7 +3,7 @@ const API_BASE = (
 ).replace(/\/$/, "");
 
 export const API_BASE_URL = API_BASE;
-export const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "pantaupesisir-demo-2026";
+export const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "";
 
 export class ApiError extends Error {
   status: number;

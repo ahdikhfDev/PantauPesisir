@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  BellRing,
-  CheckCircle2,
-  Clock,
-  RefreshCw,
-  Sparkles,
-  TriangleAlert,
-  Waves,
-  Wind,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, BellRing, CheckCircle2, Clock, RefreshCw, Sparkles, TriangleAlert, Waves, Wind, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -44,24 +33,9 @@ const ZONES = [
 ];
 
 const LEVEL_STYLE = {
-  tenang: {
-    icon: CheckCircle2,
-    text: "text-ok",
-    panel: "border-ok/30 bg-ok-soft/50",
-    chip: "bg-ok/10 text-ok",
-  },
-  hati: {
-    icon: TriangleAlert,
-    text: "text-amber",
-    panel: "border-amber/35 bg-amber-soft/60",
-    chip: "bg-amber/10 text-amber",
-  },
-  tunda: {
-    icon: XCircle,
-    text: "text-signal-dark",
-    panel: "border-signal/30 bg-signal-soft/60",
-    chip: "bg-signal/10 text-signal-dark",
-  },
+  tenang: { icon: CheckCircle2, verdict: "Aman", text: "text-ok", band: "bg-ok" },
+  hati: { icon: TriangleAlert, verdict: "Hati-hati", text: "text-amber", band: "bg-amber" },
+  tunda: { icon: XCircle, verdict: "Tunda", text: "text-signal-ink", band: "bg-signal" },
 } as const;
 
 export default function RingkasanPage() {
@@ -127,146 +101,131 @@ export default function RingkasanPage() {
 
   return (
     <>
-      <section className="mb-6 flex flex-col gap-4 border-b border-line pb-5">
+      <section className="mb-7 flex flex-col gap-4 pb-1">
         <div className="max-w-3xl">
-          <span className="eyebrow">Kabar Laut</span>
-          <h1 className="font-display mt-2 text-[26px] font-semibold leading-[1.06] tracking-[-0.04em] sm:text-[32px]">
-            Kabar laut <span className="text-sea">hari ini.</span>
-          </h1>
-          <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted">
-            Ombak, angin, dan peringatan — dijelaskan tanpa istilah rumit.
+          <p className="eyebrow">Kabar laut</p>
+          <h1 className="display mt-2.5 text-[clamp(2.1rem,4.4vw,3.4rem)]">Kabar laut hari ini.</h1>
+          <p className="mt-3 max-w-2xl text-[15.5px] leading-[1.6] text-ink-soft">
+            Satu paragraf untuk dibaca sebelum berangkat. Ombak, angin, dan peringatan, tanpa istilah
+            rumit.
           </p>
         </div>
       </section>
 
-      <div className="flex flex-wrap items-center gap-2">
-        {ZONES.map((item) => (
-          <button
-            key={item.code}
-            type="button"
-            onClick={() => setZone(item.code)}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-[11.5px] font-medium transition-colors",
-              zone === item.code
-                ? "border-sea bg-sea text-white"
-                : "border-line bg-surface text-ink-soft hover:border-line-strong",
-            )}
-            aria-pressed={zone === item.code}
-          >
-            {item.name}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {ACTIVITIES.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            onClick={() => setActivity(item.key)}
-            className={cn(
-              "rounded-full px-3 py-1 text-[10.5px] font-medium transition-colors",
-              activity === item.key
-                ? "bg-ink text-white"
-                : "bg-paper text-muted ring-1 ring-line hover:text-ink",
-            )}
-            aria-pressed={activity === item.key}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
-      <section className={cn("card mt-4 overflow-hidden border", style.panel)} aria-live="polite">
-        <div className="p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex items-start gap-4">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-white/85">
-                <Icon className={cn("h-6 w-6", style.text)} aria-hidden />
-              </span>
-              <div>
-                <p className="text-[10px] font-semibold tracking-[0.14em] text-muted">
-                  {data?.zone_name?.toUpperCase() ?? "MEMUAT…"} · {activeActivity.label.toUpperCase()}
-                </p>
-                <h2 className={cn("mt-1 text-[22px] font-semibold leading-tight tracking-[-0.03em]", style.text)}>
-                  {loading && !data ? "Menyusun ringkasan…" : data?.level_label ?? "—"}
-                </h2>
-              </div>
-            </div>
-            <span className="flex shrink-0 items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-[10.5px] text-muted">
-                <Clock className="h-3 w-3" aria-hidden />
-                {data?.metrics.age_seconds != null
-                  ? `Data ${formatAge(data.metrics.age_seconds)}`
-                  : "Menunggu data"}
-              </span>
-            </span>
-          </div>
-
-          <div className="mt-5 rounded-[12px] bg-white/70 p-4 sm:p-5">
-            <p className="flex items-center gap-1.5 text-[9.5px] font-semibold tracking-[0.12em] text-muted">
-              <Sparkles className="h-3 w-3 text-sea" aria-hidden /> RINGKASAN
-            </p>
-            {loading && !data ? (
-              <div className="mt-2 space-y-2">
-                <div className="h-3.5 w-full animate-pulse rounded bg-line" />
-                <div className="h-3.5 w-4/5 animate-pulse rounded bg-line" />
-                <div className="h-3.5 w-2/3 animate-pulse rounded bg-line" />
-              </div>
-            ) : (
-              <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-                {data?.summary ?? error ?? "—"}
-              </p>
-            )}
-            {data?.advice ? (
-              <p className={cn("mt-3 inline-flex rounded-[10px] px-3 py-2 text-[12px] font-medium", style.chip)}>
-                {data.advice}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="mt-4 grid gap-0 overflow-hidden rounded-[12px] bg-white/55 sm:grid-cols-3">
-            <div className="border-b border-white/70 px-4 py-3 sm:border-b-0 sm:border-r">
-              <p className="flex items-center gap-1 text-[9.5px] font-semibold tracking-[0.1em] text-muted">
-                <Waves className="h-3 w-3" aria-hidden /> OMBAK
-              </p>
-              <p className="metric mt-1 text-[17px] text-ink">{fixed(data?.metrics.wave_m, 1)} m</p>
-            </div>
-            <div className="border-b border-white/70 px-4 py-3 sm:border-b-0 sm:border-r">
-              <p className="flex items-center gap-1 text-[9.5px] font-semibold tracking-[0.1em] text-muted">
-                <Wind className="h-3 w-3" aria-hidden /> ANGIN
-              </p>
-              <p className="metric mt-1 text-[17px] text-ink">{fixed(data?.metrics.wind_mps, 0)} m/s</p>
-            </div>
-            <div className="px-4 py-3">
-              <p className="flex items-center gap-1 text-[9.5px] font-semibold tracking-[0.1em] text-muted">
-                <BellRing className="h-3 w-3" aria-hidden /> PERINGATAN
-              </p>
-              <p className="metric mt-1 text-[17px] text-ink">{data?.metrics.alert_count ?? 0}</p>
-            </div>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-semibold text-ink-soft">Kenapa?</span>
-            {(data?.reasons ?? []).map((reason) => (
-              <span key={reason} className="rounded-full bg-white/75 px-2.5 py-1 text-[10px] text-muted">
-                {reason}
-              </span>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="text-[13px] text-muted">Pantai</p>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {ZONES.map((item) => (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => setZone(item.code)}
+                aria-pressed={zone === item.code}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-[13.5px] transition-colors",
+                  zone === item.code
+                    ? "bg-ground text-white"
+                    : "bg-surface text-ink-soft hover:bg-line/40 hover:text-ink",
+                )}
+              >
+                {item.name}
+              </button>
             ))}
           </div>
         </div>
+        <div>
+          <p className="text-[13px] text-muted">Aktivitas</p>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {ACTIVITIES.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setActivity(item.key)}
+                aria-pressed={activity === item.key}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-[13.5px] transition-colors",
+                  activity === item.key
+                    ? "bg-ground text-white"
+                    : "bg-surface text-ink-soft hover:bg-line/40 hover:text-ink",
+                )}
+              >
+                {item.label.split(" / ")[0].split(" & ")[0]}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/70 bg-white/45 px-5 py-3">
-          <p className="max-w-md text-[9.5px] leading-relaxed text-muted">
-            Untuk prakiraan resmi, cek juga BMKG sebelum berangkat.
+      <section className={cn("mt-5 overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-card)]")} aria-live="polite">
+        <div className={cn("flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-white", style.band)}>
+          <p className="flex items-center gap-2 font-display text-[16px] font-medium">
+            <Icon className="h-4 w-4 shrink-0" strokeWidth={2.4} aria-hidden />
+            {data?.zone_name ?? "Teluk Jakarta"} · {activeActivity.label}
+          </p>
+          <p className="metric flex items-center gap-1.5 text-[12.5px] text-paper/70">
+            <Clock className="h-3.5 w-3.5" aria-hidden />
+            {data?.metrics.age_seconds != null ? `data ${formatAge(data.metrics.age_seconds)}` : "menunggu data"}
+          </p>
+        </div>
+
+        <div className="px-5 pb-5 pt-6">
+          <p className="text-[13.5px] text-muted">Putusan</p>
+          <p className={cn("verdict mt-2 flex items-center gap-3 text-[clamp(2.6rem,6vw,3.8rem)]", style.text)}>
+            <Icon className="h-[0.55em] w-[0.55em] shrink-0" strokeWidth={2.4} aria-hidden />
+            {loading && !data ? "Menyusun" : style.verdict}
+          </p>
+
+          <p className="mt-3 max-w-[62ch] text-[16px] leading-[1.6] text-ink">
+            {loading && !data ? "Menyusun ringkasan dari pembacaan terbaru." : data?.summary ?? error ?? "—"}
+          </p>
+          {data?.advice ? (
+            <p className="mt-2.5 max-w-[62ch] text-[15px] leading-[1.6] text-ink-soft">{data.advice}</p>
+          ) : null}
+        </div>
+
+        <dl className="mx-5 mb-5 grid overflow-hidden rounded-[var(--radius-panel)] bg-surface sm:grid-cols-3">
+          {[
+            { icon: Waves, label: "Ombak", value: fixed(data?.metrics.wave_m, 1), unit: "m" },
+            { icon: Wind, label: "Angin", value: fixed(data?.metrics.wind_mps, 0), unit: "m/s" },
+            { icon: BellRing, label: "Peringatan", value: String(data?.metrics.alert_count ?? 0), unit: "aktif" },
+          ].map((metric, index) => (
+            <div
+              key={metric.label}
+              className={cn("px-4 py-3", index ? "sm:border-l sm:border-line" : "")}
+            >
+              <dt className="flex items-center gap-1.5 text-[13px] text-muted">
+                <metric.icon className="h-3.5 w-3.5" aria-hidden />
+                {metric.label}
+              </dt>
+              <dd className="metric mt-1 flex items-baseline gap-1.5 text-[26px] leading-none font-semibold">
+                {metric.value}
+                <span className="text-[14px] font-normal text-muted">{metric.unit}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        {data?.reasons?.length ? (
+          <div className="px-5 py-3">
+            <p className="text-[13.5px] text-muted">Yang menentukan</p>
+            <ul className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1 text-[14px] text-ink-soft">
+              {data.reasons.map((reason) => (
+                <li key={reason} className="flex items-baseline gap-2">
+                  <span className="h-1.5 w-1.5 shrink-0 translate-y-[-1px] bg-ink" aria-hidden />
+                  {reason}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-5">
+          <p className="max-w-md text-[12.5px] leading-relaxed text-muted">
+            Untuk prakiraan resmi, cek BMKG sebelum berangkat.
           </p>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => reload(true)}
-              disabled={loading}
-              className="btn btn-ghost btn-sm"
-            >
+            <button type="button" onClick={() => reload(true)} disabled={loading} className="btn btn-ghost btn-sm">
               <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} aria-hidden />
               Perbarui
             </button>
@@ -277,36 +236,41 @@ export default function RingkasanPage() {
         </div>
       </section>
 
-      <section className="mt-5 grid gap-4 lg:grid-cols-[1.35fr_1fr]">
-        <div className="card p-5">
-          <h2 className="text-[14px] font-semibold">Dari mana angka ini?</h2>
-          <ol className="mt-3 space-y-3">
+      <section className="mt-7 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+        <div className="card p-4">
+          <h2 className="text-[17px]">Dari mana ringkasan ini?</h2>
+          <ol className="mt-3 divide-y divide-line">
             {[
               ["Data buoy", "Ombak, angin, periode, dan tekanan dibaca dari perangkat di laut."],
-              ["Analisis sistem", "Batas aman per aktivitas dan peringatan aktif menentukan statusnya."],
+              ["Batas per aktivitas", "Setiap aktivitas punya batas aman berbeda; perahu kecil paling sensitif."],
+              ["Kalimat", "Angka rubrik yang sama, ditulis ulang menjadi bahasa sehari-hari."],
             ].map(([title, copy], index) => (
-              <li key={title} className="flex gap-3">
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-sea-soft text-[10px] font-semibold text-sea">
-                  {index + 1}
-                </span>
-                <span className="text-[11.5px] leading-relaxed text-ink-soft">
-                  <span className="font-semibold text-ink">{title}. </span>
+              <li key={title} className="flex gap-3 py-2.5">
+                <span className="metric shrink-0 text-[13px] text-muted">{String(index + 1).padStart(2, "0")}</span>
+                <span className="text-[14px] leading-relaxed text-ink-soft">
+                  <span className="font-medium text-ink">{title}. </span>
                   {copy}
                 </span>
               </li>
             ))}
           </ol>
+          <p className="mt-3 flex items-center gap-1.5 text-[13px] text-muted">
+            <Sparkles className="h-3.5 w-3.5" aria-hidden />
+            {data?.source === "ai"
+              ? "Kalimat ditulis model bahasa dari angka di atas."
+              : "Kalimat disusun dari templat, bukan model."}
+          </p>
         </div>
 
-        <div className="card flex flex-col justify-between gap-3 p-5">
+        <div className="card flex flex-col justify-between gap-5 p-5">
           <div>
-            <h2 className="text-[14px] font-semibold">Mau lihat angka lengkap?</h2>
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted">
-              Grafik, riwayat pembacaan, dan asal-usul setiap nilai tersedia di konsol teknis.
+            <h2 className="text-[17px]">Mau lihat angka aslinya?</h2>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+              Grafik, riwayat pembacaan, dan asal-usul setiap nilai ada di konsol teknis.
             </p>
           </div>
           <Link href="/konsol" className="btn btn-ghost btn-sm self-start">
-            Buka konsol teknis <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            Buka konsol <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </div>
       </section>

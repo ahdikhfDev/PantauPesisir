@@ -37,7 +37,7 @@ export default function AlertsPage() {
         eyebrow="Peringatan warga"
         title={
           <>
-            Pemberitahuan <span className="text-signal">kondisi pesisir.</span>
+            Pemberitahuan kondisi pesisir
           </>
         }
         description="Pemberitahuan aktif untuk setiap pantai, lengkap dengan waktu dan tingkat keparahannya. Tidak perlu login dan tidak ada yang harus dikonfirmasi — pemberitahuan berakhir sendiri saat kondisinya sudah lewat."
@@ -58,9 +58,9 @@ export default function AlertsPage() {
                   type="button"
                   onClick={() => setSeverityFilter(filter.value)}
                   className={cn(
-                    "border-b px-1 pb-1.5 text-[11px] font-medium transition-colors",
+                    "border-b px-1 pb-1.5 text-[14px] font-medium transition-colors",
                     severityFilter === filter.value
-                      ? "border-signal text-signal-dark"
+                      ? "border-ground text-ground"
                       : "border-transparent text-muted hover:text-ink",
                   )}
                   aria-pressed={severityFilter === filter.value}
@@ -69,7 +69,7 @@ export default function AlertsPage() {
                 </button>
               ))}
               <select
-                className="ml-auto h-8 rounded-[7px] border border-line bg-transparent px-2 text-[11px] font-medium text-ink-soft outline-none focus:border-sea"
+                className="ml-auto h-9 rounded-full bg-surface px-3 text-[14px] font-medium text-ink-soft outline-none"
                 value={zoneFilter}
                 onChange={(event) => setZoneFilter(event.target.value)}
                 aria-label="Filter berdasarkan zona"
@@ -83,21 +83,21 @@ export default function AlertsPage() {
               </select>
             </div>
 
-            <p className="mt-4 text-[11px] leading-relaxed text-muted">
+            <p className="mt-4 text-[14px] leading-relaxed text-muted">
               {alerts.data?.total ?? 0} pemberitahuan cocok dengan filter saat ini. Tingkat keparahan
               menggambarkan hasil analisis risiko saat pemberitahuan dibuat.
             </p>
 
             <div className="mt-4 border-t border-line pt-4">
-              <p className="text-[9.5px] font-semibold text-muted">Bagaimana pemberitahuan dibuat</p>
+              <p className="text-[17px] font-medium text-ink">Bagaimana pemberitahuan dibuat</p>
               <ol className="mt-2 divide-y divide-line border-t border-line">
                 {[
                   "Analisis risiko menemukan kondisi sedang atau tinggi di suatu pantai.",
                   "Sistem menulis pemberitahuan yang tertaut ke analisis dan zona tersebut.",
                   "Pemberitahuan berlaku 6 jam, lalu berakhir otomatis tanpa perlu ditutup.",
                 ].map((step, index) => (
-                  <li key={step} className="flex gap-2.5 py-2 text-[11px] leading-relaxed text-ink-soft">
-                    <span className="metric mt-[1px] shrink-0 text-[9.5px] text-muted">
+                  <li key={step} className="flex gap-2.5 py-2 text-[14px] leading-relaxed text-ink-soft">
+                    <span className="metric mt-[1px] shrink-0 text-[14px] text-muted">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     {step}
@@ -108,10 +108,10 @@ export default function AlertsPage() {
           </div>
 
           <div className="card p-5">
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
+            <p className="flex items-center gap-1.5 text-[17px] font-medium text-ink">
               <ShieldCheck className="h-3 w-3" aria-hidden /> Tanpa akun, tanpa tindakan
             </p>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
+            <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
               Halaman ini hanya untuk dibaca. Tidak ada tombol akui atau selesai karena tidak ada akun
               petugas yang perlu dicatat.
             </p>
@@ -122,7 +122,7 @@ export default function AlertsPage() {
                 ["Info", severityCounts.info ?? 0],
               ].map(([label, value]) => (
                 <div key={String(label)} className="px-2">
-                  <p className="text-[9.5px] text-muted">{label}</p>
+                  <p className="text-[14px] text-muted">{label}</p>
                   <p className="metric mt-1 text-[16px] font-medium">{value}</p>
                 </div>
               ))}
@@ -135,7 +135,7 @@ export default function AlertsPage() {
         ) : alerts.loading && !alerts.data ? (
           <div className="space-y-3">
             {[0, 1, 2].map((index) => (
-              <div key={index} className="skeleton h-[130px] rounded-[14px]" />
+              <div key={index} className="skeleton h-[130px]" />
             ))}
           </div>
         ) : alerts.data && alerts.data.items.length === 0 ? (
@@ -163,7 +163,7 @@ export default function AlertsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <SeverityBadge severity={alert.severity} />
                       <span className="chip">{alert.zone_name ?? alert.zone_code}</span>
-                      <span className="flex items-center gap-1 font-mono text-[9.5px] text-muted">
+                      <span className="flex items-center gap-1 font-mono text-[14px] text-muted">
                         <Clock className="h-3 w-3" aria-hidden />
                         {formatWib(alert.created_at)}
                       </span>
@@ -172,7 +172,7 @@ export default function AlertsPage() {
                     <h2 className="mt-3 text-[15.5px] font-semibold tracking-[-0.02em]">{alert.title}</h2>
                     <p
                       className={cn(
-                        "mt-2 whitespace-pre-line text-[12px] leading-relaxed text-muted",
+                        "mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-muted",
                         isOpen ? "" : "line-clamp-2",
                       )}
                     >
@@ -182,7 +182,7 @@ export default function AlertsPage() {
                     <button
                       type="button"
                       onClick={() => setExpanded(isOpen ? null : alert.id)}
-                      className="mt-2 inline-flex items-center gap-1 text-[10.5px] font-semibold text-sea"
+                      className="mt-2 inline-flex items-center gap-1 text-[14px] font-medium text-sea"
                     >
                       {isOpen ? (
                         <ChevronUp className="h-3 w-3" aria-hidden />
@@ -198,7 +198,7 @@ export default function AlertsPage() {
           </div>
         )}
 
-        <div className="flex items-start gap-2 border-t border-line pt-3 text-[10.5px] leading-relaxed text-muted">
+        <div className="flex items-start gap-2 border-t border-line pt-3 text-[14px] leading-relaxed text-muted">
           <BellRing className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
           <p>
             <strong className="text-ink">Pemberitahuan berakhir otomatis.</strong> Setiap pemberitahuan

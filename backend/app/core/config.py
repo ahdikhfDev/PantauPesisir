@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # --- security ---
     # Privileged endpoints require X-API-Key. Empty + demo_mode=False fails closed.
     api_secret_key: str = ""
-    demo_api_key: str = "pantaupesisir-demo-2026"
+    demo_api_key: str = "pantaupesisir-operator-2026"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     ingestion_rate_limit_per_minute: int = 240
 

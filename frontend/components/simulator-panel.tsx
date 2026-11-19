@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, CircleStop, Play, Radar, Square } from "lucide-react";
+import { Activity, Check, CircleStop, Play, Radar, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { CaveatNote, InlineSpinner, StatusPill } from "@/components/ui";
@@ -140,13 +140,13 @@ export function SimulatorPanel({
   const autoRunning = status.data?.running ?? false;
 
   return (
-    <div className="card grid overflow-hidden lg:grid-cols-[1.05fr_0.95fr]">
+    <div className="card grid overflow-hidden lg:grid-cols-[1.15fr_0.85fr]">
       <div className="p-6 sm:p-7">
         <div className="flex items-start justify-between gap-3">
           <div>
             <span className="eyebrow-plain">Kontrol operator</span>
             <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.03em]">Kirim batch telemetri</h2>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
+            <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">
               Setiap pembacaan divalidasi saat masuk dan ditandai dengan sesi ingestion-nya.
             </p>
           </div>
@@ -155,31 +155,32 @@ export function SimulatorPanel({
           </StatusPill>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          {SCENARIOS.map((item) => (
-            <button
-              key={item.value}
-              type="button"
-              onClick={() => setScenario(item.value)}
-              className={cn(
-                "rounded-[12px] border px-3.5 py-3 text-left transition",
-                scenario === item.value
-                  ? "border-ink bg-ink text-white"
-                  : "border-line bg-white text-ink hover:border-line-strong",
-              )}
-              aria-pressed={scenario === item.value}
-            >
-              <span className="block text-[12px] font-semibold">{item.label}</span>
-              <span
+        <div className="mt-5 grid gap-2 sm:grid-cols-3">
+          {SCENARIOS.map((item) => {
+            const on = scenario === item.value;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => setScenario(item.value)}
                 className={cn(
-                  "mt-0.5 block text-[10px]",
-                  scenario === item.value ? "text-white/60" : "text-muted",
+                  "rounded-[var(--radius-panel)] border px-3.5 py-3 text-left transition-colors",
+                  on
+                    ? "border-signal bg-signal text-white"
+                    : "border-line bg-paper text-ink hover:border-line-strong hover:bg-surface",
                 )}
+                aria-pressed={on}
               >
-                {item.copy}
-              </span>
-            </button>
-          ))}
+                <span className="flex items-center gap-1.5 text-[13.5px] font-semibold">
+                  {on ? <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={3} aria-hidden /> : null}
+                  {item.label}
+                </span>
+                <span className={cn("mt-0.5 block text-[13.5px]", on ? "text-white/80" : "text-muted")}>
+                  {item.copy}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -202,15 +203,15 @@ export function SimulatorPanel({
           </div>
           <div>
             <span className="label">Mode</span>
-            <div className="flex rounded-[10px] border border-line-strong bg-white p-1">
+            <div className="flex gap-1 rounded-full border border-line bg-surface p-1">
               {(["manual", "auto"] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setMode(value)}
                   className={cn(
-                    "flex-1 rounded-lg px-2 py-1.5 text-[11px] font-semibold capitalize transition",
-                    mode === value ? "bg-paper text-ink" : "text-muted hover:text-ink",
+                    "flex-1 rounded-full px-2 py-1.5 text-[13.5px] font-medium transition-colors",
+                    mode === value ? "bg-paper text-ink shadow-[0_1px_2px_rgba(24,20,20,0.1)]" : "text-muted hover:text-ink",
                   )}
                   aria-pressed={mode === value}
                 >
@@ -251,8 +252,8 @@ export function SimulatorPanel({
           </div>
         </div>
 
-        <p className="mt-4 flex items-center gap-1.5 text-[10px] text-muted">
-          <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — kontrol operator aktif.
+        <p className="mt-4 flex items-center gap-1.5 text-[14px] text-muted">
+          <span className="h-1.5 w-1.5 bg-ok" aria-hidden /> Mode operator — kontrol operator aktif.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -270,20 +271,19 @@ export function SimulatorPanel({
         </div>
 
         {error ? (
-          <div className="mt-4 rounded-[10px] border border-signal/25 bg-signal-soft px-3.5 py-3 text-[12px] text-signal-dark">
+          <div className="mt-4 rounded-[var(--radius-panel)] bg-signal-soft px-3.5 py-3 text-[13.5px] text-signal">
             {error}
             {error.toLowerCase().includes("api key") || error.includes("401") ? (
-              <span className="mt-1 block text-[11px] text-signal-dark/80">
-                Kunci operator: <code className="font-mono">pantaupesisir-demo-2026</code>. Tempelkan di
-                atas lalu coba lagi.
+              <span className="mt-1 block text-[14px] text-signal/80">
+                Kunci operator tidak diterima. Periksa konfigurasi server, lalu coba lagi.
               </span>
             ) : null}
           </div>
         ) : null}
       </div>
 
-      <div className="border-t border-line bg-paper/70 p-6 sm:p-7 lg:border-l lg:border-t-0">
-        <h3 className="text-[10px] font-semibold text-muted">Yang terjadi berikutnya</h3>
+      <div className="border-t border-line bg-surface/60 p-6 sm:p-7 lg:border-l lg:border-t-0">
+        <h3 className="text-[15.5px] font-semibold text-ink">Yang terjadi berikutnya</h3>
         <ol className="mt-3 divide-y divide-line border-t border-line">
           {[
             "Gateway mengirim pembacaan yang konsisten dengan kunci idempotensi.",
@@ -293,31 +293,31 @@ export function SimulatorPanel({
             "Grafik, kualitas data, dan analisis AI disegarkan dari database.",
           ].map((step, index) => (
             <li key={step} className="flex gap-3 py-2.5">
-              <span className="metric mt-[2px] shrink-0 text-[9.5px] text-muted">
+              <span className="metric mt-[2px] shrink-0 text-[13px] text-muted">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <p className="text-[12px] leading-relaxed text-ink-soft">{step}</p>
+              <p className="text-[13.5px] leading-relaxed text-ink-soft">{step}</p>
             </li>
           ))}
         </ol>
 
         {acceptance ? (
-          <p className="mt-4 border-l-2 border-l-sea py-1 pl-3 text-[11px] leading-relaxed text-ink-soft">
+          <p className="mt-4 border-l-2 border-l-sea py-1 pl-3 text-[14px] leading-relaxed text-ink-soft">
             {acceptance}
           </p>
         ) : null}
 
         <div className="mt-5">
-          <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
+          <p className="flex items-center gap-1.5 text-[17px] font-medium text-ink">
             <Radar className="h-3 w-3" aria-hidden /> Status pekerjaan
           </p>
           {job.data ? (
             <>
-              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px] first:border-t-0">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[13.5px] first:border-t-0">
                 <span className="text-muted">Profil kondisi</span>
                 <span className="font-semibold capitalize">{enumLabel(job.data.scenario)}</span>
               </div>
-              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[13.5px]">
                 <span className="text-muted">Status</span>
                 <StatusPill
                   tone={
@@ -331,25 +331,25 @@ export function SimulatorPanel({
                   {enumLabel(job.data.status)}
                 </StatusPill>
               </div>
-              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[12px]">
+              <div className="flex items-center justify-between gap-3 border-t border-line py-1.5 text-[13.5px]">
                 <span className="text-muted">Observasi</span>
                 <span className="metric font-semibold">{job.data.observations_count}</span>
               </div>
-              <p className="mt-2 font-mono text-[9px] text-line-strong">{job.data.id}</p>
+              <p className="mt-2 font-mono text-[13.5px] text-line-strong">{job.data.id}</p>
             </>
           ) : (
-            <p className="text-[11px] leading-relaxed text-muted">
+            <p className="text-[14px] leading-relaxed text-muted">
               Belum ada batch yang dikirim di tab ini. Status umpan saat ini ditampilkan di samping.
             </p>
           )}
         </div>
 
         {notice ? (
-          <p className="mt-3 text-[11px] font-medium text-ink-soft">{notice}</p>
+          <p className="mt-3 text-[14px] font-medium text-ink-soft">{notice}</p>
         ) : null}
 
         {status.data?.last_tick_at ? (
-          <p className="mt-3 text-[10px] text-muted">Tick otomatis terakhir {formatWib(status.data.last_tick_at)}</p>
+          <p className="mt-3 text-[14px] text-muted">Tick otomatis terakhir {formatWib(status.data.last_tick_at)}</p>
         ) : null}
 
         <div className="mt-4">

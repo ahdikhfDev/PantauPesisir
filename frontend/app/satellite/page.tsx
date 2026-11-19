@@ -114,7 +114,7 @@ export default function SatellitePage() {
         title={
           <>
             Konteks pesisir dari{" "}
-            <span className="text-sea">Copernicus.</span>
+            Copernicus
           </>
         }
         description="Catatan katalog Sentinel-2 L2A nyata, diambil langsung dari STAC API Copernicus Data Space Ecosystem: cakupan area, waktu akuisisi, statistik awan, dan pratinjau tersimpan. Citra optik adalah konteks — bukan pengukuran tinggi gelombang."
@@ -138,7 +138,7 @@ export default function SatellitePage() {
               href={provider.data?.docs_url ?? "https://documentation.dataspace.copernicus.eu/APIs/STAC.html"}
               target="_blank"
               rel="noreferrer"
-              className="text-[11px] font-semibold text-sea underline underline-offset-2"
+              className="text-[14px] font-medium text-sea underline underline-offset-2"
             >
               Dokumentasi penyedia <ExternalLink className="inline h-3 w-3" aria-hidden />
             </a>
@@ -173,8 +173,8 @@ export default function SatellitePage() {
           <div className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
               <div>
-                <h2 className="text-[14px] font-semibold">Peta pesisir</h2>
-                <p className="mt-0.5 text-[10.5px] text-muted">
+                <h2 className="text-[17px] font-medium">Peta pesisir</h2>
+                <p className="mt-0.5 text-[14px] text-muted">
                   Poligon zona pemantauan, situs buoy, dan cakupan area satelit historis.
                 </p>
               </div>
@@ -191,9 +191,9 @@ export default function SatellitePage() {
                     type="button"
                     onClick={() => setLayers((current) => ({ ...current, [key]: !current[key] }))}
                     className={cn(
-                      "border-b pb-0.5 text-[10.5px] font-medium transition-colors",
+                      "border-b pb-0.5 text-[14px] font-medium transition-colors",
                       layers[key]
-                        ? "border-signal text-ink"
+                        ? "border-ground text-ground"
                         : "border-transparent text-muted hover:text-ink",
                     )}
                     aria-pressed={layers[key]}
@@ -208,17 +208,17 @@ export default function SatellitePage() {
               {zones.data ? (
                 <ZoneMap zones={zones.data} latest={latest.data} datasets={datasets.data ?? []} layers={layers} />
               ) : (
-                <div className="grid h-full place-items-center text-[12px] text-muted">Memuat peta…</div>
+                <div className="grid h-full place-items-center text-[13.5px] text-muted">Memuat peta…</div>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line px-5 py-3 text-[10px] text-muted">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line px-5 py-3 text-[14px] text-muted">
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full border border-signal bg-signal/10" aria-hidden />
+                <span className="h-2.5 w-2.5 border border-signal bg-signal/10" aria-hidden />
                 Poligon zona pemantauan
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full border-2 border-sea-deep bg-signal" aria-hidden />
+                <span className="h-2.5 w-2.5 border-2 border-sea-deep bg-signal" aria-hidden />
                 Buoy terpasang
               </span>
               <span className="flex items-center gap-1.5">
@@ -229,14 +229,14 @@ export default function SatellitePage() {
             </div>
           </div>
 
-          <div className="card p-5">
+          <div className="card p-4">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[14px] font-semibold">Sinkronkan rentang</h2>
+              <h2 className="text-[17px] font-medium">Sinkronkan rentang</h2>
               <StatusPill tone={job.data ? statusTone(job.data.status) : "neutral"}>
                 {job.data?.status ?? "siaga"}
               </StatusPill>
             </div>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted">
+            <p className="mt-1 text-[14px] leading-relaxed text-muted">
               Mengantrekan pencarian STAC nyata untuk cakupan zona, menyimpan metadata, dan menyimpan satu
               pratinjau per akuisisi. Tanpa unduhan raster dan tanpa rahasia API.
             </p>
@@ -298,8 +298,8 @@ export default function SatellitePage() {
                   />
                 </div>
               </div>
-              <p className="flex items-center gap-1.5 text-[10px] text-muted">
-                <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — sinkronisasi aktif.
+              <p className="flex items-center gap-1.5 text-[14px] text-muted">
+                <span className="h-1.5 w-1.5 bg-ok" aria-hidden /> Mode operator — sinkronisasi aktif.
               </p>
               <button type="button" className="btn btn-primary btn-sm" onClick={submit} disabled={busy}>
                 {busy ? <InlineSpinner label="Mengantrekan…" /> : <RefreshCw className="h-3.5 w-3.5" aria-hidden />}
@@ -308,17 +308,17 @@ export default function SatellitePage() {
             </div>
 
             {error ? (
-              <p className="mt-3 rounded-[10px] border border-signal/25 bg-signal-soft px-3 py-2.5 text-[11.5px] text-signal-dark">
+              <p className="mt-3 rounded-[var(--radius-panel)] bg-signal-soft px-3 py-2.5 text-[13.5px] text-signal">
                 {error}
               </p>
             ) : null}
             {notice ? (
-              <p className="mt-3 rounded-[10px] border border-sea/15 bg-sea-soft/70 px-3 py-2.5 text-[11.5px] leading-relaxed text-sea">
+              <p className="mt-3 rounded-[var(--radius-panel)] bg-sea-soft px-3 py-2.5 text-[13.5px] leading-relaxed text-sea">
                 {notice}
               </p>
             ) : null}
             {job.data ? (
-              <div className="mt-3 space-y-1.5 rounded-[10px] border border-line bg-paper/70 px-3 py-2.5 text-[11px]">
+              <div className="mt-3 space-y-1.5 rounded-[var(--radius-panel)] bg-surface px-3 py-2.5 text-[14px]">
                 <p className="flex justify-between gap-3">
                   <span className="text-muted">Ditemukan</span>
                   <span className="font-semibold">{job.data.datasets_found}</span>
@@ -332,10 +332,10 @@ export default function SatellitePage() {
                   <span className="font-semibold">{job.data.used_cache ? "ya" : "tidak"}</span>
                 </p>
                 {job.data.error_message ? (
-                  <p className="pt-1 text-[10px] leading-snug text-signal-dark">{job.data.error_message}</p>
+                  <p className="pt-1 text-[14px] leading-snug text-signal">{job.data.error_message}</p>
                 ) : null}
                 {job.data.warnings?.length ? (
-                  <ul className="list-inside list-disc pt-1 text-[10px] text-amber">
+                  <ul className="list-inside list-disc pt-1 text-[14px] text-amber">
                     {job.data.warnings.map((warning) => (
                       <li key={warning}>{warning}</li>
                     ))}
@@ -355,7 +355,7 @@ export default function SatellitePage() {
             <div>
               <span className="eyebrow">Katalog akuisisi</span>
               <h2 className="mt-2 text-[20px] font-semibold">Catatan Sentinel-2 tersimpan</h2>
-              <p className="mt-1 text-[12px] text-muted">
+              <p className="mt-1 text-[13.5px] text-muted">
                 Semua akuisisi tersimpan, terbaru lebih dulu. Pratinjau disimpan secara lokal; waktu akuisisi
                 dan atribusi zona tidak diubah dari respons penyedia.
               </p>
@@ -371,7 +371,7 @@ export default function SatellitePage() {
             ) : datasets.loading && !datasets.data ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {[0, 1, 2].map((index) => (
-                  <div key={index} className="skeleton h-[280px] rounded-[14px]" />
+                  <div key={index} className="skeleton h-[280px]" />
                 ))}
               </div>
             ) : catalogue.length === 0 ? (
@@ -393,7 +393,7 @@ export default function SatellitePage() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="grid h-full place-items-center text-[11px] text-sea">
+                        <div className="grid h-full place-items-center text-[14px] text-sea">
                           <span className="flex items-center gap-1.5">
                             <ImageIcon className="h-3.5 w-3.5" aria-hidden /> Tidak ada pratinjau tersimpan
                           </span>
@@ -402,12 +402,12 @@ export default function SatellitePage() {
                     </div>
 
                     <div className="flex flex-1 flex-col p-4">
-                      <p className="font-mono text-[9.5px] text-muted">
+                      <p className="font-mono text-[14px] text-muted">
                         {dataset.collection} · {String(dataset.metadata?.platform ?? "sentinel-2")}
                       </p>
-                      <h3 className="mt-1 break-all text-[12px] font-semibold leading-snug">{dataset.product_id}</h3>
+                      <h3 className="mt-1 break-all text-[13.5px] font-semibold leading-snug">{dataset.product_id}</h3>
 
-                      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10.5px]">
+                      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[14px]">
                         <dt className="text-muted">Diakuisisi</dt>
                         <dd className="text-right font-semibold">{formatWib(dataset.acquired_at)}</dd>
                         <dt className="text-muted">Tutupan awan</dt>
@@ -415,7 +415,7 @@ export default function SatellitePage() {
                         <dt className="text-muted">Resolusi</dt>
                         <dd className="text-right font-semibold">{fixed(dataset.resolution_m, 0)} m</dd>
                         <dt className="text-muted">CRS</dt>
-                        <dd className="text-right font-mono text-[10px]">{dataset.crs ?? "—"}</dd>
+                        <dd className="text-right font-mono text-[14px]">{dataset.crs ?? "—"}</dd>
                         <dt className="text-muted">Pemrosesan</dt>
                         <dd className="text-right font-semibold">{enumLabel(dataset.processing_status)}</dd>
                       </dl>
@@ -431,18 +431,18 @@ export default function SatellitePage() {
                       <button
                         type="button"
                         onClick={() => setExpanded(expanded === dataset.id ? null : dataset.id)}
-                        className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-sea"
+                        className="mt-3 inline-flex items-center gap-1.5 text-[14px] font-medium text-sea"
                       >
                         <Layers className="h-3 w-3" aria-hidden />
                         {expanded === dataset.id ? "Sembunyikan metadata" : "Metadata penyedia"}
                       </button>
                       {expanded === dataset.id ? (
-                        <pre className="mt-2 max-h-40 overflow-auto rounded-[8px] bg-paper p-2 text-[9px] leading-relaxed text-ink-soft">
+                        <pre className="mt-2 max-h-40 overflow-auto bg-paper p-2 text-[13.5px] leading-relaxed text-ink-soft">
                           {JSON.stringify(dataset.metadata, null, 2)}
                         </pre>
                       ) : null}
 
-                      <p className="mt-auto pt-3 text-[9.5px] leading-snug text-muted">{dataset.attribution}</p>
+                      <p className="mt-auto pt-3 text-[14px] leading-snug text-muted">{dataset.attribution}</p>
                     </div>
                   </article>
                 ))}
@@ -451,7 +451,7 @@ export default function SatellitePage() {
           </div>
         </section>
 
-        <p className="rounded-[14px] border border-line bg-surface px-5 py-4 text-[10.5px] leading-relaxed text-muted">
+        <p className="card px-5 py-4 text-[14px] leading-relaxed text-muted">
           Basis API <span className="font-mono text-ink">{API_BASE_URL}</span> · Unduhan produk Sentinel-2 resolusi
           penuh memerlukan akun Copernicus gratis (OIDC/S3). Endpoint katalog dan pratinjau
           menyajikan provenans, metadata akuisisi, serta fallback yang baik.
@@ -464,9 +464,9 @@ export default function SatellitePage() {
 function Fact({ label, value, note }: { label: string; value: string; note: string }) {
   return (
     <div className="min-w-0 px-5 py-4">
-      <p className="text-[10px] text-muted">{label}</p>
-      <p className="mt-1.5 text-[12.5px] font-semibold leading-snug">{value}</p>
-      <p className="mt-1 line-clamp-2 text-[10px] leading-snug text-muted" title={note}>
+      <p className="text-[14px] text-muted">{label}</p>
+      <p className="mt-1.5 text-[17px] font-medium leading-snug">{value}</p>
+      <p className="mt-1 line-clamp-2 text-[14px] leading-snug text-muted" title={note}>
         {note}
       </p>
     </div>

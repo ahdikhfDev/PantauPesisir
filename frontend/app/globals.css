@@ -1,49 +1,111 @@
 @import "tailwindcss";
 
+/*
+  A coastal safety console. The identity is red on white — red is the brand, the
+  action, and the alarm, all one red, because a warning tool that looks like a
+  warning tool is doing its job. Severity never rests on colour alone: every
+  state also carries a word and an icon.
+*/
+
 @theme {
-  --color-paper: #faf3f1;
-  --color-surface: #fffdfb;
-  --color-ink: #17191c;
-  --color-ink-soft: #3c4247;
-  --color-muted: #7a7170;
-  --color-line: #efe0dc;
-  --color-line-strong: #d9c6c1;
-  --color-signal: #e11d2e;
-  --color-signal-dark: #ad1220;
-  --color-signal-soft: #fde8ea;
-  --color-sea: #123f46;
-  --color-sea-deep: #0c2c31;
-  --color-sea-soft: #e4ecea;
-  --color-amber: #94651a;
-  --color-amber-soft: #f7e9d4;
-  --color-ok: #1c555c;
-  --color-ok-soft: #e4ecea;
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --font-display: var(--font-space), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  /* The brand red. Wordmark, primary actions, active nav, eyebrow labels. */
+  --color-ground: #d01f16;
+  --color-ground-deep: #a5140d;
+
+  --color-paper: #ffffff;
+  --color-surface: #f7f5f5;
+  --color-ink: #0e1b26;
+  --color-ink-soft: #4a4f55;
+  --color-muted: #6b6f75;
+  --color-line: #e7e3e3;
+  --color-line-strong: #cfc9c9;
+
+  /* Stop. Tunda, risiko tinggi, gagal. The worst reading. */
+  --color-signal: #c9200f;
+  /* The same red, dark enough to read as text on a red-tinted panel. */
+  --color-signal-ink: #9e150d;
+  --color-signal-dark: #a3140c;
+  --color-signal-soft: rgba(201, 32, 15, 0.07);
+
+  /* Caution. Waspada, mendekati batas, data usang. */
+  --color-amber: #a34a06;
+  --color-amber-soft: rgba(163, 74, 6, 0.09);
+
+  /* Clear. A teal, because "no hazard" should read as settled water, not as
+     another shade of alarm. */
+  --color-ok: #0d6f63;
+  --color-ok-soft: rgba(13, 111, 99, 0.1);
+
+  /* Secondary voice for series and labels. Dark enough to pass as body text
+     (5.2:1 on white), because most of its uses are words, not fills. */
+  --color-sea: #5f6f7c;
+  --color-sea-deep: #3d4d59;
+  --color-sea-soft: rgba(95, 111, 124, 0.1);
+
+  /* The three verdict panels. Each carries its own hue at low saturation, so the
+     panel already tells you which register you are in before you read the word. */
+  --color-panel-clear: #eef5f3;
+  --color-panel-caution: #fdf3e4;
+  --color-panel-danger: #fdeceb;
+
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
+  --font-display: var(--font-sign), var(--font-plex), ui-sans-serif, sans-serif;
+
+  /* Soft card scale: one radius per rank, so a card inside a card reads as
+     smaller, not as another box. */
+  --radius-card: 14px;
+  --radius-panel: 10px;
+  --radius-inner: 8px;
+  --shadow-card: 0 1px 2px rgba(24, 20, 20, 0.04), 0 10px 28px -20px rgba(24, 20, 20, 0.14);
+  --shadow-raise: 0 2px 4px rgba(24, 20, 20, 0.05), 0 20px 44px -24px rgba(24, 20, 20, 0.22);
+
+  /* Motion, in one place. Two durations and two curves is the whole system. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-plate: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-quick: 160ms;
+  --dur-slow: 620ms;
 }
 
 @layer base {
+  html {
+    /* One page load, one gesture. Anchor jumps stay instant. */
+    scroll-behavior: auto;
+  }
+
   body {
-    @apply bg-paper text-ink antialiased;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
   h2,
   h3 {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-wrap: balance;
   }
 
   ::selection {
-    background: rgba(217, 58, 43, 0.18);
+    background: var(--color-signal);
+    color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid #123f46;
+    outline: 2px solid var(--color-signal);
     outline-offset: 2px;
+  }
+
+  /* Data always lines up, whatever it is. */
+  table td,
+  .metric {
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -52,30 +114,70 @@
     @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8;
   }
 
+  /* Small label for a code or unit. Never decorative: these name a source or a
+     field, and the reader needs them to be distinguishable from prose. */
+  .code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
   .eyebrow {
-    @apply inline-flex items-center gap-2 text-[11px] font-semibold text-muted;
+    @apply inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.1em] text-signal uppercase;
   }
 
   .eyebrow::before {
     content: "";
-    @apply block h-[1.5px] w-5 bg-signal;
+    @apply block h-[2px] w-4 bg-signal;
   }
 
+  /* The same label without the rule, for places already inside a bordered card
+     where a second leading mark would just be clutter. */
   .eyebrow-plain {
-    @apply text-[11px] font-semibold text-muted;
+    @apply text-[12px] font-semibold tracking-[0.1em] text-signal uppercase;
+  }
+
+  /* The sign face. One per screen, at the size a driver reads from a distance. */
+  .verdict {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    line-height: 0.84;
   }
 
   .display {
     font-family: var(--font-display);
-    @apply text-[clamp(2rem,4vw,2.75rem)] font-semibold leading-[1.02] tracking-[-0.04em];
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 2.9rem);
+    line-height: 0.94;
+    letter-spacing: -0.005em;
   }
 
+  /* White card on white page, held by a hairline. The reference's card, and it
+     lets the red stay the only saturated thing on screen. */
   .card {
-    @apply rounded-[14px] border border-line bg-surface;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-flat {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    box-shadow: none;
   }
 
   .card-hover {
-    @apply transition-colors duration-200 hover:border-line-strong;
+    transition: box-shadow var(--dur-quick) ease, transform var(--dur-quick) var(--ease-out);
+  }
+
+  .card-hover:hover {
+    box-shadow: var(--shadow-raise);
+    transform: translateY(-2px);
   }
 
   .btn,
@@ -83,49 +185,66 @@
   .btn-signal,
   .btn-dark,
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-[9px] px-4 py-2.5 text-[12.5px] font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-[14px] font-medium transition-[background-color,color,transform] duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+    border: 0;
+    border-radius: 999px;
   }
 
-  /* Brand action on public/marketing surfaces. Inside the console, red stays
-     reserved for risk, so app actions keep using .btn-primary (ink). */
+  /* A button answers the press. Nothing else on the page moves on its own. */
+  .btn:active:not(:disabled),
+  .btn-primary:active:not(:disabled),
+  .btn-signal:active:not(:disabled),
+  .btn-dark:active:not(:disabled),
+  .btn-ghost:active:not(:disabled) {
+    transform: translateY(1px) scale(0.99);
+  }
+
+  .btn-lg {
+    @apply px-5 py-3 text-[15px];
+  }
+
+  /* Primary actions wear the brand red — the reference's CTA, and here red is
+     the identity, not only the alarm. */
+  .btn-primary,
+  .btn-dark {
+    @apply bg-ground text-white hover:bg-ground-deep;
+  }
+
+  /* The one button that is allowed to be red: it acts on a red reading. */
   .btn-signal {
     @apply bg-signal text-white hover:bg-signal-dark;
   }
 
-  .btn-primary {
-    @apply bg-ink text-white hover:bg-sea-deep;
-  }
-
-  .btn-dark {
-    @apply bg-sea-deep text-white hover:bg-sea;
-  }
-
   .btn-ghost {
-    @apply border border-line-strong bg-transparent text-ink hover:border-ink/35 hover:bg-surface;
+    @apply bg-paper text-ink hover:bg-surface;
+    box-shadow: inset 0 0 0 1px var(--color-line-strong);
   }
 
   .btn-sm {
-    @apply px-3 py-1.5 text-[11.5px];
+    @apply px-3.5 py-1.5 text-[13px];
   }
 
   .chip {
-    @apply inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-muted;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-3 py-1 text-[13px] text-ink-soft;
   }
 
   .input {
-    @apply w-full rounded-[8px] border border-line-strong bg-surface px-3 py-2 text-[12.5px] text-ink outline-none transition-colors focus:border-sea focus:ring-2 focus:ring-sea/10;
+    @apply w-full bg-paper px-3.5 py-2 text-[14px] text-ink outline-none transition-colors;
+    border: 0;
+    border-radius: var(--radius-inner);
+    box-shadow: inset 0 0 0 1px var(--color-line-strong);
+  }
+
+  .input:focus {
+    box-shadow: inset 0 0 0 1.5px var(--color-signal);
   }
 
   .label {
-    @apply mb-1.5 block text-[10.5px] font-semibold text-muted;
-  }
-
-  .metric {
-    @apply font-mono tabular-nums tracking-[-0.02em];
+    @apply mb-1.5 block text-[12.5px] font-medium text-muted;
   }
 
   .skeleton {
-    @apply animate-pulse rounded-[10px] bg-line/70;
+    @apply animate-pulse rounded-xl bg-line/70;
   }
 
   .divide-hairline {
@@ -133,7 +252,16 @@
   }
 
   .table-row {
-    @apply border-b border-line/80 last:border-0;
+    @apply border-b border-line last:border-0;
+  }
+
+  table thead th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-muted);
+    text-transform: none;
   }
 
   .font-display {
@@ -142,25 +270,104 @@
 }
 
 @layer utilities {
-  .reveal,
-  .reveal-late,
-  .reveal-later {
-    animation: reveal-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  .ink-underline {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
   }
 
-  .reveal-late {
-    animation-delay: 0.08s;
+  /*
+    Page entrance. One sequence per page, driven by CSS alone so it costs no
+    JavaScript and survives hydration. Children opt in with .stagger-1..6.
+    Everything settles and stays settled — no looping, no attention-seeking.
+  */
+  .enter-up {
+    animation: enter-up var(--dur-slow) var(--ease-out) both;
   }
 
-  .reveal-later {
-    animation-delay: 0.16s;
+  .enter-fade {
+    animation: enter-fade 420ms ease both;
   }
+
+  /* The sign. Slight overshoot, because a plate being hung lands. */
+  .enter-plate {
+    animation: enter-plate 720ms var(--ease-plate) both;
+  }
+
+  /* A value that just changed: one red pulse, then back to rest. */
+  .pulse-signal {
+    animation: pulse-signal 900ms ease-out both;
+  }
+
+  /* Live indicator: a heartbeat that reads as "connected", not as an alert. */
+  .live-dot {
+    animation: live-dot 2.4s ease-in-out infinite;
+  }
+
+  /* Progress drawn from zero, used for the level track and freshness bars. */
+  .grow-x {
+    transform-origin: left center;
+    animation: grow-x 700ms var(--ease-out) both;
+  }
+
+  /*
+    A card that lifts under the pointer. Only for things that are actually
+    clickable — otherwise the eye learns to ignore the movement.
+  */
+  .lift {
+    transition:
+      transform var(--dur-quick) var(--ease-out),
+      box-shadow var(--dur-quick) var(--ease-out);
+  }
+
+  .lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raise);
+  }
+
+  .lift:active {
+    transform: translateY(0) scale(0.995);
+  }
+
+  /* Number that counts up when it arrives. Set --n in inline style. */
+  .count-in {
+    animation: count-in 420ms var(--ease-out) both;
+  }
+
+  /* Sweep across a surface while its real value is still loading. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    animation: sheen 1.4s ease-in-out infinite;
+  }
+
+  .stagger-1 { animation-delay: 40ms; }
+  .stagger-2 { animation-delay: 90ms; }
+  .stagger-3 { animation-delay: 140ms; }
+  .stagger-4 { animation-delay: 190ms; }
+  .stagger-5 { animation-delay: 240ms; }
+  .stagger-6 { animation-delay: 290ms; }
+  .stagger-7 { animation-delay: 340ms; }
+  .stagger-8 { animation-delay: 390ms; }
 }
 
-@keyframes reveal-up {
+@keyframes enter-up {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -168,24 +375,113 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal-late,
-  .reveal-later {
-    animation: none;
+@keyframes enter-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes enter-plate {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Leaflet tuning */
+@keyframes pulse-signal {
+  0% { background-color: var(--color-signal); }
+  100% { background-color: transparent; }
+}
+
+@keyframes live-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.82); }
+}
+
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes count-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes sheen {
+  to { transform: translateX(100%); }
+}
+
+/*
+  Reduced motion is not "slower", it is none: the page arrives already settled.
+  data-reveal / chart animations are switched off at their source too.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .enter-up,
+  .enter-fade,
+  .enter-plate,
+  .grow-x,
+  .count-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .lift:hover,
+  .lift:active {
+    transform: none;
+  }
+
+  .sheen::after {
+    display: none;
+  }
+}
+
+/* Leaflet: the paper ground continues into the map frame. */
 .leaflet-container {
   font-family: var(--font-sans);
-  background: #dfe5e2;
+  background: var(--color-surface);
+}
+
+/* OSM raster is bright blue-green by default; pull it toward the console's
+   grey-blue so the map reads as instrument, not as a screenshot pasted in.
+   Set on the container: leaflet's own CSS ends with `.leaflet-tile { filter:
+   inherit }`, so a rule on the tile itself loses on source order. */
+.leaflet-container .leaflet-tile-container {
+  filter: saturate(0.55) contrast(0.97);
 }
 
 .leaflet-control-attribution {
+  font-family: var(--font-mono);
   font-size: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--color-muted);
 }
 
-.leaflet-popup-content-wrapper {
-  border-radius: 10px;
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: var(--radius-inner);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 0 0 0 1px var(--color-line-strong);
 }

@@ -48,32 +48,32 @@ const LEVEL_META: Record<
   Level,
   {
     label: string;
-    badge: string;
-    panel: string;
+    verdict: string;
+    text: string;
+    band: string;
     icon: typeof CheckCircle2;
-    scale: string;
   }
 > = {
   tenang: {
     label: LEVEL_LABEL.tenang,
-    badge: "text-ok",
-    panel: "border-ok/30 bg-ok-soft/60",
+    verdict: "Aman",
+    text: "text-ok",
+    band: "bg-ok",
     icon: CheckCircle2,
-    scale: "bg-ok",
   },
   hati: {
     label: LEVEL_LABEL.hati,
-    badge: "text-amber",
-    panel: "border-amber/35 bg-amber-soft/70",
+    verdict: "Hati-hati",
+    text: "text-amber",
+    band: "bg-amber",
     icon: TriangleAlert,
-    scale: "bg-amber",
   },
   tunda: {
     label: LEVEL_LABEL.tunda,
-    badge: "text-signal-dark",
-    panel: "border-signal/30 bg-signal-soft/70",
+    verdict: "Tunda",
+    text: "text-signal-ink",
+    band: "bg-signal",
     icon: XCircle,
-    scale: "bg-signal",
   },
 };
 
@@ -176,32 +176,29 @@ export default function CekPage() {
 
   return (
     <>
-      <section className="mb-6 flex flex-col gap-4 border-b border-line pb-5">
+      <section className="mb-7 flex flex-col gap-4 pb-1">
         <div className="max-w-3xl">
-          <span className="eyebrow">Untuk semua orang</span>
-          <h1 className="font-display mt-2 text-[26px] font-semibold leading-[1.06] tracking-[-0.04em] sm:text-[32px]">
-            Mau ke laut? <span className="text-sea">Cek dulu.</span>
+          <p className="eyebrow">Cek kondisi</p>
+          <h1 className="display mt-2.5 text-[clamp(2.1rem,4.4vw,3.4rem)]">
+            Mau ke laut? Cek dulu.
           </h1>
-          <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-muted">
-            Pilih lokasi dan rencana aktivitas. Dalam hitungan detik, konsol ini merangkum kondisi laut
-            terkini menjadi jawaban sederhana: aman, hati-hati, atau sebaiknya tunda.
+          <p className="mt-3 max-w-2xl text-[15.5px] leading-[1.6] text-ink-soft">
+            Pilih pantai dan rencana aktivitas. Halaman ini merangkum kondisi terkini menjadi satu
+            putusan, aman, hati-hati, atau tunda, beserta sebabnya.
           </p>
         </div>
       </section>
 
-      <section className="card p-5 sm:p-6">
-        <div className="flex items-center gap-2">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-sea-deep text-[11px] font-semibold text-white">
-            1
-          </span>
-          <h2 className="text-[14px] font-semibold">Pilih lokasi</h2>
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-muted">
-            <MapPin className="h-3 w-3" aria-hidden /> {zoneOptions.length} zona terpantau
+      <section>
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-[19px]">Pilih pantai</h2>
+          <span className="flex items-center gap-1.5 text-[14px] text-muted">
+            <MapPin className="h-3.5 w-3.5" aria-hidden /> {zoneOptions.length} pantai dipantau
           </span>
         </div>
 
-        <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
-          {zoneOptions.map((item) => {
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {zoneOptions.map((item, index) => {
             const active = item.zone_code === zone.zone_code;
             const itemReading = (latest.data?.items ?? []).find((row) => row.zone_code === item.zone_code);
             return (
@@ -209,25 +206,27 @@ export default function CekPage() {
                 key={item.zone_code}
                 type="button"
                 onClick={() => setZoneCode(item.zone_code)}
-                className={cn(
-                  "rounded-[12px] border px-4 py-3 text-left transition-colors",
-                  active
-                    ? "border-sea bg-sea-soft/70"
-                    : "border-line bg-surface hover:border-line-strong hover:bg-paper",
-                )}
                 aria-pressed={active}
+                className={cn(
+                  "px-4 py-3.5 text-left transition-colors",
+                  active
+                    ? "rounded-[var(--radius-panel)] bg-ground text-white shadow-[var(--shadow-card)]"
+                    : "rounded-[var(--radius-panel)] bg-surface text-ink hover:bg-line/40",
+                )}
               >
-                <span className="flex items-center justify-between gap-2">
-                  <span className="text-[13px] font-semibold text-ink">{item.zone_name}</span>
-                  <span className={cn("h-2 w-2 rounded-full", active ? "bg-sea" : "bg-line-strong")} aria-hidden />
-                </span>
-                <span className="mt-1 flex items-center gap-3 text-[10.5px] text-muted">
-                  <span className="inline-flex items-center gap-1">
-                    <Waves className="h-3 w-3" aria-hidden />
+                <span className="block text-[16.5px] font-medium">{item.zone_name}</span>
+                <span
+                  className={cn(
+                    "mt-1.5 flex items-center gap-3.5 text-[14px]",
+                    active ? "text-paper/70" : "text-muted",
+                  )}
+                >
+                  <span className="metric inline-flex items-center gap-1.5">
+                    <Waves className="h-3.5 w-3.5" aria-hidden />
                     {itemReading ? `${fixed(itemReading.parameters.wave_height_m, 1)} m` : "—"}
                   </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="h-3 w-3" aria-hidden />
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" aria-hidden />
                     {itemReading ? formatAge(itemReading.data_age_seconds) : "—"}
                   </span>
                 </span>
@@ -236,15 +235,12 @@ export default function CekPage() {
           })}
         </div>
 
-        <div className="mt-6 flex items-center gap-2">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-sea-deep text-[11px] font-semibold text-white">
-            2
-          </span>
-          <h2 className="text-[14px] font-semibold">Rencana aktivitas</h2>
+        <div className="mt-7 flex flex-wrap items-center gap-3">
+          <h2 className="text-[19px]">Rencana aktivitas</h2>
         </div>
 
-        <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
-          {ACTIVITIES.map((item) => {
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {ACTIVITIES.map((item, index) => {
             const Icon = ACTIVITY_ICONS[item.key];
             const active = activity === item.key;
             return (
@@ -252,18 +248,28 @@ export default function CekPage() {
                 key={item.key}
                 type="button"
                 onClick={() => setActivity(item.key)}
-                className={cn(
-                  "flex items-start gap-3 rounded-[12px] border px-4 py-3 text-left transition-colors",
-                  active
-                    ? "border-sea bg-sea-soft/70"
-                    : "border-line bg-surface hover:border-line-strong hover:bg-paper",
-                )}
                 aria-pressed={active}
+                className={cn(
+                  "flex items-start gap-3 px-4 py-3.5 text-left transition-colors",
+                  active
+                    ? "rounded-[var(--radius-panel)] bg-ground text-white shadow-[var(--shadow-card)]"
+                    : "rounded-[var(--radius-panel)] bg-surface text-ink hover:bg-line/40",
+                )}
               >
-                <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", active ? "text-sea" : "text-muted")} aria-hidden />
+                <Icon
+                  className={cn("mt-0.5 h-[18px] w-[18px] shrink-0", active ? "text-paper" : "text-muted")}
+                  aria-hidden
+                />
                 <span>
-                  <span className="block text-[12.5px] font-semibold text-ink">{item.label}</span>
-                  <span className="mt-0.5 block text-[10.5px] leading-relaxed text-muted">{item.note}</span>
+                  <span className="block text-[15.5px] font-medium">{item.label}</span>
+                  <span
+                    className={cn(
+                      "mt-1 block text-[14px] leading-snug",
+                      active ? "text-paper/70" : "text-muted",
+                    )}
+                  >
+                    {item.note}
+                  </span>
                 </span>
               </button>
             );
@@ -271,123 +277,154 @@ export default function CekPage() {
         </div>
       </section>
 
-      <section className={cn("card mt-5 overflow-hidden border", meta.panel)} aria-live="polite">
-        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
-          <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-white/80">
-              <LevelIcon className={cn("h-6 w-6", meta.badge)} aria-hidden />
-            </span>
-            <div>
-              <p className="text-[10px] font-semibold text-muted">Hasil untuk {zone.zone_name}</p>
-              <h2 className={cn("mt-1 text-[22px] font-semibold leading-tight tracking-[-0.03em]", meta.badge)}>
-                {loading ? "Membaca kondisi…" : meta.label}
-              </h2>
-              <p className="mt-1.5 max-w-xl text-[12.5px] leading-relaxed text-ink-soft">
-                {loading ? "Sebentar, mengambil pembacaan terbaru dari buoy." : advice}
+      <section className="mt-7" aria-live="polite">
+        <div
+          className={cn(
+            "overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper shadow-[var(--shadow-card)] transition-colors duration-500",
+          )}
+        >
+          <div className={cn("flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-white", meta.band)}>
+            <p className="flex items-center gap-2 font-display text-[16px] font-medium">
+              <meta.icon className="h-4 w-4 shrink-0" strokeWidth={2.4} aria-hidden />
+              {zone.zone_name} · {activeActivity.label}
+            </p>
+            <p className="metric flex items-center gap-1.5 text-[13.5px] text-paper/70">
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-paper" aria-hidden />
+              <Clock className="h-3.5 w-3.5" aria-hidden />
+              {age !== null ? `data ${formatAge(age)}` : "menunggu data"}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-4 px-5 pb-5 pt-6 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-[13.5px] text-muted">Putusan untuk aktivitas ini</p>
+              {/* Re-keyed so the plate re-hangs when the verdict actually changes. */}
+              <p
+                key={`${zone.zone_code}-${activity}-${level}`}
+                className={cn(
+                  "verdict enter-plate mt-2 flex items-center gap-3 text-[clamp(2.6rem,6vw,3.8rem)]",
+                  loading ? "text-muted" : meta.text,
+                )}
+              >
+                {loading ? "Membaca" : meta.verdict}
+                <meta.icon
+                  className="h-[0.4em] w-[0.4em] shrink-0"
+                  strokeWidth={2.4}
+                  aria-hidden
+                />
+              </p>
+              <p className="mt-3 max-w-[46ch] text-[15.5px] leading-[1.55] text-ink-soft">
+                {loading ? "Mengambil pembacaan terbaru dari buoy." : advice}
               </p>
             </div>
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
-            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-[10.5px] font-medium text-muted">
-              <Clock className="h-3 w-3" aria-hidden />
-              {age !== null ? `Diperbarui ${formatAge(age)}` : "Menunggu data"}
-            </span>
             <a
               href={shareHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-ink-soft underline underline-offset-4 hover:text-ink"
+              className="btn btn-ghost btn-sm shrink-0 self-start"
             >
-              <Share2 className="h-3 w-3" aria-hidden /> Bagikan ke WhatsApp
+              <Share2 className="h-3.5 w-3.5" aria-hidden /> Bagikan ke WhatsApp
             </a>
           </div>
+
+          <dl className="mx-5 mb-5 grid overflow-hidden rounded-[var(--radius-panel)] bg-surface sm:grid-cols-3">
+            <div className="border-b border-line px-4 py-3 sm:border-b-0">
+              <dt className="text-[13.5px] text-muted">Ombak</dt>
+              <dd className="metric mt-1 flex items-baseline gap-1.5 text-[26px] leading-none font-semibold">
+                {fixed(wave, 1)}
+                <span className="text-[13.5px] font-normal text-muted">m</span>
+              </dd>
+              <dd className="mt-1 text-[13.5px] text-muted">{waveWords(wave)}</dd>
+            </div>
+            <div className="border-b border-line px-4 py-3 sm:border-b-0 sm:border-l">
+              <dt className="text-[13.5px] text-muted">Angin</dt>
+              <dd className="metric mt-1 flex items-baseline gap-1.5 text-[26px] leading-none font-semibold">
+                {fixed(wind, 0)}
+                <span className="text-[13.5px] font-normal text-muted">m/s</span>
+              </dd>
+              <dd className="mt-1 text-[13.5px] text-muted">{windWords(wind)}</dd>
+            </div>
+            <div className="px-4 py-3 sm:border-l">
+              <dt className="text-[13.5px] text-muted">Peringatan aktif</dt>
+              <dd className="metric mt-1 text-[26px] leading-none font-semibold">{zoneAlerts.length}</dd>
+              <dd className="mt-1 text-[13.5px] text-muted">
+                {zoneAlerts.length ? zoneAlerts[0].title : "tidak ada"}
+              </dd>
+            </div>
+          </dl>
         </div>
 
-        <div className="grid gap-0 border-t border-white/60 bg-white/45 sm:grid-cols-3">
-          <div className="border-b border-white/70 px-5 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-[9.5px] font-semibold text-muted">Ombak</p>
-            <p className="metric mt-1 text-[17px] font-medium text-ink">{fixed(wave, 1)} m</p>
-            <p className="text-[10.5px] text-muted">{waveWords(wave)}</p>
-          </div>
-          <div className="border-b border-white/70 px-5 py-3.5 sm:border-b-0 sm:border-r">
-            <p className="text-[9.5px] font-semibold text-muted">Angin</p>
-            <p className="metric mt-1 text-[17px] font-medium text-ink">{fixed(wind, 0)} m/s</p>
-            <p className="text-[10.5px] text-muted">{windWords(wind)}</p>
-          </div>
-          <div className="px-5 py-3.5">
-            <p className="text-[9.5px] font-semibold text-muted">Peringatan aktif</p>
-            <p className="metric mt-1 text-[17px] font-medium text-ink">{zoneAlerts.length}</p>
-            <p className="text-[10.5px] text-muted">{zoneAlerts.length ? zoneAlerts[0].title : "tidak ada"}</p>
-          </div>
-        </div>
-
-        <div className="border-t border-white/60 bg-white/60 px-5 py-3">
-          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted">
-            <span className="font-semibold text-ink-soft">Kenapa?</span>
-            {reasons.map((reason) => (
-              <span key={reason} className="rounded-full bg-white/80 px-2 py-0.5">
+        <div className="mt-5">
+          <h2 className="text-[15px] font-medium">Yang menentukan putusan ini</h2>
+          <ul key={`reasons-${zone.zone_code}-${activity}-${level}`} className="mt-2 divide-y divide-line">
+            {reasons.map((reason, index) => (
+              <li
+                key={reason}
+                className={cn(
+                  "enter-up flex items-baseline gap-2.5 py-2 text-[14px] text-ink-soft",
+                  `stagger-${Math.min(index + 1, 8)}`,
+                )}
+              >
+                <span className="h-1.5 w-1.5 shrink-0 translate-y-[-1px] bg-ink" aria-hidden />
                 {reason}
-              </span>
+              </li>
             ))}
-          </p>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] font-medium text-muted">
+          </ul>
+          <div className="mt-4 flex items-center gap-3 text-[14px] text-muted">
             <span>Tenang</span>
-            <span className="mx-1 flex-1 overflow-hidden rounded-full bg-line">
+            <span className="flex-1 border-t border-line-strong">
               <span
-                className={cn("block h-1.5 rounded-full transition-all", meta.scale)}
+                key={`meter-${level}`}
+                className={cn(
+                  "grow-x block h-[3px] -translate-y-[2px]",
+                  level === "tenang" ? "bg-ok" : level === "hati" ? "bg-amber" : "bg-signal",
+                )}
                 style={{ width: level === "tenang" ? "33%" : level === "hati" ? "66%" : "100%" }}
               />
             </span>
             <span>Tunda</span>
           </div>
-          <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-muted">
             Penilaian memakai ombak, angin, riwayat analisis, dan peringatan aktif untuk{" "}
-            {activeActivity.label.toLowerCase()}. Untuk prakiraan resmi, cek juga BMKG sebelum berangkat.
+            {activeActivity.label.toLowerCase()}. Untuk prakiraan resmi, cek BMKG sebelum berangkat.
           </p>
         </div>
       </section>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.35fr_1fr]">
-        <section className="card overflow-hidden">
-          <div className="flex flex-wrap items-end justify-between gap-2 border-b border-line px-5 py-4">
+      <div className="mt-7 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+        <section className="card">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line px-4 py-3">
             <div>
-              <h2 className="text-[14px] font-semibold">
-                Ombak {range === "7d" ? "7 hari" : "24 jam"} terakhir
-              </h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">
+              <h2 className="text-[17px]">Ombak {range === "7d" ? "7 hari" : "24 jam"} terakhir</h2>
+              <p className="mt-0.5 text-[14px] text-muted">
                 {zone.zone_name}
                 {wavePoints.length
-                  ? ` · ${formatShortWib(new Date(wavePoints[0].time).toISOString())} – ${formatShortWib(
+                  ? `, ${formatShortWib(new Date(wavePoints[0].time).toISOString())} sampai ${formatShortWib(
                       new Date(wavePoints[wavePoints.length - 1].time).toISOString(),
                     )} WIB`
                   : ""}
               </p>
             </div>
-            <div className="flex items-center gap-3.5">
-              <div className="flex items-center gap-1">
-                {([
-                  ["24h", "24 jam"],
-                  ["7d", "7 hari"],
-                ] as const).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setRange(value)}
-                    aria-pressed={range === value}
-                    className={cn(
-                      "border-b px-1 pb-0.5 text-[10.5px] font-medium transition-colors",
-                      range === value
-                        ? "border-signal text-ink"
-                        : "border-transparent text-muted hover:text-ink",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <span className="text-[10.5px] text-muted">
-                {wavePoints.length ? `${wavePoints.length} titik` : "memuat…"}
-              </span>
+            <div className="flex items-center gap-3">
+              {([
+                ["24h", "24 jam"],
+                ["7d", "7 hari"],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRange(value)}
+                  aria-pressed={range === value}
+                  className={cn(
+                    "border-b-2 px-0.5 pb-0.5 text-[14px] transition-colors",
+                    range === value
+                      ? "border-ink font-medium text-ink"
+                      : "border-transparent text-muted hover:text-ink",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
           <div className="px-3 pb-2 pt-3 sm:px-4">
@@ -397,16 +434,16 @@ export default function CekPage() {
               limitLabel={`batas aman ${fixed(LIMITS[activity].waveWarn, 1)} m`}
             />
           </div>
-          <p className="border-t border-line px-5 py-2.5 text-[9.5px] leading-relaxed text-muted">
+          <p className="border-t border-line px-4 py-2.5 text-[14px] leading-relaxed text-muted">
             Garis putus-putus adalah batas aman untuk {activeActivity.label.toLowerCase()}. Sumber:
             pembacaan buoy yang sudah diperiksa.
           </p>
         </section>
 
-        <section className="card overflow-hidden">
-          <div className="border-b border-line px-5 py-4">
-            <h2 className="text-[14px] font-semibold">Pantai yang dipantau</h2>
-            <p className="mt-0.5 text-[10.5px] text-muted">Pilih pantai di peta untuk melihat kondisinya</p>
+        <section className="card">
+          <div className="border-b border-line px-4 py-3">
+            <h2 className="text-[17px]">Pantai yang dipantau</h2>
+            <p className="mt-0.5 text-[14px] text-muted">Klik pantai di peta untuk memilihnya</p>
           </div>
           <div className="h-[280px] w-full">
             {zones.data ? (
@@ -418,43 +455,42 @@ export default function CekPage() {
                 onSelectZone={setZoneCode}
               />
             ) : (
-              <div className="grid h-full place-items-center text-[11px] text-muted">Memuat peta…</div>
+              <div className="grid h-full place-items-center text-[14px] text-muted">Memuat peta…</div>
             )}
           </div>
-          <p className="border-t border-line px-5 py-2.5 text-[9.5px] text-muted">
+          <p className="border-t border-line px-4 py-2.5 text-[13.5px] text-muted">
             Peta dasar © OpenStreetMap contributors
           </p>
         </section>
       </div>
 
-      <section className="mt-5 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="card p-5">
-          <h2 className="text-[14px] font-semibold">Cara membaca hasilnya</h2>
-          <ul className="mt-3 space-y-2.5">
+      <section className="mt-7 grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+        <div className="card p-4">
+          <h2 className="text-[17px]">Cara membaca putusannya</h2>
+          <dl className="mt-3 divide-y divide-line border-y border-line">
             {[
               ["Aman", "Ombak dan angin masih nyaman untuk aktivitas yang dipilih.", "bg-ok"],
-              ["Hati-hati", "Ada satu kondisi yang mendekati batas. Tetap pantau dan siapkan pelampung.", "bg-amber"],
-              ["Tunda", "Ombak, angin, atau peringatan sudah melewati batas aman aktivitas tersebut.", "bg-signal"],
+              ["Hati-hati", "Satu kondisi mendekati batas. Tetap pantau dan siapkan pelampung.", "bg-amber"],
+              ["Tunda", "Ombak, angin, atau peringatan sudah melewati batas aman aktivitas itu.", "bg-signal"],
             ].map(([title, copy, dot]) => (
-              <li key={title} className="flex gap-2.5">
-                <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", dot)} aria-hidden />
-                <span className="text-[11.5px] leading-relaxed text-ink-soft">
-                  <span className="font-semibold text-ink">{title}. </span>
-                  {copy}
-                </span>
-              </li>
+              <div key={title} className="flex gap-2.5 py-2.5">
+                <span className={cn("mt-2 h-2 w-2 shrink-0", dot)} aria-hidden />
+                <div>
+                  <dt className="text-[14px] font-medium">{title}</dt>
+                  <dd className="mt-0.5 text-[13.5px] leading-relaxed text-ink-soft">{copy}</dd>
+                </div>
+              </div>
             ))}
-          </ul>
+          </dl>
         </div>
 
-        <div className="card flex flex-col justify-between gap-4 p-5">
+        <div className="card flex flex-col justify-between gap-5 p-5">
           <div>
-            <p className="flex items-center gap-1.5 text-[10px] font-semibold text-muted">
-              <LifeBuoy className="h-3.5 w-3.5" aria-hidden /> Butuh angka lengkap?
+            <p className="flex items-center gap-1.5 text-[14px] text-muted">
+              <LifeBuoy className="h-4 w-4" aria-hidden /> Butuh angka lengkap?
             </p>
-            <p className="mt-2 text-[12px] leading-relaxed text-muted">
-              Riwayat per jam, metadata satelit, dan panel analisis tersedia di konsol pemantauan untuk
-              operator.
+            <p className="mt-2 text-[13.5px] leading-relaxed text-ink-soft">
+              Riwayat per jam, metadata satelit, dan panel analisis tersedia di konsol untuk operator.
             </p>
           </div>
           <Link href="/konsol" className="btn btn-ghost btn-sm self-start">

@@ -17,8 +17,8 @@ import { EmptyState } from "@/components/ui";
 import { fixed } from "@/lib/format";
 import type { Observation } from "@/lib/types";
 
-const AXIS = { stroke: "#7a7170", fontSize: 10, fontFamily: "var(--font-mono)" };
-const GRID = "#eaddd9";
+const AXIS = { stroke: "#6b6f75", fontSize: 10, fontFamily: "var(--font-mono)" };
+const GRID = "rgba(24,20,20,0.10)";
 
 function timeLabel(value: unknown): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -62,17 +62,17 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
       <div className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Kondisi laut pada jendela</h2>
-            <p className="mt-1 text-[11px] text-muted">
+            <h2 className="text-[17px] font-medium">Kondisi laut pada jendela</h2>
+            <p className="mt-1 text-[14px] text-muted">
               Tinggi gelombang signifikan (m) dan kecepatan angin (m/s) · telemetri buoy · WIB
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[10px] font-semibold ">
-            <span className="flex items-center gap-1.5 text-signal">
-              <span className="h-2 w-2 rounded-full bg-signal" aria-hidden /> Tinggi gelombang
+          <div className="flex items-center gap-3 text-[14px] font-medium">
+            <span className="flex items-center gap-1.5 text-ground">
+              <span className="h-2 w-2 bg-ground" aria-hidden /> Tinggi gelombang
             </span>
             <span className="flex items-center gap-1.5 text-sea">
-              <span className="h-2 w-2 rounded-full bg-sea" aria-hidden /> Angin
+              <span className="h-2 w-2  bg-sea" aria-hidden /> Angin
             </span>
           </div>
         </div>
@@ -82,8 +82,8 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
             <ComposedChart data={data} margin={{ top: 6, right: 6, bottom: 0, left: -18 }}>
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#e11d2e" stopOpacity={0.22} />
-                  <stop offset="100%" stopColor="#e11d2e" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#d01f16" stopOpacity={0.22} />
+                  <stop offset="100%" stopColor="#d01f16" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={GRID} strokeDasharray="3 4" vertical={false} />
@@ -111,7 +111,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value: number) => `${fixed(value, 1)}`}
-                label={{ value: "m", angle: -90, position: "insideLeft", fill: "#7a7170", fontSize: 10 }}
+                label={{ value: "m", angle: -90, position: "insideLeft", fill: "#6b6f75", fontSize: 10 }}
               />
               <YAxis
                 yAxisId="wind"
@@ -120,12 +120,12 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value: number) => `${fixed(value, 0)}`}
-                label={{ value: "m/s", angle: 90, position: "insideRight", fill: "#7a7170", fontSize: 10 }}
+                label={{ value: "m/s", angle: 90, position: "insideRight", fill: "#6b6f75", fontSize: 10 }}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #eaddd9",
+                  border: "1px solid rgba(24,20,20,0.18)",
                   fontSize: 11,
                   fontFamily: "var(--font-sans)",
                   boxShadow: "0 18px 40px -30px rgba(17,24,27,0.5)",
@@ -141,7 +141,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="height"
                 name="Tinggi gelombang"
-                stroke="#e11d2e"
+                stroke="#d01f16"
                 strokeWidth={2}
                 fill={`url(#${gradientId})`}
                 dot={false}
@@ -153,7 +153,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="wind"
                 name="Kecepatan angin"
-                stroke="#123f46"
+                stroke="#5f6f7c"
                 strokeWidth={1.6}
                 strokeDasharray="5 4"
                 dot={false}
@@ -167,8 +167,8 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
 
       <div className="card p-5 sm:p-6">
         <div>
-          <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Tekanan & periode</h2>
-          <p className="mt-1 text-[11px] text-muted">
+          <h2 className="text-[17px] font-medium">Tekanan & periode</h2>
+          <p className="mt-1 text-[14px] text-muted">
             Barometer yang turun dengan periode yang memanjang adalah pola yang dipantau model.
           </p>
         </div>
@@ -197,7 +197,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #eaddd9",
+                  border: "1px solid rgba(24,20,20,0.18)",
                   fontSize: 11,
                   fontFamily: "var(--font-sans)",
                 }}
@@ -212,7 +212,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="pressure"
                 name="Tekanan udara"
-                stroke="#94651a"
+                stroke="#a34a06"
                 strokeWidth={1.8}
                 dot={false}
                 isAnimationActive={false}
@@ -222,7 +222,7 @@ export function ObservationCharts({ items }: { items: Observation[] }) {
                 type="monotone"
                 dataKey="period"
                 name="Periode gelombang"
-                stroke="#123f46"
+                stroke="#5f6f7c"
                 strokeWidth={1.6}
                 dot={false}
                 isAnimationActive={false}

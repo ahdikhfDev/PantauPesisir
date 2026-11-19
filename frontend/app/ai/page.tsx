@@ -140,7 +140,7 @@ export default function AiPage() {
         eyebrow="Intelijen risiko AI"
         title={
           <>
-            Penyaringan, <span className="text-signal">sebelum membesar.</span>
+            Penyaringan sebelum membesar
           </>
         }
         description="Isolation Forest yang dilatih pada observasi NOAA NDBC asli memberi skor seberapa tidak biasa jendela terbaru. Rubrik terpisah yang mudah dibaca menilai keparahan absolut. Kedua lapisan ditampilkan — beserta input, versi, dan catatannya — agar setiap skor dapat ditelusuri."
@@ -173,7 +173,7 @@ export default function AiPage() {
               <KeyValue
                 label="Data latih"
                 value={
-                  <span className="text-[11px] leading-snug">
+                  <span className="text-[14px] leading-snug">
                     NOAA NDBC stdmet · stasiun 51002 &amp; 41010 · 2022–2024
                   </span>
                 }
@@ -207,15 +207,15 @@ export default function AiPage() {
             </div>
 
             <div className="mt-4 border-t border-line pt-3.5">
-              <p className="text-[10px] font-semibold text-muted">Proksi evaluasi</p>
-              <p className="mt-1.5 text-[11px] leading-relaxed text-ink-soft">
+              <p className="text-[17px] font-medium text-ink">Proksi evaluasi</p>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
                 {metrics.proxy_evaluation?.method ??
                   "Penandaan diperiksa konsentrasinya pada perubahan tekanan dan tinggi gelombang yang cepat di irisan validasi nyata."}
               </p>
-              <div className="mt-3 grid grid-cols-2 gap-x-4 text-[10.5px]">
+              <div className="mt-3 grid grid-cols-2 gap-x-4 text-[14px]">
                 <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
                   <p className="text-muted">Recall perubahan tekanan</p>
-                  <p className="metric text-[13px] font-medium">
+                  <p className="metric text-[14px] font-medium">
                     {metrics.proxy_evaluation?.recall_top5pct_pressure_change !== undefined
                       ? percent(metrics.proxy_evaluation.recall_top5pct_pressure_change)
                       : "—"}
@@ -223,7 +223,7 @@ export default function AiPage() {
                 </div>
                 <div className="flex items-baseline justify-between gap-3 border-t border-line pt-2">
                   <p className="text-muted">Baseline acak</p>
-                  <p className="metric text-[13px] font-medium">
+                  <p className="metric text-[14px] font-medium">
                     {metrics.proxy_evaluation?.random_selection_baseline !== undefined
                       ? percent(metrics.proxy_evaluation.random_selection_baseline)
                       : "—"}
@@ -234,7 +234,7 @@ export default function AiPage() {
 
             <ul className="mt-4 space-y-2">
               {(modelInfo.data?.limitations ?? []).map((limitation) => (
-                <li key={limitation} className="flex gap-2 text-[11px] leading-relaxed text-muted">
+                <li key={limitation} className="flex gap-2 text-[14px] leading-relaxed text-muted">
                   <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-amber" aria-hidden />
                   {limitation}
                 </li>
@@ -246,7 +246,7 @@ export default function AiPage() {
           <div className="card p-6">
             <span className="eyebrow-plain">Jalankan analisis</span>
             <h2 className="mt-2 text-[19px] font-semibold">Saring jendela</h2>
-            <p className="mt-1 max-w-md text-[11.5px] leading-relaxed text-muted">
+            <p className="mt-1 max-w-md text-[13.5px] leading-relaxed text-muted">
               Pilih zona dan jendela. API memuat observasi valid tersimpan, memberi skor, menyelaraskan
               rekaman satelit tersinggah, dan menulis baris analisis baru.
             </p>
@@ -266,14 +266,14 @@ export default function AiPage() {
               </div>
               <div>
                 <span className="label">Jendela observasi</span>
-                <div className="flex rounded-[10px] border border-line-strong bg-white p-1">
+                <div className="flex rounded-full bg-surface p-1">
                   {WINDOWS.map((value) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => setWindowMinutes(value)}
                       className={cn(
-                        "flex-1 rounded-lg px-1 py-1.5 text-[11px] font-semibold transition",
+                        "flex-1 rounded-full px-1 py-1.5 text-[16px] font-medium transition",
                         windowMinutes === value ? "bg-paper text-ink" : "text-muted hover:text-ink",
                       )}
                       aria-pressed={windowMinutes === value}
@@ -285,23 +285,23 @@ export default function AiPage() {
               </div>
             </div>
 
-            <label className="mt-3 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/60 px-3.5 py-3">
+            <label className="mt-3 flex items-start gap-2.5 rounded-[var(--radius-panel)] bg-surface px-3.5 py-3">
               <input
                 type="checkbox"
                 checked={createAlert}
                 onChange={(event) => setCreateAlert(event.target.checked)}
                 className="mt-0.5 h-3.5 w-3.5 accent-sea"
               />
-              <span className="text-[11.5px] leading-relaxed text-ink-soft">
+              <span className="text-[13.5px] leading-relaxed text-ink-soft">
                 Tambahkan pemberitahuan warga saat risiko mencapai sedang atau tinggi.
-                <span className="mt-0.5 block text-[10px] text-muted">
+                <span className="mt-0.5 block text-[14px] text-muted">
                   Peringatan dapat dikonfirmasi di ruang kerja peringatan.
                 </span>
               </span>
             </label>
 
-            <p className="mt-4 flex items-center gap-1.5 text-[10px] text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden /> Mode demo — analisis dapat dijalankan.
+            <p className="mt-4 flex items-center gap-1.5 text-[14px] text-muted">
+              <span className="h-1.5 w-1.5 bg-ok" aria-hidden /> Mode operator — analisis dapat dijalankan.
             </p>
 
             <button type="button" onClick={run} disabled={busy} className="btn btn-primary mt-4 w-full">
@@ -310,25 +310,25 @@ export default function AiPage() {
             </button>
 
             {error ? (
-              <div className="mt-3 rounded-[10px] border border-signal/25 bg-signal-soft px-3.5 py-3 text-[11.5px] leading-relaxed text-signal-dark">
+              <div className="mt-3 rounded-[var(--radius-panel)] bg-signal-soft px-3.5 py-3 text-[13.5px] leading-relaxed text-signal">
                 {error}
                 {error.toLowerCase().includes("observation") ? (
-                  <span className="mt-1 block text-[10.5px]">
+                  <span className="mt-1 block text-[14px]">
                     Hasilkan telemetri di konsol laut terlebih dahulu, atau perlebar jendela.
                   </span>
                 ) : null}
               </div>
             ) : null}
             {notice ? (
-              <div className="mt-3 flex gap-2 rounded-[10px] border border-sea/15 bg-sea-soft/70 px-3.5 py-3 text-[11.5px] leading-relaxed text-sea">
+              <div className="mt-3 flex gap-2 rounded-[var(--radius-panel)] bg-sea-soft px-3.5 py-3 text-[13.5px] leading-relaxed text-sea">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
                 {notice}
               </div>
             ) : null}
 
-            <div className="mt-4 flex items-start gap-2.5 rounded-[10px] border border-line bg-paper/70 px-3.5 py-3">
+            <div className="mt-4 flex items-start gap-2.5 rounded-[var(--radius-panel)] bg-surface px-3.5 py-3">
               <SlidersHorizontal className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden />
-              <p className="text-[10.5px] leading-relaxed text-muted">
+              <p className="text-[14px] leading-relaxed text-muted">
                 Tingkat risiko berasal dari rubrik transparan (<span className="font-mono">rubrik_risiko_v1</span>)
                 menggunakan tinggi gelombang absolut, angin, penurunan tekanan, dan periode.
               </p>
@@ -345,31 +345,31 @@ export default function AiPage() {
                 <span className="chip">{prediction.zone_code}</span>
                 <span className="chip">{prediction.windows_evaluated} jendela diskor</span>
                 {prediction.alert_id ? (
-                  <Link href="/alerts" className="chip border-signal/25 bg-signal-soft text-signal-dark">
+                  <Link href="/alerts" className="chip bg-signal-soft text-signal">
                     Peringatan dibuka <ArrowUpRight className="h-3 w-3" aria-hidden />
                   </Link>
                 ) : null}
               </div>
-              <span className="font-mono text-[9.5px] text-muted">
+              <span className="font-mono text-[14px] text-muted">
                 analisis {prediction.id.slice(0, 8)} · {formatWib(prediction.created_at)}
               </span>
             </div>
 
             <div className="grid gap-6 p-6 lg:grid-cols-[0.85fr_1.15fr]">
               <div>
-                <p className="text-[10px] font-semibold text-muted">Indeks anomali</p>
+                <p className="text-[17px] font-medium text-ink">Indeks anomali</p>
                 <p className="mt-1.5 flex items-baseline gap-2">
                   <span className="metric text-[38px] font-medium leading-none">
                     {fixed(prediction.anomaly_score, 2)}
                   </span>
-                  <span className="text-[10.5px] text-muted">
+                  <span className="text-[14px] text-muted">
                     {prediction.anomaly_detected ? "ditandai" : "dalam rentang"}
                   </span>
                 </p>
-                <div className="relative mt-4 h-[5px] rounded-full bg-line">
+                <div className="relative mt-4 h-[5px] bg-line">
                   <div
                     className={cn(
-                      "absolute inset-y-0 left-0 rounded-full",
+                      "absolute inset-y-0 left-0",
                       prediction.anomaly_detected ? "bg-signal" : "bg-sea",
                     )}
                     style={{ width: `${Math.min(Math.max(prediction.anomaly_score, 0), 1) * 100}%` }}
@@ -380,7 +380,7 @@ export default function AiPage() {
                     aria-hidden
                   />
                 </div>
-                <div className="mt-1.5 flex items-baseline justify-between text-[9.5px] text-muted">
+                <div className="mt-1.5 flex items-baseline justify-between text-[14px] text-muted">
                   <span className="metric">0.00</span>
                   <span>
                     ambang <span className="metric">{fixed(prediction.anomaly_threshold, 2)}</span>
@@ -389,14 +389,14 @@ export default function AiPage() {
                 </div>
 
                 <div className="mt-5">
-                  <div className="flex items-center justify-between text-[10px] font-semibold text-muted">
+                  <div className="flex items-center justify-between text-[17px] font-medium text-ink">
                     <span>Skor risiko</span>
                     <span className="metric">{fixed(prediction.risk_score, 1)}/100</span>
                   </div>
-                  <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-line">
+                  <div className="mt-2 h-2.5 overflow-hidden bg-line">
                     <div
                       className={cn(
-                        "h-full rounded-full",
+                        "h-full",
                         prediction.risk_level === "high"
                           ? "bg-signal"
                           : prediction.risk_level === "moderate"
@@ -406,13 +406,13 @@ export default function AiPage() {
                       style={{ width: `${prediction.risk_score ?? 0}%` }}
                     />
                   </div>
-                  <p className="mt-1.5 text-[10px] text-muted">
+                  <p className="mt-1.5 text-[14px] text-muted">
                     Metode <span className="font-mono">{prediction.risk_method ?? "rubrik_risiko_v1"}</span>
                   </p>
                 </div>
 
                 <dl className="mt-5 divide-y divide-line border-t border-line pt-2">
-                  <KeyValue label="Versi model" value={<span className="font-mono text-[10px]">{prediction.model_version}</span>} />
+                  <KeyValue label="Versi model" value={<span className="font-mono text-[14px]">{prediction.model_version}</span>} />
                   <KeyValue label="Awal jendela" value={formatShortWib(prediction.observation_window_start)} />
                   <KeyValue label="Akhir jendela" value={formatShortWib(prediction.observation_window_end)} />
                   <KeyValue label="Observasi" value={prediction.input_observation_count} />
@@ -433,10 +433,10 @@ export default function AiPage() {
               </div>
 
               <div>
-                <h3 className="text-[10px] font-semibold text-muted">Penjelasan</h3>
-                <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-soft">{prediction.explanation}</p>
+                <h3 className="text-[17px] font-medium text-ink">Penjelasan</h3>
+                <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">{prediction.explanation}</p>
 
-                <h3 className="mt-5 text-[10px] font-semibold text-muted">Faktor kontributor</h3>
+                <h3 className="mt-5 text-[17px] font-medium text-muted">Faktor kontributor</h3>
                 <ul className="mt-2 divide-y divide-line border-y border-line">
                   {prediction.contributing_factors.map((factor) => {
                     const magnitude = Math.min(Math.abs(factor.deviation_sigma) / 4, 1);
@@ -444,18 +444,18 @@ export default function AiPage() {
                     return (
                       <li key={factor.feature} className="py-2.5">
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
-                          <p className="text-[11.5px] text-ink-soft">{factor.label}</p>
-                          <p className="metric text-[11px] text-muted">
+                          <p className="text-[13.5px] text-ink-soft">{factor.label}</p>
+                          <p className="metric text-[14px] text-muted">
                             {fixed(factor.value, 2)} {factor.unit}
-                            <span className="ml-2 text-[10px]">
+                            <span className="ml-2 text-[14px]">
                               {factor.deviation_sigma > 0 ? "+" : ""}
                               {fixed(factor.deviation_sigma, 2)}σ
                             </span>
                           </p>
                         </div>
-                        <div className="mt-1.5 h-1 rounded-full bg-line">
+                        <div className="mt-1.5 h-1 bg-line">
                           <div
-                            className={cn("h-full rounded-full", anomalous ? "bg-signal" : "bg-sea")}
+                            className={cn("h-full", anomalous ? "bg-signal" : "bg-sea")}
                             style={{ width: `${Math.max(magnitude * 100, 3)}%` }}
                           />
                         </div>
@@ -463,30 +463,30 @@ export default function AiPage() {
                     );
                   })}
                   {prediction.contributing_factors.length === 0 ? (
-                    <li className="py-2.5 text-[12px] text-muted">
+                    <li className="py-2.5 text-[13.5px] text-muted">
                       Tidak ada faktor individual yang melampaui ambang pelaporan.
                     </li>
                   ) : null}
                 </ul>
-                <p className="mt-2 text-[9.5px] leading-relaxed text-muted">
+                <p className="mt-2 text-[14px] leading-relaxed text-muted">
                   Deviasi diukur terhadap baseline data latih untuk fitur yang sama. σ adalah
                   jarak terstandardisasi dari baseline model.
                 </p>
 
                 <div
                   className={cn(
-                    "mt-5 rounded-[10px] border p-4",
+                    "card mt-5 p-4",
                     prediction.risk_level === "high"
-                      ? "border-signal/25 bg-signal-soft/70"
+                      ? "bg-signal-soft"
                       : prediction.risk_level === "moderate"
-                        ? "border-amber/25 bg-amber-soft/70"
+                        ? "bg-amber-soft"
                         : "border-ok/20 bg-ok-soft/60",
                   )}
                 >
-                  <p className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
+                  <p className="flex items-center gap-1.5 text-[17px] font-medium text-ink">
                     <Target className="h-3 w-3" aria-hidden /> Rekomendasi operasional
                   </p>
-                  <p className="mt-1.5 text-[12px] leading-relaxed text-ink-soft">{prediction.recommendation}</p>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">{prediction.recommendation}</p>
                 </div>
               </div>
             </div>
@@ -495,13 +495,13 @@ export default function AiPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <SourceBadge kind="model" />
                 <SourceBadge kind={prediction.is_simulated ? "simulated" : "observed"} />
-                <span className="text-[10.5px] text-muted">
+                <span className="text-[14px] text-muted">
                   Keluaran model diturunkan dari telemetri buoy tervalidasi.
                 </span>
               </div>
               <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
                 {prediction.caveats.map((caveat) => (
-                  <li key={caveat} className="flex gap-1.5 text-[10px] leading-relaxed text-muted">
+                  <li key={caveat} className="flex gap-1.5 text-[14px] leading-relaxed text-muted">
                     <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-amber" aria-hidden />
                     {caveat}
                   </li>
@@ -510,7 +510,7 @@ export default function AiPage() {
             </div>
           </div>
         ) : history.loading ? (
-          <div className="skeleton h-[320px] rounded-[14px]" />
+          <div className="skeleton h-[320px]" />
         ) : history.error ? (
           <ErrorState message={history.error} onRetry={history.refresh} />
         ) : (
@@ -531,7 +531,7 @@ export default function AiPage() {
             <div>
               <span className="eyebrow">Riwayat analisis</span>
               <h2 className="mt-3 text-[22px] font-semibold tracking-[-0.035em]">Eksekusi model terbaru</h2>
-              <p className="mt-1 text-[12px] text-muted">
+              <p className="mt-1 text-[13.5px] text-muted">
                 Tersimpan di PostgreSQL/SQLite dengan versi model, jendela, dan ID observasi.
               </p>
             </div>
@@ -555,15 +555,15 @@ export default function AiPage() {
                   <span className="chip">{item.zone_code}</span>
                   <RiskBadge level={item.risk_level} />
                 </div>
-                <p className="mt-3 text-[12px] font-semibold">{formatShortWib(item.created_at)} WIB</p>
-                <div className="mt-2 flex items-center justify-between text-[10.5px] text-muted">
+                <p className="mt-3 text-[13.5px] font-semibold">{formatShortWib(item.created_at)} WIB</p>
+                <div className="mt-2 flex items-center justify-between text-[14px] text-muted">
                   <span className="metric">anomali {fixed(item.anomaly_score, 2)}</span>
                   <span className="metric">risiko {fixed(item.risk_score, 0)}</span>
                 </div>
               </button>
             ))}
             {history.data?.length === 0 ? (
-              <p className="text-[12px] text-muted">Belum ada eksekusi.</p>
+              <p className="text-[13.5px] text-muted">Belum ada eksekusi.</p>
             ) : null}
           </div>
         </section>

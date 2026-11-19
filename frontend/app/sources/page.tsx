@@ -68,7 +68,7 @@ export default function SourcesPage() {
         eyebrow="Sumber data & kesehatan sistem"
         title={
           <>
-            Ketahui apa yang ada di balik <span className="text-sea">setiap angka.</span>
+            Ketahui apa yang ada di balik setiap angka
           </>
         }
         description="Status basis data, artefak model, loop simulator, dan kesegaran penyedia satelit — plus gerbang validasi yang memisahkan pembacaan mentah dari dasbor."
@@ -78,7 +78,7 @@ export default function SourcesPage() {
               {health.data ? enumLabel(health.data.status) : "memeriksa"} · v{health.data?.version ?? "—"}
             </StatusPill>
             <span className="chip">Lingkungan · {health.data?.environment ?? "—"}</span>
-            <a href={docsUrl} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-sea underline underline-offset-2">
+            <a href={docsUrl} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-sea underline underline-offset-2">
               OpenAPI / Swagger <ExternalLink className="inline h-3 w-3" aria-hidden />
             </a>
           </div>
@@ -137,7 +137,7 @@ export default function SourcesPage() {
           />
         </div>
 
-        <div className="card grid grid-cols-2 gap-px overflow-hidden bg-line sm:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
           {[
             ["Observasi tersimpan", health.data?.counts.buoy_observations],
             ["Dataset satelit", health.data?.counts.satellite_datasets],
@@ -146,8 +146,8 @@ export default function SourcesPage() {
             ["Perangkat buoy", health.data?.counts.buoy_devices],
             ["Zona", health.data?.counts.coastal_zones],
           ].map(([label, value]) => (
-            <div key={String(label)} className="bg-surface px-4 py-3.5">
-              <p className="text-[10px] text-muted">{label}</p>
+            <div key={String(label)} className="card px-4 py-3.5">
+              <p className="text-[14px] text-muted">{label}</p>
               <p className="metric mt-1.5 text-[21px] font-medium leading-none">{value ?? "—"}</p>
             </div>
           ))}
@@ -156,8 +156,8 @@ export default function SourcesPage() {
         <div className="card overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
             <div>
-              <h2 className="text-[14px] font-semibold">Kesegaran sumber</h2>
-              <p className="mt-0.5 text-[10.5px] text-muted">
+              <h2 className="text-[17px] font-medium">Kesegaran sumber</h2>
+              <p className="mt-0.5 text-[14px] text-muted">
                 Stempel waktu terakhir teramati, diterima, dan berhasil, langsung dari basis data.
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function SourcesPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[860px] text-left">
                 <thead>
-                  <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
+                  <tr className="border-b border-line bg-paper/70 text-[14px] font-medium text-muted">
                     <th className="px-5 py-2.5">Sumber</th>
                     <th className="px-3 py-2.5">Tipe</th>
                     <th className="px-3 py-2.5">Status</th>
@@ -185,24 +185,24 @@ export default function SourcesPage() {
                 </thead>
                 <tbody>
                   {(sources.data?.items ?? []).map((source) => (
-                    <tr key={source.source_name} className="table-row align-top text-[11.5px]">
+                    <tr key={source.source_name} className="table-row align-top text-[13.5px]">
                       <td className="px-5 py-3">
                         <p className="font-semibold text-ink">
                           {(source.metadata?.label as string) ?? source.source_name}
                         </p>
-                        <p className="font-mono text-[9px] text-muted">{source.source_name}</p>
+                        <p className="font-mono text-[13.5px] text-muted">{source.source_name}</p>
                       </td>
                       <td className="px-3 py-3 text-muted">{enumLabel(source.source_type)}</td>
                       <td className="px-3 py-3">
                         <StatusPill tone={statusTone(source.status)}>{enumLabel(source.status)}</StatusPill>
                       </td>
-                      <td className="px-3 py-3 font-mono text-[10px] text-ink-soft">
+                      <td className="px-3 py-3 font-mono text-[14px] text-ink-soft">
                         {formatWib(source.last_observed_at)}
                       </td>
                       <td className="px-3 py-3 text-muted">{formatAge(source.age_seconds)}</td>
-                      <td className="max-w-[280px] px-5 py-3 text-[10.5px] leading-relaxed text-muted">
+                      <td className="max-w-[280px] px-5 py-3 text-[14px] leading-relaxed text-muted">
                         {source.last_error ? (
-                          <span className="text-signal-dark">{source.last_error}</span>
+                          <span className="text-signal">{source.last_error}</span>
                         ) : (
                           (source.metadata?.note as string) ?? "Tidak ada galat dilaporkan."
                         )}
@@ -240,7 +240,7 @@ export default function SourcesPage() {
               ].map((item, index) => (
                 <div key={index} className="flex flex-col gap-1.5 border-b border-line pb-4 last:border-0 last:pb-0">
                   <div>{item.badge}</div>
-                  <p className="text-[11.5px] leading-relaxed text-muted">{item.copy}</p>
+                  <p className="text-[13.5px] leading-relaxed text-muted">{item.copy}</p>
                 </div>
               ))}
             </div>
@@ -251,8 +251,8 @@ export default function SourcesPage() {
             <h2 className="mt-2.5 text-[18px] font-semibold tracking-[-0.03em]">Syarat yang harus lolos</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
               {VALIDATION_RULES.map((rule, index) => (
-                <li key={rule} className="flex gap-3 py-2.5 text-[11.5px] leading-relaxed text-ink-soft">
-                  <span className="metric mt-[1px] shrink-0 text-[10px] text-muted">
+                <li key={rule} className="flex gap-3 py-2.5 text-[13.5px] leading-relaxed text-ink-soft">
+                  <span className="metric mt-[1px] shrink-0 text-[14px] text-muted">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   {rule}
@@ -291,7 +291,7 @@ export default function SourcesPage() {
               }
             />
           </div>
-          <p className="mt-4 text-[11px] leading-relaxed text-muted">
+          <p className="mt-4 text-[14px] leading-relaxed text-muted">
             Ambang operasi dikalibrasi pada {calibration?.windows ?? 90} jendela skenario normal
             ({(calibration?.target_false_alarm_rate ?? 0.1) * 100}% laju penandaan target). Pada irisan
             validasi NDBC nyata, ambang terpasang menandai{" "}
@@ -325,8 +325,8 @@ export default function SourcesPage() {
 
         <div className="card overflow-hidden">
           <div className="border-b border-line px-5 py-4">
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Permukaan API publik</h2>
-            <p className="mt-0.5 text-[11px] text-muted">
+            <h2 className="text-[17px] font-medium">Permukaan API publik</h2>
+            <p className="mt-0.5 text-[14px] text-muted">
               Jalur dasar <span className="font-mono text-ink">{API_BASE_URL}</span> · JSON · ISO 8601 (UTC).
               Waktu pada tampilan disajikan dalam WIB. Ikon kunci menandai operasi yang memerlukan{" "}
               <span className="font-mono">X-API-Key</span>.
@@ -335,7 +335,7 @@ export default function SourcesPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left">
               <thead>
-                <tr className="border-b border-line bg-paper/70 text-[10px] font-medium text-muted">
+                <tr className="border-b border-line bg-paper/70 text-[14px] font-medium text-muted">
                   <th className="px-5 py-2.5">Metode</th>
                   <th className="px-3 py-2.5">Endpoint</th>
                   <th className="px-3 py-2.5">Autentikasi</th>
@@ -344,29 +344,29 @@ export default function SourcesPage() {
               </thead>
               <tbody>
                 {ENDPOINTS.map((endpoint) => (
-                  <tr key={`${endpoint.method}-${endpoint.path}`} className="table-row text-[11.5px]">
+                  <tr key={`${endpoint.method}-${endpoint.path}`} className="table-row text-[13.5px]">
                     <td className="px-5 py-2.5">
                       <span
                         className={cn(
-                          "font-mono text-[9.5px] font-semibold",
+                          "font-mono text-[17px] font-medium",
                           endpoint.method === "GET"
                             ? "text-sea"
                             : endpoint.method === "POST"
-                              ? "text-signal-dark"
+                              ? "text-signal"
                               : "text-amber",
                         )}
                       >
                         {endpoint.method}
                       </span>
                     </td>
-                    <td className="px-3 py-2.5 font-mono text-[10.5px] text-ink">{endpoint.path}</td>
+                    <td className="px-3 py-2.5 font-mono text-[14px] text-ink">{endpoint.path}</td>
                     <td className="px-3 py-2.5">
                       {endpoint.auth ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-signal">
+                        <span className="inline-flex items-center gap-1 text-[14px] font-medium text-signal">
                           <KeyRound className="h-3 w-3" aria-hidden /> kunci
                         </span>
                       ) : (
-                        <span className="text-[10px] text-muted">publik</span>
+                        <span className="text-[14px] text-muted">publik</span>
                       )}
                     </td>
                     <td className="px-5 py-2.5 text-muted">{endpoint.purpose}</td>
@@ -379,15 +379,15 @@ export default function SourcesPage() {
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           <div className="card p-6">
-            <h2 className="text-[14px] font-semibold">Degradasi bertahap</h2>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
+            <h2 className="text-[17px] font-medium">Degradasi bertahap</h2>
+            <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
               Jika Copernicus melewati batas waktu, tugas satelit ditandai{" "}
               <span className="font-mono">completed_with_fallback</span>, status penyedia menjadi{" "}
               <span className="font-mono">unavailable</span>, dan akuisisi ter-cache tetap terlihat dengan
               tanggal akuisisi aslinya. Pemantauan buoy dan analisis AI tetap berjalan karena konteks
               satelit adalah lapisan pelengkap.
             </p>
-            <p className="mt-3 text-[10.5px] leading-relaxed text-muted">
+            <p className="mt-3 text-[14px] leading-relaxed text-muted">
               Untuk menguji jalur ini: putuskan jaringan (atau blokir host STAC), jalankan sinkronisasi,
               lalu periksa <span className="font-mono">/satellite/jobs/&#123;id&#125;</span> dan halaman ini.
               Katalog dataset harus tetap terisi.
@@ -395,8 +395,8 @@ export default function SourcesPage() {
           </div>
 
           <div className="card p-6">
-            <h2 className="text-[14px] font-semibold">Tata letak penyimpanan</h2>
-            <ul className="mt-3 divide-y divide-line border-y border-line text-[11.5px] leading-relaxed text-muted">
+            <h2 className="text-[17px] font-medium">Tata letak penyimpanan</h2>
+            <ul className="mt-3 divide-y divide-line border-y border-line text-[13.5px] leading-relaxed text-muted">
               <li className="py-2.5">
                 Tabel relasional untuk zona, perangkat, sesi, observasi, dataset, tugas, model,
                 prediksi, peringatan, dan status sumber.
@@ -419,13 +419,13 @@ export default function SourcesPage() {
         </div>
 
         {provider.data?.last_error ? (
-          <div className="flex gap-2 rounded-[12px] border border-amber/25 bg-amber-soft/60 px-5 py-4 text-[11.5px] leading-relaxed text-amber">
+          <div className="flex gap-2 rounded-[var(--radius-card)] bg-amber-soft px-5 py-4 text-[13.5px] leading-relaxed text-amber">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
             Galat penyedia satelit terakhir: {provider.data.last_error}
           </div>
         ) : null}
 
-        <p className="text-[10px] leading-relaxed text-muted">
+        <p className="text-[14px] leading-relaxed text-muted">
           Laju yang ditampilkan berasal dari basis data saat ini. Kesegaran yang dihitung memakai waktu
           server dalam UTC, lalu ditampilkan dalam WIB.
           {sources.data ? ` Cuplikan ${formatWib(sources.data.generated_at)}.` : ""}
@@ -445,14 +445,14 @@ function HealthCard({
   rows: Array<[string, string]>;
 }) {
   return (
-    <div className="card p-5">
+    <div className="card p-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-[12.5px] font-semibold">{title}</h3>
+        <h3 className="text-[17px] font-medium">{title}</h3>
         <StatusPill tone={statusTone(status)}>{enumLabel(status)}</StatusPill>
       </div>
       <dl className="mt-3 divide-y divide-line border-t border-line">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex items-baseline justify-between gap-3 py-2 text-[10.5px]">
+          <div key={label} className="flex items-baseline justify-between gap-3 py-2 text-[14px]">
             <dt className="text-muted">{label}</dt>
             <dd className="truncate text-right font-medium text-ink">{value}</dd>
           </div>
@@ -465,8 +465,8 @@ function HealthCard({
 function Lineage({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] text-muted">{label}</p>
-      <p className="mt-1 text-[11.5px] font-medium leading-snug text-ink">{value}</p>
+      <p className="text-[14px] text-muted">{label}</p>
+      <p className="mt-1 text-[13.5px] font-medium leading-snug text-ink">{value}</p>
     </div>
   );
 }

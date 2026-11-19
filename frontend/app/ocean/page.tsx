@@ -83,7 +83,7 @@ export default function OceanPage() {
         title={
           <>
             Setiap pembacaan,{" "}
-            <span className="text-signal">dengan buktinya.</span>
+            dengan buktinya
           </>
         }
         description="Telemetri buoy, satuan fisiknya, waktu catatannya, dan asal-usulnya. Setiap pembacaan divalidasi sebelum sampai ke tampilan ini."
@@ -112,23 +112,23 @@ export default function OceanPage() {
                 aria-selected={item.zone_code === zoneCode}
                 onClick={() => selectZone(item.zone_code)}
                 className={cn(
-                  "border-b-2 px-1 pb-2 pt-1 text-[12px] font-medium transition-colors",
+                  "border-b-2 px-1 pb-2 pt-1 text-[13.5px] font-medium transition-colors",
                   item.zone_code === zoneCode
-                    ? "border-signal text-ink"
+                    ? "border-ground text-ground"
                     : "border-transparent text-muted hover:text-ink",
                 )}
               >
                 {item.zone_name}
-                <span className={cn("ml-2 font-mono text-[9px]", item.zone_code === zoneCode ? "text-muted" : "text-line-strong")}>
+                <span className={cn("ml-2 font-mono text-[13.5px]", item.zone_code === zoneCode ? "text-muted" : "text-line-strong")}>
                   {item.zone_code}
                 </span>
               </button>
             ))}
-            {zones.loading && !zones.data ? <div className="skeleton h-9 w-40 rounded-[7px]" /> : null}
+            {zones.loading && !zones.data ? <div className="skeleton h-9 w-40" /> : null}
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10.5px] font-medium text-muted">Jendela</span>
+            <span className="text-[14px] font-medium text-muted">Jendela</span>
               <div className="flex items-center gap-2">
             {RANGES.map((range) => (
               <button
@@ -136,9 +136,9 @@ export default function OceanPage() {
                 type="button"
                 onClick={() => setRangeMinutes(range.minutes)}
                 className={cn(
-                  "border-b px-1.5 pb-1 text-[11px] font-medium transition-colors",
+                  "border-b px-1.5 pb-1 text-[14px] font-medium transition-colors",
                   rangeMinutes === range.minutes
-                    ? "border-signal text-ink"
+                    ? "border-ground text-ground"
                     : "border-transparent text-muted hover:text-ink",
                 )}
                 aria-pressed={rangeMinutes === range.minutes}
@@ -152,9 +152,9 @@ export default function OceanPage() {
 
         {/* freshness strip */}
         <div className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11.5px]">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13.5px]">
             <span className="flex items-center gap-1.5 font-semibold text-ink">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
+              <span className="h-1.5 w-1.5 bg-ink" aria-hidden />
               {zone?.zone_name ?? zoneCode}
             </span>
             <span className="text-muted">
@@ -179,11 +179,11 @@ export default function OceanPage() {
         </div>
 
         {zone?.boundary_note ? (
-          <p className="text-[10.5px] leading-relaxed text-muted">{zone.boundary_note}</p>
+          <p className="text-[14px] leading-relaxed text-muted">{zone.boundary_note}</p>
         ) : null}
 
         {/* metric grid */}
-        <div className="card grid grid-cols-2 divide-x divide-y divide-line overflow-hidden lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <MetricCard
             label="Tinggi gelombang signifikan"
             value={fixed(parameters?.wave_height_m, 2)}
@@ -235,15 +235,15 @@ export default function OceanPage() {
         </div>
 
         {history.error ? (
-          <div className="card border-signal/25 bg-signal-soft/50 p-5 text-[13px] text-signal-dark">
+          <div className="card border-0 bg-signal-soft p-4 text-[14px] text-signal">
             {history.error}
           </div>
         ) : history.data ? (
           <ObservationCharts items={history.data.items} />
         ) : (
           <div className="grid gap-5 xl:grid-cols-[1.35fr_1fr]">
-            <div className="skeleton h-[340px] rounded-[14px]" />
-            <div className="skeleton h-[340px] rounded-[14px]" />
+            <div className="skeleton h-[340px]" />
+            <div className="skeleton h-[340px]" />
           </div>
         )}
 
@@ -252,8 +252,8 @@ export default function OceanPage() {
           <div className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
               <div>
-                <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Pembacaan terbaru</h2>
-                <p className="mt-0.5 text-[11px] text-muted">
+                <h2 className="text-[17px] font-medium">Pembacaan terbaru</h2>
+                <p className="mt-0.5 text-[14px] text-muted">
                   {history.data?.total ?? 0} baris di jendela terpilih · terbaru lebih dulu
                 </p>
               </div>
@@ -261,8 +261,8 @@ export default function OceanPage() {
             </div>
             <div className="max-h-[430px] overflow-auto">
               <table className="w-full min-w-[580px] border-collapse text-left">
-                <thead className="sticky top-0 z-10 bg-paper/95 backdrop-blur">
-                  <tr className="text-[10px] font-medium text-muted">
+                <thead className="sticky top-0 z-10 bg-paper backdrop-blur">
+                  <tr className="text-[14px] font-medium text-muted">
                     <th className="px-5 py-2.5">Teramati (WIB)</th>
                     <th className="px-3 py-2.5">Tinggi (m)</th>
                     <th className="px-3 py-2.5">Periode (s)</th>
@@ -273,8 +273,8 @@ export default function OceanPage() {
                 </thead>
                 <tbody>
                   {(history.data?.items ?? []).slice(0, 14).map((item) => (
-                    <tr key={item.id} className="table-row text-[12px]">
-                      <td className="px-5 py-3 font-mono text-[11px] text-ink-soft">{formatShortWib(item.observed_at)}</td>
+                    <tr key={item.id} className="table-row text-[13.5px]">
+                      <td className="px-5 py-3 font-mono text-[14px] text-ink-soft">{formatShortWib(item.observed_at)}</td>
                       <td className="metric px-3 py-3 font-semibold">{fixed(item.parameters.wave_height_m, 2)}</td>
                       <td className="metric px-3 py-3">{fixed(item.parameters.wave_period_s, 1)}</td>
                       <td className="metric px-3 py-3">{fixed(item.parameters.wind_speed_mps, 1)} m/s</td>
@@ -288,7 +288,7 @@ export default function OceanPage() {
                   ))}
                   {history.data && history.data.items.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-5 py-10 text-center text-[12px] text-muted">
+                      <td colSpan={6} className="px-5 py-10 text-center text-[13.5px] text-muted">
                         Belum ada pembacaan di jendela ini. Kirim batch di bawah.
                       </td>
                     </tr>
@@ -298,19 +298,19 @@ export default function OceanPage() {
             </div>
           </div>
 
-          <div className="card p-5">
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Asal-usul pembacaan</h2>
-            <p className="mt-1 text-[11px] leading-relaxed text-muted">
+          <div className="card p-4">
+            <h2 className="text-[17px] font-medium">Asal-usul pembacaan</h2>
+            <p className="mt-1 text-[14px] leading-relaxed text-muted">
               Waktu teramati, diterima, dan diproses disimpan terpisah agar waktu ingest tidak
               tertukar dengan waktu pengukuran.
             </p>
             <dl className="mt-4 divide-y divide-line">
-              <KeyValue label="ID observasi" value={<span className="font-mono text-[10px]">{observation?.id.slice(0, 8) ?? "—"}</span>} />
+              <KeyValue label="ID observasi" value={<span className="font-mono text-[14px]">{observation?.id.slice(0, 8) ?? "—"}</span>} />
               <KeyValue label="Waktu teramati" value={formatWib(observation?.observed_at)} />
               <KeyValue label="Waktu diterima" value={formatWib(observation?.received_at)} />
               <KeyValue label="Waktu diproses" value={formatWib(observation?.processed_at)} />
               <KeyValue label="Jenis sumber" value={observation?.source_type ?? "—"} />
-              <KeyValue label="Sesi" value={<span className="font-mono text-[10px]">{observation?.simulation_id?.slice(0, 8) ?? "—"}</span>} />
+              <KeyValue label="Sesi" value={<span className="font-mono text-[14px]">{observation?.simulation_id?.slice(0, 8) ?? "—"}</span>} />
               <KeyValue label="Validasi" value={observation?.validation_status ?? "—"} />
               <KeyValue label="Buoy" value={observation?.buoy_code ?? "—"} />
               <KeyValue
@@ -324,7 +324,7 @@ export default function OceanPage() {
             </dl>
 
             {observation?.validation_errors?.length ? (
-              <div className="mt-4 rounded-[10px] border border-signal/20 bg-signal-soft/60 p-3 text-[11px] text-signal-dark">
+              <div className="mt-4 rounded-[var(--radius-inner)] bg-signal-soft p-3 text-[14px] text-signal">
                 <p className="font-semibold">Masalah validasi</p>
                 <ul className="mt-1 list-inside list-disc space-y-1">
                   {observation.validation_errors.map((error) => (
@@ -334,7 +334,7 @@ export default function OceanPage() {
               </div>
             ) : null}
 
-            <div className="mt-4 rounded-[10px] bg-paper p-3 text-[10.5px] leading-relaxed text-muted">
+            <div className="mt-4 bg-paper p-3 text-[14px] leading-relaxed text-muted">
               <strong className="text-ink">Catatan satuan.</strong> Arah gelombang dan arah angin adalah
               sudut meteorologis “dari arah” dalam derajat sejati. Tekanan disimpan dalam hPa dan tidak
               pernah dikonversi di basis data.
@@ -352,8 +352,8 @@ export default function OceanPage() {
           />
         </section>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-line bg-white px-5 py-4">
-          <p className="text-[11.5px] text-muted">
+        <div className="card flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+          <p className="text-[13.5px] text-muted">
             Langkah berikutnya: saring jendela ini dengan model anomali dan rubrik risiko yang transparan.
           </p>
           <Link href="/ai" className="btn btn-dark btn-sm">
@@ -377,13 +377,13 @@ function MetricCard({
   hint: string;
 }) {
   return (
-    <div className="px-5 py-4">
-      <p className="text-[10px] text-muted">{label}</p>
+    <div className="card p-5">
+      <p className="text-[14px] text-muted">{label}</p>
       <p className="mt-2 flex items-baseline gap-1.5">
         <span className="metric text-[23px] font-medium leading-none">{value}</span>
-        <span className="text-[10px] text-muted">{unit}</span>
+        <span className="text-[14px] text-muted">{unit}</span>
       </p>
-      <p className="mt-1.5 text-[9.5px] leading-snug text-muted">{hint}</p>
+      <p className="mt-1.5 text-[14px] leading-snug text-muted">{hint}</p>
     </div>
   );
 }
